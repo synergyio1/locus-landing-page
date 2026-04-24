@@ -44,11 +44,23 @@ test("'A day in Locus' showpiece renders the four stages in order", async ({
   const section = page.locator("#day-in-locus")
   await expect(section).toBeVisible()
 
-  const tabs = section.getByRole("tab")
-  await expect(tabs).toHaveCount(4)
+  const stageIds = ["plan", "focus", "catch", "close"] as const
+  for (const id of stageIds) {
+    await expect(section.locator(`#stage-${id}`)).toHaveCount(1)
+  }
+
+  const rail = section.getByRole("navigation", {
+    name: /a day in locus/i,
+  })
+  const railLinks = rail.getByRole("link")
+  await expect(railLinks).toHaveCount(4)
 
   const labels = ["Morning plan", "In the work", "Drift caught", "End of the day"]
   for (let i = 0; i < labels.length; i++) {
-    await expect(tabs.nth(i)).toContainText(labels[i])
+    await expect(railLinks.nth(i)).toContainText(labels[i])
+    await expect(railLinks.nth(i)).toHaveAttribute(
+      "href",
+      `#stage-${stageIds[i]}`
+    )
   }
 })
