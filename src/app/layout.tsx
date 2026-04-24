@@ -17,6 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://getlocus.tech"),
   title: "Locus — a macOS focus system",
   description:
     "Know where your hours actually went. A macOS focus system for sessions, projects and habits.",

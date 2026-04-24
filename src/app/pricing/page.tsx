@@ -9,5 +9,5 @@ export const metadata: Metadata = {
 }
 
 export default function PricingPage() {
-  return <Pricing />
+  return <Pricing headingLevel="h1" />
 }

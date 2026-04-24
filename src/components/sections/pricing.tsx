@@ -13,10 +13,15 @@ import {
 } from "@/content/pricing"
 import { cn } from "@/lib/utils"
 
-export function Pricing() {
+export function Pricing({
+  headingLevel = "h2",
+}: {
+  headingLevel?: "h1" | "h2"
+} = {}) {
   const [cadence, setCadence] = React.useState<PricingCadence>(
     pricing.defaultCadence
   )
+  const Heading = headingLevel
 
   return (
     <section
@@ -29,12 +34,12 @@ export function Pricing() {
           <span className="text-xs uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
             {pricing.eyebrow}
           </span>
-          <h2
+          <Heading
             id="pricing-heading"
             className="text-3xl font-medium leading-tight tracking-tight text-[var(--fg)] md:text-4xl"
           >
             {pricing.headline}
-          </h2>
+          </Heading>
           <p className="text-base leading-relaxed text-[var(--muted-foreground)] md:text-lg">
             {pricing.body}
           </p>
