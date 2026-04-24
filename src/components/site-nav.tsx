@@ -50,10 +50,11 @@ export function SiteNav() {
           transition={{ type: "spring", stiffness: 320, damping: 30 }}
           data-compact={compact ? "true" : "false"}
           className={cn(
-            "relative flex w-full items-center justify-between gap-4 rounded-full border border-[var(--border)] backdrop-blur-xl transition-[padding] duration-200",
-            "bg-[color-mix(in_oklab,var(--bg)_72%,transparent)]",
+            "relative flex w-full items-center justify-between gap-4 rounded-full border border-[var(--border)] backdrop-blur-xl transition-[padding,background-color] duration-200",
             "shadow-[0_10px_30px_-15px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)]",
-            compact ? "px-3 py-1.5" : "px-4 py-2"
+            compact
+              ? "bg-[color-mix(in_oklab,var(--bg)_94%,transparent)] backdrop-saturate-150 px-3 py-1.5"
+              : "bg-[color-mix(in_oklab,var(--bg)_72%,transparent)] px-4 py-2"
           )}
         >
           <Link
