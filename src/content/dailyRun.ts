@@ -25,16 +25,16 @@ export const dailyRun: DailyRunContent = {
     {
       caption: "Morning plan in the Command view.",
       screenshot: {
-        src: "/screenshots/CommandView_planning_dark.png",
+        src: "/screenshots/screens/CommandView_planning_dark.png",
         alt: "Locus Command view laying out the morning's sessions and projects",
-        width: 2560,
-        height: 1706,
+        width: 2880,
+        height: 1800,
       },
     },
     {
       caption: "Menu bar widget while the session runs.",
       screenshot: {
-        src: "/screenshots/MenuBarWidget_running_dark.png",
+        src: "/screenshots/screens/MenuBarWidget_running_dark.png",
         alt: "Locus menu bar widget showing a live session, project and remaining time",
         width: 1896,
         height: 1314,

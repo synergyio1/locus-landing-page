@@ -2,6 +2,7 @@ import * as React from "react"
 
 import { PageShell } from "@/components/layout/page-shell"
 import { SpringReveal } from "@/components/motion"
+import { Icon, type IconName } from "@/components/ui/icon"
 import { loop, type LoopVerb } from "@/content/loop"
 
 export function Loop() {
@@ -9,34 +10,43 @@ export function Loop() {
     <section
       id={loop.id}
       aria-labelledby="loop-heading"
-      className="border-t border-[var(--border)] bg-[var(--bg)]"
+      className="relative border-t border-[var(--border)] bg-[var(--bg)]"
     >
-      <PageShell className="py-20 md:py-28">
+      <PageShell className="py-24 md:py-32">
         <SpringReveal className="flex flex-col items-start gap-10 md:items-center md:text-center">
+          <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted-foreground)]">
+            The daily loop
+          </span>
           <h2
             id="loop-heading"
-            className="max-w-3xl text-2xl font-medium leading-snug tracking-tight text-[var(--fg)] md:text-3xl"
+            className="max-w-3xl text-balance text-2xl font-medium leading-snug tracking-tight text-[var(--fg)] md:text-4xl"
           >
             {loop.sentence}
           </h2>
-          <ul className="flex w-full flex-wrap items-center gap-x-8 gap-y-4 md:justify-center md:gap-x-12">
+
+          <ol
+            aria-label="Daily loop verbs"
+            className="grid w-full grid-cols-2 gap-y-8 md:flex md:items-center md:justify-center md:gap-x-6"
+          >
             {loop.verbs.map((verb, index) => (
               <React.Fragment key={verb.label}>
-                <li className="flex items-center gap-2 text-sm uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-                  <VerbIcon name={verb.icon} />
-                  <span className="text-[var(--fg)]">{verb.label}</span>
-                </li>
+                <VerbCell verb={verb} index={index} />
                 {index < loop.verbs.length - 1 ? (
                   <li
                     aria-hidden
-                    className="hidden text-[var(--muted-foreground)]/60 md:block"
+                    className="hidden md:block"
+                    style={{
+                      animation: "spring-reveal 520ms cubic-bezier(0.22,1,0.36,1) both",
+                      animationDelay: `${index * 140 + 70}ms`,
+                    }}
                   >
-                    →
+                    <Connector />
                   </li>
                 ) : null}
               </React.Fragment>
             ))}
-          </ul>
+          </ol>
+
           <p className="max-w-2xl text-base italic text-[var(--muted-foreground)]">
             {loop.subline}
           </p>
@@ -46,53 +56,47 @@ export function Loop() {
   )
 }
 
-function VerbIcon({ name }: { name: LoopVerb["icon"] }) {
-  const common = {
-    "aria-hidden": true as const,
-    viewBox: "0 0 24 24",
-    fill: "none" as const,
-    stroke: "currentColor",
-    strokeWidth: 1.6,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-    className: "size-4 text-[var(--accent)]",
-  }
+function VerbCell({ verb, index }: { verb: LoopVerb; index: number }) {
+  return (
+    <li
+      className="group inline-flex items-center gap-2 text-sm uppercase tracking-[0.22em] text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
+      style={{
+        animation: "spring-reveal 520ms cubic-bezier(0.22,1,0.36,1) both",
+        animationDelay: `${index * 140}ms`,
+      }}
+    >
+      <span
+        aria-hidden
+        className="inline-flex size-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] transition-colors group-hover:border-[color-mix(in_oklab,var(--accent)_55%,transparent)]"
+      >
+        <Icon name={verb.icon as IconName} size={14} />
+      </span>
+      <span className="text-[var(--fg)]">{verb.label}</span>
+    </li>
+  )
+}
 
-  switch (name) {
-    case "plan":
-      return (
-        <svg {...common}>
-          <rect x="4" y="5" width="16" height="15" rx="2" />
-          <path d="M8 3v4" />
-          <path d="M16 3v4" />
-          <path d="M4 10h16" />
-          <path d="M8.5 14.5l2 2 4-4" />
-        </svg>
-      )
-    case "focus":
-      return (
-        <svg {...common}>
-          <circle cx="12" cy="12" r="8" />
-          <circle cx="12" cy="12" r="3" />
-        </svg>
-      )
-    case "track":
-      return (
-        <svg {...common}>
-          <path d="M4 18V6" />
-          <path d="M4 18h16" />
-          <path d="M8 14v-3" />
-          <path d="M13 14V9" />
-          <path d="M18 14V7" />
-        </svg>
-      )
-    case "review":
-      return (
-        <svg {...common}>
-          <path d="M20 12a8 8 0 1 1-2.343-5.657" />
-          <path d="M20 4v4h-4" />
-          <path d="M12 8v4l2.5 2.5" />
-        </svg>
-      )
-  }
+function Connector() {
+  return (
+    <svg
+      viewBox="0 0 40 10"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinecap="round"
+      className="h-2 w-10 text-[var(--muted-foreground)]/60"
+      aria-hidden
+    >
+      <path
+        d="M2 5h34"
+        strokeDasharray="2 3"
+        style={{
+          strokeDasharray: "60",
+          strokeDashoffset: "0",
+          animation: "draw-line 800ms cubic-bezier(0.22,1,0.36,1) both",
+        }}
+      />
+      <path d="M32 2l4 3-4 3" />
+    </svg>
+  )
 }

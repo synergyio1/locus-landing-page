@@ -25,16 +25,16 @@ export const review: ReviewContent = {
     {
       caption: "The weekly review, ready when Friday arrives.",
       screenshot: {
-        src: "/screenshots/ReviewView_weekly_dark.png",
+        src: "/screenshots/screens/ReviewView_weekly_dark.png",
         alt: "Locus weekly review view with the week's sessions and reflection prompts",
-        width: 2560,
-        height: 1706,
+        width: 2880,
+        height: 1800,
       },
     },
     {
       caption: "Your hours, grouped by project and on-track share.",
       screenshot: {
-        src: "/screenshots/ReviewChart_card_dark.png",
+        src: "/screenshots/components/ReviewChart_card_dark.png",
         alt: "Locus review chart card breaking the week's minutes down by project",
         width: 1896,
         height: 1296,

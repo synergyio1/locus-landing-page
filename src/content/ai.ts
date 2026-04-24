@@ -50,7 +50,7 @@ export const ai: AiContent = {
     },
   ],
   screenshot: {
-    src: "/screenshots/ActivityClassify_card_dark.png",
+    src: "/screenshots/components/ActivityClassify_card_dark.png",
     alt: "Locus activity classification card showing on-track, unknown, and off-track pills",
     width: 1776,
     height: 876,

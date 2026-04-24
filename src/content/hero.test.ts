@@ -11,9 +11,9 @@ describe("hero content", () => {
     expect(hero.secondaryCta.href).toBe("#loop")
   })
 
-  it("screenshot resolves to the downscaled CommandView wallpaper", () => {
+  it("screenshot resolves to the bare CommandView raw under screens/", () => {
     expect(hero.screenshot.src).toBe(
-      "/screenshots/CommandView_running_dark.png"
+      "/screenshots/screens/CommandView_running_dark.png"
     )
     expect(hero.screenshot.width).toBeGreaterThan(0)
     expect(hero.screenshot.height).toBeGreaterThan(0)

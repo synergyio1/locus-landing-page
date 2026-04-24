@@ -10,10 +10,10 @@ describe("review content", () => {
   it("exposes exactly two panels: weekly view + chart card", () => {
     expect(review.panels).toHaveLength(2)
     expect(review.panels[0].screenshot.src).toBe(
-      "/screenshots/ReviewView_weekly_dark.png"
+      "/screenshots/screens/ReviewView_weekly_dark.png"
     )
     expect(review.panels[1].screenshot.src).toBe(
-      "/screenshots/ReviewChart_card_dark.png"
+      "/screenshots/components/ReviewChart_card_dark.png"
     )
   })
 

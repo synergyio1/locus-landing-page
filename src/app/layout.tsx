@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 
 import { Footer } from "@/components/layout/footer";
 import { SiteNav } from "@/components/site-nav";
+import { NoiseOverlay } from "@/components/ui/noise-overlay";
+import { ScrollProgressPath } from "@/components/ui/scroll-progress-path";
 
 import "./globals.css";
 
@@ -34,6 +36,8 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[var(--bg)] text-[var(--fg)]">
+        <NoiseOverlay />
+        <ScrollProgressPath />
         <SiteNav />
         <main className="flex-1">{children}</main>
         <Footer />

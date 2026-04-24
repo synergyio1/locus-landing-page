@@ -10,10 +10,10 @@ describe("dailyRun content", () => {
   it("exposes exactly two panels: morning plan + menu bar widget", () => {
     expect(dailyRun.panels).toHaveLength(2)
     expect(dailyRun.panels[0].screenshot.src).toBe(
-      "/screenshots/CommandView_planning_dark.png"
+      "/screenshots/screens/CommandView_planning_dark.png"
     )
     expect(dailyRun.panels[1].screenshot.src).toBe(
-      "/screenshots/MenuBarWidget_running_dark.png"
+      "/screenshots/screens/MenuBarWidget_running_dark.png"
     )
   })
 

@@ -29,9 +29,9 @@ export const hero: HeroContent = {
     href: "#loop",
   },
   screenshot: {
-    src: "/screenshots/CommandView_running_dark.png",
+    src: "/screenshots/screens/CommandView_running_dark.png",
     alt: "Locus Command view with a focus session running",
-    width: 2560,
-    height: 1706,
+    width: 2880,
+    height: 1800,
   },
 }

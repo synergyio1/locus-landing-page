@@ -20,9 +20,9 @@ describe("depth content", () => {
     const byLabel = Object.fromEntries(
       depth.tiles.map((t) => [t.label, t.screenshot.src])
     )
-    expect(byLabel["Projects"]).toBe("/screenshots/ProjectDetail_dark.png")
-    expect(byLabel["Habits"]).toBe("/screenshots/HabitDetail_dark.png")
-    expect(byLabel["Tasks"]).toBe("/screenshots/TasksView_list_dark.png")
+    expect(byLabel["Projects"]).toBe("/screenshots/screens/ProjectDetail_dark.png")
+    expect(byLabel["Habits"]).toBe("/screenshots/screens/HabitDetail_dark.png")
+    expect(byLabel["Tasks"]).toBe("/screenshots/screens/TasksView_list_dark.png")
   })
 
   it("screenshots declare width, height, and alt", () => {

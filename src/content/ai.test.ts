@@ -37,7 +37,7 @@ describe("ai content", () => {
 
   it("renders the ActivityClassify screenshot with dimensions", () => {
     expect(ai.screenshot.src).toBe(
-      "/screenshots/ActivityClassify_card_dark.png"
+      "/screenshots/components/ActivityClassify_card_dark.png"
     )
     expect(ai.screenshot.width).toBeGreaterThan(0)
     expect(ai.screenshot.height).toBeGreaterThan(0)

@@ -9,13 +9,13 @@ export function Footer() {
   return (
     <footer
       aria-labelledby="site-footer-heading"
-      className="border-t border-[var(--border)] bg-[var(--bg)]"
+      className="relative border-t border-[var(--border)] bg-[var(--bg)]"
     >
       <h2 id="site-footer-heading" className="sr-only">
         Site footer
       </h2>
-      <PageShell className="py-12 md:py-16">
-        <div className="flex flex-col gap-10 md:flex-row md:items-start md:justify-between md:gap-16">
+      <PageShell className="py-16 md:py-20">
+        <div className="grid gap-10 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,0.6fr)] md:items-start md:gap-16">
           <div className="flex flex-col gap-3">
             <Link
               href="/"
@@ -28,12 +28,37 @@ export function Footer() {
               />
               Locus
             </Link>
+            <div
+              aria-hidden
+              className="h-px w-24 motion-reduce:animate-none"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, var(--accent), transparent)",
+                backgroundSize: "200% 100%",
+                animation: "hairline-sweep 3.8s ease-in-out infinite",
+              }}
+            />
             <p className="max-w-xs text-sm text-[var(--muted-foreground)]">
               A macOS focus system for sessions, projects and habits.
             </p>
           </div>
 
-          <nav aria-label="Footer" className="flex flex-col gap-3 text-sm">
+          <nav
+            aria-label="Footer"
+            className="grid grid-cols-2 gap-x-8 gap-y-3 text-sm"
+          >
+            <Link
+              href="/pricing"
+              className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
+            >
+              Pricing
+            </Link>
+            <Link
+              href="/changelog"
+              className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
+            >
+              Changelog
+            </Link>
             <Link
               href={`mailto:${SUPPORT_EMAIL}`}
               className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
@@ -53,9 +78,15 @@ export function Footer() {
               Terms
             </Link>
           </nav>
+
+          <div className="flex flex-col gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted-foreground)] md:text-right">
+            <span>v0.1.0</span>
+            <span>macOS 14+</span>
+            <span>Made in Europe</span>
+          </div>
         </div>
 
-        <p className="mt-10 text-xs text-[var(--muted-foreground)] md:mt-14">
+        <p className="mt-12 text-xs text-[var(--muted-foreground)] md:mt-16">
           © {year} Locus. All rights reserved.
         </p>
       </PageShell>

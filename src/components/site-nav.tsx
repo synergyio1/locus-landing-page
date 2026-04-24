@@ -2,9 +2,10 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { LayoutGroup, motion, useMotionValueEvent, useScroll } from "motion/react"
 
 import { buttonVariants } from "@/components/ui/button"
-import { PageShell } from "@/components/layout/page-shell"
+import { MagneticButton } from "@/components/ui/magnetic-button"
 import { cn } from "@/lib/utils"
 
 type NavItem = { href: string; label: string }
@@ -17,6 +18,12 @@ const NAV_ITEMS: NavItem[] = [
 
 export function SiteNav() {
   const [open, setOpen] = React.useState(false)
+  const [compact, setCompact] = React.useState(false)
+  const { scrollY } = useScroll()
+
+  useMotionValueEvent(scrollY, "change", (value) => {
+    setCompact(value > 80)
+  })
 
   React.useEffect(() => {
     if (!open) return
@@ -34,54 +41,83 @@ export function SiteNav() {
   return (
     <header
       data-slot="site-nav"
-      className="sticky top-0 z-50 w-full border-b border-[var(--border)] bg-[color-mix(in_oklab,var(--bg)_85%,transparent)] backdrop-blur supports-[backdrop-filter]:bg-[color-mix(in_oklab,var(--bg)_72%,transparent)]"
+      className="sticky top-3 z-50 w-full md:top-5"
     >
-      <PageShell>
-        <div className="flex h-14 items-center justify-between gap-6">
+      <div className="mx-auto flex max-w-[720px] items-center justify-center px-4">
+        <motion.div
+          layout
+          transition={{ type: "spring", stiffness: 320, damping: 30 }}
+          data-compact={compact ? "true" : "false"}
+          className={cn(
+            "relative flex w-full items-center justify-between gap-4 rounded-full border border-[var(--border)] backdrop-blur-xl transition-[padding] duration-200",
+            "bg-[color-mix(in_oklab,var(--bg)_72%,transparent)]",
+            "shadow-[0_10px_30px_-15px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)]",
+            compact ? "px-3 py-1.5" : "px-4 py-2"
+          )}
+        >
           <Link
             href="/"
             aria-label="Locus home"
-            className="inline-flex items-center gap-2 font-semibold tracking-tight text-[var(--fg)]"
+            className="inline-flex items-center gap-2 pl-1 font-semibold tracking-tight text-[var(--fg)]"
           >
             <span
               aria-hidden
               className="inline-block size-2 rounded-full bg-[var(--accent)]"
             />
-            Locus
+            <span className={cn("text-sm", compact ? "sr-only md:not-sr-only" : "")}>Locus</span>
           </Link>
 
-          <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-md px-3 py-1.5 text-sm text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+          <LayoutGroup id="site-nav-hover">
+            <nav
+              aria-label="Primary"
+              className="hidden items-center gap-0.5 md:flex"
+            >
+              {NAV_ITEMS.map((item) => (
+                <NavHoverLink key={item.href} item={item} />
+              ))}
+            </nav>
+          </LayoutGroup>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <Link
               href="/login"
-              className="hidden rounded-md px-3 py-1.5 text-sm text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)] md:inline-block"
+              className="hidden rounded-full px-3 py-1.5 text-sm text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)] md:inline-block"
             >
               Login
             </Link>
-            <Link
-              href="/download"
-              className={cn(buttonVariants({ size: "sm" }), "hidden md:inline-flex")}
-            >
-              Download
-            </Link>
+            <MagneticButton href="/download" className="hidden md:inline-flex">
+              <span className={cn(buttonVariants({ size: "sm" }))}>Download</span>
+            </MagneticButton>
             <MobileToggle open={open} onToggle={() => setOpen((v) => !v)} />
           </div>
-        </div>
-      </PageShell>
+        </motion.div>
+      </div>
 
       <MobileSheet open={open} onClose={() => setOpen(false)} />
     </header>
+  )
+}
+
+function NavHoverLink({ item }: { item: NavItem }) {
+  const [hover, setHover] = React.useState(false)
+  return (
+    <Link
+      href={item.href}
+      onPointerEnter={() => setHover(true)}
+      onPointerLeave={() => setHover(false)}
+      onFocus={() => setHover(true)}
+      onBlur={() => setHover(false)}
+      className="relative rounded-full px-3 py-1.5 text-sm text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
+    >
+      {hover ? (
+        <motion.span
+          layoutId="site-nav-hover-pill"
+          transition={{ type: "spring", stiffness: 420, damping: 32 }}
+          className="absolute inset-0 rounded-full bg-[var(--surface-raised)]"
+        />
+      ) : null}
+      <span className="relative">{item.label}</span>
+    </Link>
   )
 }
 
@@ -99,7 +135,7 @@ function MobileToggle({
       aria-expanded={open}
       aria-controls="site-nav-sheet"
       onClick={onToggle}
-      className="inline-flex size-9 items-center justify-center rounded-md text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)] md:hidden"
+      className="inline-flex size-8 items-center justify-center rounded-full text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)] md:hidden"
     >
       <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
       <svg
@@ -118,9 +154,8 @@ function MobileToggle({
           </>
         ) : (
           <>
-            <path d="M3 6h14" />
-            <path d="M3 10h14" />
-            <path d="M3 14h14" />
+            <path d="M3 7h14" />
+            <path d="M3 13h14" />
           </>
         )}
       </svg>
@@ -140,14 +175,14 @@ function MobileSheet({
       id="site-nav-sheet"
       data-state={open ? "open" : "closed"}
       className={cn(
-        "fixed inset-x-0 top-14 z-40 border-b border-[var(--border)] bg-[var(--bg)] transition-[opacity,transform] duration-200 md:hidden",
+        "fixed inset-x-0 top-14 z-40 mx-4 overflow-hidden rounded-2xl border border-[var(--border)] bg-[color-mix(in_oklab,var(--bg)_95%,transparent)] backdrop-blur-xl transition-[opacity,transform] duration-200 md:hidden",
         open
           ? "pointer-events-auto translate-y-0 opacity-100"
           : "pointer-events-none -translate-y-2 opacity-0"
       )}
       aria-hidden={!open}
     >
-      <PageShell className="py-6">
+      <div className="p-4">
         <nav aria-label="Mobile" className="flex flex-col gap-1">
           {NAV_ITEMS.map((item) => (
             <Link
@@ -170,11 +205,11 @@ function MobileSheet({
         <Link
           href="/download"
           onClick={onClose}
-          className={cn(buttonVariants({ size: "lg" }), "mt-4 w-full")}
+          className={cn(buttonVariants({ size: "lg" }), "mt-3 w-full")}
         >
           Download for macOS
         </Link>
-      </PageShell>
+      </div>
     </div>
   )
 }

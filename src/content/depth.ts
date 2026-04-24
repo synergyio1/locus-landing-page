@@ -29,10 +29,10 @@ export const depth: DepthContent = {
       caption: "Every session rolls up to a project with its own trend.",
       rotation: "left",
       screenshot: {
-        src: "/screenshots/ProjectDetail_dark.png",
+        src: "/screenshots/screens/ProjectDetail_dark.png",
         alt: "Locus project detail view showing sessions logged against a single project",
-        width: 1600,
-        height: 1066,
+        width: 2880,
+        height: 1800,
       },
     },
     {
@@ -40,10 +40,10 @@ export const depth: DepthContent = {
       caption: "A calendar that rewards the chain, not the hours.",
       rotation: "right",
       screenshot: {
-        src: "/screenshots/HabitDetail_dark.png",
+        src: "/screenshots/screens/HabitDetail_dark.png",
         alt: "Locus habit detail view with a daily streak calendar",
-        width: 1600,
-        height: 1066,
+        width: 2880,
+        height: 1800,
       },
     },
     {
@@ -51,10 +51,10 @@ export const depth: DepthContent = {
       caption: "The to-do list that survives past the session timer.",
       rotation: "left",
       screenshot: {
-        src: "/screenshots/TasksView_list_dark.png",
+        src: "/screenshots/screens/TasksView_list_dark.png",
         alt: "Locus tasks list grouped by project",
-        width: 1600,
-        height: 1066,
+        width: 2880,
+        height: 1800,
       },
     },
   ],
