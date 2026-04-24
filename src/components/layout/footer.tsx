@@ -46,6 +46,12 @@ export function Footer() {
             >
               Privacy
             </Link>
+            <Link
+              href="/terms"
+              className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
+            >
+              Terms
+            </Link>
           </nav>
         </div>
 
