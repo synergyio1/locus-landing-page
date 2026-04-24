@@ -45,7 +45,7 @@ export default function ChangelogPage() {
             className="grid gap-6 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-12"
           >
             <header className="flex flex-col gap-1 md:pt-1">
-              <span className="font-mono text-sm text-[var(--accent)]">
+              <span className="font-mono text-sm text-[var(--accent-text)]">
                 {entry.version}
               </span>
               <time

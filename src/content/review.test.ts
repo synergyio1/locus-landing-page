@@ -7,13 +7,10 @@ describe("review content", () => {
     expect(review.id).toBe("review")
   })
 
-  it("exposes exactly two panels: weekly view + chart card", () => {
-    expect(review.panels).toHaveLength(2)
+  it("exposes a single panel: the weekly view", () => {
+    expect(review.panels).toHaveLength(1)
     expect(review.panels[0].screenshot.src).toBe(
       "/screenshots/screens/ReviewView_weekly_dark.png"
-    )
-    expect(review.panels[1].screenshot.src).toBe(
-      "/screenshots/components/ReviewChart_card_dark.png"
     )
   })
 

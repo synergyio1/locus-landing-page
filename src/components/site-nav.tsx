@@ -5,13 +5,14 @@ import Link from "next/link"
 import { LayoutGroup, motion, useMotionValueEvent, useScroll } from "motion/react"
 
 import { buttonVariants } from "@/components/ui/button"
+import { Logo } from "@/components/ui/logo"
 import { MagneticButton } from "@/components/ui/magnetic-button"
 import { cn } from "@/lib/utils"
 
 type NavItem = { href: string; label: string }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/#features", label: "Features" },
+  { href: "/#day-in-locus", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
   { href: "/changelog", label: "Changelog" },
 ]
@@ -60,10 +61,7 @@ export function SiteNav() {
             aria-label="Locus home"
             className="inline-flex items-center gap-2 pl-1 font-semibold tracking-tight text-[var(--fg)]"
           >
-            <span
-              aria-hidden
-              className="inline-block size-2 rounded-full bg-[var(--accent)]"
-            />
+            <Logo size={18} />
             <span className={cn("text-sm", compact ? "sr-only md:not-sr-only" : "")}>Locus</span>
           </Link>
 
@@ -79,12 +77,6 @@ export function SiteNav() {
           </LayoutGroup>
 
           <div className="flex items-center gap-1.5">
-            <Link
-              href="/login"
-              className="hidden rounded-full px-3 py-1.5 text-sm text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)] md:inline-block"
-            >
-              Login
-            </Link>
             <MagneticButton href="/download" className="hidden md:inline-flex">
               <span className={cn(buttonVariants({ size: "sm" }))}>Download</span>
             </MagneticButton>
@@ -194,13 +186,6 @@ function MobileSheet({
               {item.label}
             </Link>
           ))}
-          <Link
-            href="/login"
-            onClick={onClose}
-            className="rounded-md px-3 py-3 text-base text-[var(--muted-foreground)] transition-colors hover:bg-[var(--surface-raised)]"
-          >
-            Login
-          </Link>
         </nav>
         <Link
           href="/download"

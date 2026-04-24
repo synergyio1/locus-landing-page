@@ -14,7 +14,7 @@ const buttonVariants = cva(
           "border-[var(--border)] bg-transparent text-[var(--fg)] hover:bg-[var(--surface-raised)]",
         ghost:
           "bg-transparent text-[var(--fg)] hover:bg-[var(--surface-raised)]",
-        link: "bg-transparent text-[var(--accent)] underline-offset-4 hover:underline",
+        link: "bg-transparent text-[var(--accent-text)] underline-offset-4 hover:underline",
       },
       size: {
         default: "h-9 px-4 text-sm",

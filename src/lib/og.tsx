@@ -5,8 +5,48 @@ export const OG_CONTENT_TYPE = "image/png" as const
 
 const BG = "#0A1620"
 const FG = "#E6EDF3"
-const ACCENT = "#4A8FE8"
+const ACCENT_TEXT = "#6BA6F2"
 const MUTED = "#8A9BAE"
+
+function LogoMark({ size = 56 }: { size?: number }) {
+  const vb = 1024
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${vb} ${vb}`}
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <circle
+        cx="512"
+        cy="512"
+        r="401"
+        stroke={ACCENT_TEXT}
+        strokeWidth="34"
+        fill="none"
+        opacity="0.22"
+      />
+      <circle
+        cx="512"
+        cy="512"
+        r="290"
+        stroke={ACCENT_TEXT}
+        strokeWidth="60"
+        fill="none"
+        opacity="0.55"
+      />
+      <circle
+        cx="512"
+        cy="512"
+        r="170"
+        stroke={ACCENT_TEXT}
+        strokeWidth="85"
+        fill="none"
+      />
+      <circle cx="512" cy="512" r="60" fill={ACCENT_TEXT} />
+    </svg>
+  )
+}
 
 export function renderOgImage({
   eyebrow,
@@ -27,21 +67,13 @@ export function renderOgImage({
           flexDirection: "column",
           justifyContent: "space-between",
           padding: 96,
-          background: `radial-gradient(circle at 20% 20%, #132534 0%, ${BG} 55%, ${BG} 100%)`,
+          background: `radial-gradient(circle at 18% 10%, #102A4D 0%, ${BG} 55%, ${BG} 100%)`,
           color: FG,
           fontFamily: "sans-serif",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div
-            style={{
-              width: 14,
-              height: 14,
-              borderRadius: 9999,
-              background: ACCENT,
-              boxShadow: `0 0 24px ${ACCENT}`,
-            }}
-          />
+        <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <LogoMark size={56} />
           <span
             style={{
               fontSize: 24,

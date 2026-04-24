@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test"
 
 const ROUTES = [
-  { path: "/", h1: /know where your hours actually went\./i },
+  { path: "/", h1: /finish the things you keep starting\./i },
   { path: "/pricing", h1: /one app\. one subscription\./i },
   { path: "/changelog", h1: /what.s new in locus/i },
   { path: "/download", h1: /coming soon/i },

@@ -57,7 +57,7 @@ export function LegalPage({ content }: { content: LegalContent }) {
             delay={80 + i * 60}
             className="grid gap-4 md:grid-cols-[12rem_minmax(0,1fr)] md:gap-12"
           >
-            <h2 className="text-sm font-medium uppercase tracking-[0.14em] text-[var(--accent)] md:pt-1">
+            <h2 className="text-sm font-medium uppercase tracking-[0.14em] text-[var(--accent-text)] md:pt-1">
               {section.heading}
             </h2>
             <p className="max-w-2xl border-t border-[var(--border)] pt-4 text-base leading-relaxed text-[var(--fg)] md:border-t-0 md:pt-0 md:text-lg">

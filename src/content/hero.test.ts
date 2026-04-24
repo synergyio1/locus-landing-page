@@ -7,8 +7,8 @@ describe("hero content", () => {
     expect(hero.primaryCta.href).toBe("/download")
   })
 
-  it("secondary CTA anchors to #loop", () => {
-    expect(hero.secondaryCta.href).toBe("#loop")
+  it("secondary CTA anchors to the day-in-locus showpiece", () => {
+    expect(hero.secondaryCta.href).toBe("#day-in-locus")
   })
 
   it("screenshot resolves to the bare CommandView raw under screens/", () => {

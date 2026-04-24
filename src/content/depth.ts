@@ -20,13 +20,13 @@ export type DepthContent = {
 
 export const depth: DepthContent = {
   id: "depth",
-  eyebrow: "Depth",
+  eyebrow: "The long arc",
   headline: "Not just a timer.",
-  body: "A session rolls up into a project. A project earns its minutes week after week. Habits keep returning. Tasks don't drift off the edge of a sticky note. The same app that starts your morning holds the shape of the year.",
+  body: "A session rolls into a project. A project earns its minutes week after week. Habits keep returning. Tasks stop drifting off the edge of a sticky note. The same app that started your morning carries the shape of your year.",
   tiles: [
     {
       label: "Projects",
-      caption: "Every session rolls up to a project with its own trend.",
+      caption: "Every session adds up to a project, with its own trend over weeks.",
       rotation: "left",
       screenshot: {
         src: "/screenshots/screens/ProjectDetail_dark.png",
@@ -48,7 +48,7 @@ export const depth: DepthContent = {
     },
     {
       label: "Tasks",
-      caption: "The to-do list that survives past the session timer.",
+      caption: "A to-do list that survives past the session timer — so nothing important falls through.",
       rotation: "left",
       screenshot: {
         src: "/screenshots/screens/TasksView_list_dark.png",

@@ -6,7 +6,7 @@ import { ParallaxImage } from "@/components/ui/parallax-image"
 import { review } from "@/content/review"
 
 export function Review() {
-  const [primary, secondary] = review.panels
+  const [primary] = review.panels
   return (
     <section
       id={review.id}
@@ -49,28 +49,6 @@ export function Review() {
             </ParallaxImage>
           </SpringReveal>
         </div>
-
-        <SpringReveal
-          delay={180}
-          className="mx-auto mt-16 flex max-w-2xl flex-col gap-3 md:mt-24"
-        >
-          <ParallaxImage offset={20} direction={-1}>
-            <DeviceFrame>
-              <AppScreenshot
-                src={secondary.screenshot.src}
-                alt={secondary.screenshot.alt}
-                width={secondary.screenshot.width}
-                height={secondary.screenshot.height}
-                sizes="(max-width: 768px) 100vw, (max-width: 1400px) 46vw, 640px"
-                cropAspect="16/9"
-                cropPosition="center"
-              />
-            </DeviceFrame>
-          </ParallaxImage>
-          <p className="text-sm text-[var(--muted-foreground)]">
-            {secondary.caption}
-          </p>
-        </SpringReveal>
       </PageShell>
     </section>
   )

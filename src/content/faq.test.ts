@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import { faq } from "./faq"
 
 describe("faq content", () => {
-  it("covers all seven PRD topics by id", () => {
+  it("retains all seven original tactical topics", () => {
     const ids = faq.items.map((item) => item.id)
     expect(ids).toEqual(
       expect.arrayContaining([
@@ -16,7 +16,18 @@ describe("faq content", () => {
         "sign-in",
       ])
     )
-    expect(faq.items).toHaveLength(7)
+  })
+
+  it("adds the strategic topics introduced by the A.10 redesign", () => {
+    const ids = faq.items.map((item) => item.id)
+    expect(ids).toEqual(
+      expect.arrayContaining([
+        "who-for",
+        "how-different",
+        "keystrokes",
+        "missed-session",
+      ])
+    )
   })
 
   it("each item has a non-empty question and answer", () => {

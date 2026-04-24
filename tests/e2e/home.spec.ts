@@ -20,35 +20,35 @@ test("hero renders headline, CTAs, and the CommandView screenshot", async ({
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: "Know where your hours actually went.",
+      name: "Finish the things you keep starting.",
     })
   ).toBeVisible()
 
-  const download = page.getByRole("link", { name: "Download for macOS" })
+  const download = page.getByRole("link", { name: /download for macos/i })
   await expect(download.first()).toHaveAttribute("href", "/download")
 
-  const seeHow = page.getByRole("link", { name: "See how it works" })
-  await expect(seeHow).toHaveAttribute("href", "#loop")
+  const seeDay = page.getByRole("link", { name: /see a day in locus/i })
+  await expect(seeDay).toHaveAttribute("href", "#day-in-locus")
 
   const screenshot = page.getByRole("img", {
-    name: /Command view with a focus session running/i,
+    name: /focus session running/i,
   })
   await expect(screenshot).toBeVisible()
 })
 
-test("loop strip renders the four verbs and Stoic sub-line", async ({
+test("'A day in Locus' showpiece renders the four stages in order", async ({
   page,
 }) => {
   await page.goto("/")
 
-  const loopSection = page.locator("#loop")
-  await expect(loopSection).toBeVisible()
+  const section = page.locator("#day-in-locus")
+  await expect(section).toBeVisible()
 
-  for (const label of ["Plan", "Focus", "Track", "Review"]) {
-    await expect(loopSection.getByText(label, { exact: true })).toBeVisible()
+  const tabs = section.getByRole("tab")
+  await expect(tabs).toHaveCount(4)
+
+  const labels = ["Morning plan", "In the work", "Drift caught", "End of the day"]
+  for (let i = 0; i < labels.length; i++) {
+    await expect(tabs.nth(i)).toContainText(labels[i])
   }
-
-  await expect(
-    loopSection.getByText(/execute on what's in your control/i)
-  ).toBeVisible()
 })

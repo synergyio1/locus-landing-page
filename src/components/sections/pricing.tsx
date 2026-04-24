@@ -154,7 +154,7 @@ function PlanCard({
           </p>
         </div>
         {plan.featured ? (
-          <span className="rounded-full border border-[color-mix(in_oklab,var(--accent)_50%,transparent)] bg-[color-mix(in_oklab,var(--accent)_16%,transparent)] px-2.5 py-0.5 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[var(--accent)]">
+          <span className="rounded-full border border-[color-mix(in_oklab,var(--accent)_50%,transparent)] bg-[color-mix(in_oklab,var(--accent)_16%,transparent)] px-2.5 py-0.5 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[var(--accent-text)]">
             Popular
           </span>
         ) : null}
@@ -187,7 +187,7 @@ function PlanCard({
           </motion.div>
         </AnimatePresence>
         {price.note || price.savings ? (
-          <p className="text-sm text-[var(--accent)]">
+          <p className="text-sm text-[var(--accent-text)]">
             {price.savings ?? price.note}
           </p>
         ) : null}
@@ -214,7 +214,7 @@ function PlanCard({
                 strokeWidth="1.8"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="size-2.5 text-[var(--accent)]"
+                className="size-2.5 text-[var(--accent-text)]"
               >
                 <path d="M2 6.5L5 9l5-6" />
               </svg>

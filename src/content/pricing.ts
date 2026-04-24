@@ -33,11 +33,11 @@ export type PricingContent = {
 export const pricing: PricingContent = {
   id: "pricing",
   eyebrow: "Pricing",
-  headline: "One app. One subscription. No tiers to read.",
-  body: "Free keeps the loop — sessions, projects, habits. Pro unlocks on-device activity classification, Plan My Day, and the weekly review chart.",
+  headline: "One app. One subscription. No games.",
+  body: "Free keeps the loop — sessions, projects, habits — for as long as you want. Pro adds the parts that do the thinking: the planner that shapes your day, the monitor that catches you drifting, and the weekly review that tells you what actually moved.",
   defaultCadence: "monthly",
   unlockNote:
-    "Want to try Pro without subscribing? A 7-day Try Pro unlock is available from the Mac app — once, per account.",
+    "Want to try Pro without paying first? A 7-day Try Pro unlock is available from inside the Mac app — once, per account.",
   plans: [
     {
       id: "free",
@@ -58,7 +58,7 @@ export const pricing: PricingContent = {
     {
       id: "pro",
       name: "Pro",
-      tagline: "Everything, plus the thinking parts.",
+      tagline: "The parts that do the thinking.",
       price: {
         monthly: { amount: 6, unit: "/mo" },
         yearly: {
@@ -68,8 +68,8 @@ export const pricing: PricingContent = {
         },
       },
       features: [
-        "On-device activity classification (on track / off track)",
-        "Plan My Day assistant",
+        "Plan My Day — the planner that blocks out your day",
+        "On-device activity classification (on-track vs off-track)",
         "Weekly review chart and project breakdown",
         "Priority email support",
       ],

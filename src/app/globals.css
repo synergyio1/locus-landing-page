@@ -7,6 +7,9 @@
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-text: var(--accent-text);
   --color-accent-foreground: var(--accent-foreground);
   --color-alive: var(--alive);
   --color-warn: var(--warn);
@@ -35,8 +38,11 @@
   --surface-raised: #132534;
   --muted: #132534;
   --muted-foreground: #8A9BAE;
-  --accent: #4A8FE8;
-  --accent-foreground: #0A1620;
+  --accent: #0047AB;
+  --accent-hover: #00347D;
+  --accent-subtle: rgb(0 71 171 / 0.12);
+  --accent-text: #6BA6F2;
+  --accent-foreground: #FFFFFF;
   --alive: #3FCF7E;
   --warn: #E8556F;
   --border: rgb(255 255 255 / 0.08);

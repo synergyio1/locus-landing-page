@@ -13,31 +13,22 @@ export type ReviewContent = {
   eyebrow: string
   headline: string
   body: string
-  panels: [ReviewPanel, ReviewPanel]
+  panels: [ReviewPanel]
 }
 
 export const review: ReviewContent = {
   id: "review",
   eyebrow: "Friday review",
   headline: "Close the week with the receipts in hand.",
-  body: "Every Friday Locus lays the week out flat — the sessions that happened, the projects that moved, the days the chain held. A short reflection, the minutes of proof, and a clear picture of what next week is actually about.",
+  body: "Every Friday, Locus lays the week out flat — the sessions that happened, the projects that moved, the days the chain held. A short reflection, the minutes of proof, and an honest picture of what next week is actually about.",
   panels: [
     {
-      caption: "The weekly review, ready when Friday arrives.",
+      caption: "The weekly view — ready to talk it through when Friday arrives.",
       screenshot: {
         src: "/screenshots/screens/ReviewView_weekly_dark.png",
-        alt: "Locus weekly review view with the week's sessions and reflection prompts",
+        alt: "Locus weekly review — the week's sessions laid out with reflection prompts",
         width: 2880,
         height: 1800,
-      },
-    },
-    {
-      caption: "Your hours, grouped by project and on-track share.",
-      screenshot: {
-        src: "/screenshots/components/ReviewChart_card_dark.png",
-        alt: "Locus review chart card breaking the week's minutes down by project",
-        width: 1896,
-        height: 1296,
       },
     },
   ],

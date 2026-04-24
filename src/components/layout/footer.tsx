@@ -1,6 +1,7 @@
 import Link from "next/link"
 
 import { PageShell } from "@/components/layout/page-shell"
+import { Logo } from "@/components/ui/logo"
 
 const SUPPORT_EMAIL = "support@getlocus.tech"
 
@@ -22,10 +23,7 @@ export function Footer() {
               aria-label="Locus home"
               className="inline-flex items-center gap-2 font-semibold tracking-tight text-[var(--fg)]"
             >
-              <span
-                aria-hidden
-                className="inline-block size-2 rounded-full bg-[var(--accent)]"
-              />
+              <Logo size={22} />
               Locus
             </Link>
             <div
@@ -39,7 +37,7 @@ export function Footer() {
               }}
             />
             <p className="max-w-xs text-sm text-[var(--muted-foreground)]">
-              A macOS focus system for sessions, projects and habits.
+              The bridge between the things you said you&rsquo;d do and the things you actually did. For macOS.
             </p>
           </div>
 

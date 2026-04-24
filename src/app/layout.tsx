@@ -20,9 +20,9 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://getlocus.tech"),
-  title: "Locus — a macOS focus system",
+  title: "Locus — finish the things you keep starting",
   description:
-    "Know where your hours actually went. A macOS focus system for sessions, projects and habits.",
+    "An AI planner that shapes your day, an on-device monitor that keeps it honest, and a Friday review that tells you what actually moved. For macOS.",
 };
 
 export default function RootLayout({

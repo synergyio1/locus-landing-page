@@ -33,7 +33,7 @@ export function Faq() {
                       <span>{item.question}</span>
                       <span
                         aria-hidden
-                        className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] text-[var(--muted-foreground)] transition-[transform,color,background] group-open:rotate-45 group-open:border-[color-mix(in_oklab,var(--accent)_50%,transparent)] group-open:bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] group-open:text-[var(--accent)]"
+                        className="inline-flex size-7 shrink-0 items-center justify-center rounded-full border border-[var(--border)] text-[var(--muted-foreground)] transition-[transform,color,background] group-open:rotate-45 group-open:border-[color-mix(in_oklab,var(--accent)_50%,transparent)] group-open:bg-[color-mix(in_oklab,var(--accent)_12%,transparent)] group-open:text-[var(--accent-text)]"
                       >
                         <Icon name="plus" size={12} />
                       </span>

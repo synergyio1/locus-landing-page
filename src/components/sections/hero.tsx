@@ -23,7 +23,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[60vh] bg-[radial-gradient(ellipse_80%_60%_at_60%_0%,color-mix(in_oklab,var(--accent)_14%,transparent),transparent_70%)]"
       />
 
-      <PageShell className="relative flex min-h-[100dvh] flex-col justify-center pt-24 pb-20 md:pt-28 md:pb-24">
+      <PageShell className="relative flex min-h-[88dvh] flex-col justify-center pt-24 pb-20 md:pt-28 md:pb-24">
         <div className="grid items-center gap-12 md:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] md:gap-16">
           <SpringReveal className="flex flex-col gap-6">
             <span className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
@@ -36,7 +36,7 @@ export function Hero() {
             </span>
             <h1
               id="hero-heading"
-              className="text-[2.75rem] font-semibold leading-[0.98] tracking-tighter text-[var(--fg)] md:text-[5.25rem]"
+              className="text-[2.5rem] font-semibold leading-[1.02] tracking-tight text-[var(--fg)] sm:text-[2.75rem] md:text-[3.5rem] lg:text-[4.25rem] xl:text-[4.75rem]"
             >
               {hero.headline}
             </h1>
