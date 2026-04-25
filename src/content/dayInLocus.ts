@@ -74,9 +74,9 @@ export const dayInLocus: DayInLocusContent = {
       id: "catch",
       time: "2:28 PM",
       label: "Drift caught",
-      title: "The monitor notices before you do.",
+      title: "Locus catches the drift before you do.",
       caption:
-        "You flicked over to read one thing. Locus saw the active window, recognised it wasn't the work, and nudged you back — gently, once. No shaming, no logs sent anywhere.",
+        "You flicked over to read one thing. Locus saw the active window, recognised it wasn't the work, and nudged you back — gently, once. No shaming.",
       screenshot: {
         src: "/screenshots/components/ActivityClassify_card_dark.png",
         alt: "Locus activity classification card flagging a Safari window as off-project",
@@ -88,7 +88,7 @@ export const dayInLocus: DayInLocusContent = {
         verdict: "off-track",
         window: "Safari — X (formerly Twitter)",
         detail:
-          "Window title classified on-device. Nothing you typed or scrolled ever leaves the Mac.",
+          "Locus checks the window title against the session goal. It doesn't read what you type, screenshot your screen, or read URLs.",
       },
     },
     {

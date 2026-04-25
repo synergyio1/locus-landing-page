@@ -33,19 +33,19 @@ export const faq: FaqContent = {
       id: "who-for",
       question: "Who is Locus actually for?",
       answer:
-        "People whose calendar is full but whose week doesn't always move — founders, researchers, writers, engineers, anyone with long-running goals that keep getting crowded out by the urgent stuff. If you set ambitious targets and then lose the plot mid-week, Locus is trying to be your accountability partner, not your surveillance camera.",
+        "Anyone who relies heavily on personal productivity and works on a Mac. Founders, researchers, writers, engineers — anyone whose calendar is full but whose week doesn't always move. If you set ambitious goals and then lose the plot mid-week, Locus is trying to be your accountability partner, not your surveillance camera.",
     },
     {
       id: "how-different",
       question: "How is this different from the trackers and timers I've already tried?",
       answer:
-        "Most tools do one thing. Locus ties three together — a planner that picks the day's work, a monitor that catches you drifting, and a Friday review that tells you what actually moved — all anchored to a single goal you can see across the whole day. The point isn't the timer; it's closing the gap between what you said you'd do and what you did.",
+        "Most tools do one thing. Locus is the execution layer — an AI plans the day around your goal, catches you when you drift, and on Friday walks you through what actually moved. Three things tied together, all anchored to a single goal you can see across the whole day. The point isn't the timer; it's closing the gap between what you said you'd do and what you did.",
     },
     {
       id: "keystrokes",
-      question: "Does the AI monitor see what I type or which websites I visit?",
+      question: "Does the AI read what I type or which sites I visit?",
       answer:
-        "No. Locus looks at the title of the frontmost window and classifies it as on-project or off-project on-device — nothing else. It doesn't read keystrokes, doesn't screenshot your screen, doesn't send window titles or URLs anywhere.",
+        "No. Locus checks the title of the frontmost window against your session's goal — nothing else. It doesn't read what you type, screenshot your screen, or read URLs. The next answer covers what happens to those window titles themselves.",
     },
     {
       id: "missed-session",
@@ -57,7 +57,7 @@ export const faq: FaqContent = {
       id: "privacy",
       question: "Does Locus send my activity to the cloud?",
       answer:
-        "No. Activity classification runs on-device — window titles never leave your Mac. The only things that sync to your account are your subscription status and, for Pro, the settings you'd want on a second Mac.",
+        "Yes — and we want to be specific about what and why. Window titles, project names and session metadata go through Locus's backend to leading AI models, where they're used to plan your day, classify whether you're on-track, and write your Friday review. We don't store logs, we don't train on the data, and it isn't tied to your account when it's sent. If you'd rather not share any of that, the free Loop tier (sessions, projects, habits, tasks) doesn't need it.",
     },
     {
       id: "mac-only",
@@ -87,7 +87,7 @@ export const faq: FaqContent = {
       id: "offline",
       question: "Does Locus work offline?",
       answer:
-        "Yes. All timing, classification and review happen on-device. An internet connection is only required the first time you sign in with a Pro account, and when your subscription renews.",
+        "Mostly. The free Loop — sessions, projects, habits, tasks — works fully offline. The Pro AI features (Plan My Day, drift catch, Friday review) need a connection because they call leading AI models through Locus's backend.",
     },
     {
       id: "sign-in",

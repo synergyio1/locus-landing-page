@@ -20,7 +20,7 @@ export const review: ReviewContent = {
   id: "review",
   eyebrow: "Friday review",
   headline: "Close the week with the receipts in hand.",
-  body: "Every Friday, Locus lays the week out flat — the sessions that happened, the projects that moved, the days the chain held. A short reflection, the minutes of proof, and an honest picture of what next week is actually about.",
+  body: "Every Friday, Locus lays the week out flat — the sessions, the projects that moved, the days the chain held. An AI walks you through what the week was actually for: what worked, what slipped, what next week is about.",
   panels: [
     {
       caption: "The weekly view — ready to talk it through when Friday arrives.",

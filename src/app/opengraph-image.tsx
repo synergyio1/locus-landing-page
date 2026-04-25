@@ -6,9 +6,9 @@ export const contentType = OG_CONTENT_TYPE
 
 export default function Image() {
   return renderOgImage({
-    eyebrow: "macOS",
+    eyebrow: "AI-native execution OS — for macOS",
     title: "Finish the things you keep starting.",
     subtitle:
-      "An AI planner, an on-device monitor, and a Friday review — for the goals that keep getting pushed.",
+      "An AI plans your day, catches you when you drift, and on Friday walks you through what actually moved.",
   })
 }

@@ -28,7 +28,7 @@ export function Hero() {
           <SpringReveal className="flex flex-col gap-6">
             <span className="inline-flex items-center gap-3 text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
               <BreathingDot aria-hidden />
-              <span>macOS focus system</span>
+              <span>AI-native execution OS</span>
               <span
                 aria-hidden
                 className="hidden h-px w-14 bg-gradient-to-r from-[var(--muted-foreground)]/60 to-transparent md:inline-block"

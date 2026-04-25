@@ -34,7 +34,7 @@ export const pricing: PricingContent = {
   id: "pricing",
   eyebrow: "Pricing",
   headline: "One app. One subscription. No games.",
-  body: "Free keeps the loop — sessions, projects, habits — for as long as you want. Pro adds the parts that do the thinking: the planner that shapes your day, the monitor that catches you drifting, and the weekly review that tells you what actually moved.",
+  body: "Free keeps the loop — sessions, projects, habits, tasks — forever. Pro adds the AI brain: the planner that shapes your day around your goal, the AI that catches you the moment you drift, and the Friday review that walks you through what actually moved.",
   defaultCadence: "monthly",
   unlockNote:
     "Want to try Pro without paying first? A 7-day Try Pro unlock is available from inside the Mac app — once, per account.",
@@ -68,9 +68,9 @@ export const pricing: PricingContent = {
         },
       },
       features: [
-        "Plan My Day — the planner that blocks out your day",
-        "On-device activity classification (on-track vs off-track)",
-        "Weekly review chart and project breakdown",
+        "Plan My Day — an AI planner that shapes your day around your goal",
+        "AI drift catch — flags when the active window doesn't match your session goal",
+        "AI Friday review — walked through, not just charted",
         "Priority email support",
       ],
       cta: { label: "Get Pro", href: "/download" },

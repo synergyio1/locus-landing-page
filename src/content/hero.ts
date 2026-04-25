@@ -19,7 +19,7 @@ export type HeroContent = {
 export const hero: HeroContent = {
   headline: "Finish the things you keep starting.",
   subheadline:
-    "An AI planner blocks out your day, an on-device monitor keeps it honest while you work, and a Friday review shows you what actually moved.",
+    "An AI plans your day around what matters, catches you the moment you drift, and on Friday shows you what actually moved. One app, every day.",
   primaryCta: {
     label: "Download for macOS — free",
     href: "/download",
