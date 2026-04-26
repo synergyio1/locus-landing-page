@@ -51,7 +51,7 @@ describe("AccountPage", () => {
     )
   })
 
-  it("renders Free chip + Upgrade + Start-trial CTA for a new free user", async () => {
+  it("renders Free chip + Monthly/Yearly upgrade buttons + disabled trial for a new free user", async () => {
     setSnapshot({
       email: "cook@example.com",
       entitlement: { user_id: "u1", plan: "free" },
@@ -64,11 +64,16 @@ describe("AccountPage", () => {
 
     expect(screen.getByText("cook@example.com")).toBeTruthy()
     expect(screen.getByTestId("plan-chip").textContent).toBe("Free")
-    expect(
-      (screen.getByRole("button", {
-        name: /upgrade to pro/i,
-      }) as HTMLButtonElement).disabled
-    ).toBe(true)
+
+    const monthly = screen.getByRole("button", {
+      name: /upgrade to pro — monthly/i,
+    }) as HTMLButtonElement
+    const yearly = screen.getByRole("button", {
+      name: /upgrade to pro — yearly/i,
+    }) as HTMLButtonElement
+    expect(monthly.disabled).toBe(false)
+    expect(yearly.disabled).toBe(false)
+
     expect(
       (screen.getByRole("button", {
         name: /start 7-day pro trial/i,
@@ -192,6 +197,38 @@ describe("AccountPage", () => {
 
     const link = screen.getByRole("link", { name: /download locus for mac/i })
     expect(link.getAttribute("href")).toBe("/download")
+  })
+
+  it("renders a welcome banner when ?welcome=1 is set", async () => {
+    setSnapshot({
+      email: "cook@example.com",
+      entitlement: { user_id: "u1", plan: "free" },
+      subscription: null,
+      proTrial: null,
+    })
+
+    const jsx = await AccountPage({
+      searchParams: Promise.resolve({ welcome: "1" }),
+    })
+    render(jsx)
+
+    expect(screen.getByTestId("welcome-banner").textContent).toMatch(
+      /welcome to pro/i
+    )
+  })
+
+  it("does not render the welcome banner without ?welcome=1", async () => {
+    setSnapshot({
+      email: "cook@example.com",
+      entitlement: { user_id: "u1", plan: "free" },
+      subscription: null,
+      proTrial: null,
+    })
+
+    const jsx = await AccountPage()
+    render(jsx)
+
+    expect(screen.queryByTestId("welcome-banner")).toBeNull()
   })
 
   it("retains the 'Sign out everywhere' button", async () => {
