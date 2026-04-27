@@ -1,6 +1,6 @@
 import "server-only"
 
-import type { SupabaseClient } from "@supabase/supabase-js"
+import { getDb } from "@/lib/db/client"
 
 export type Plan = "free" | "trial" | "pro"
 
@@ -45,38 +45,73 @@ export type AccountSnapshot = {
   proTrial: ProTrial | null
 }
 
+function toIso(value: Date | string | null): string | null {
+  if (value === null || value === undefined) return null
+  return value instanceof Date ? value.toISOString() : new Date(value).toISOString()
+}
+
 export async function loadAccountSnapshot(
-  supabase: SupabaseClient,
   userId: string,
   fallbackEmail: string
 ): Promise<AccountSnapshot> {
-  const [entitlement, subscription, profile, proTrial] = await Promise.all([
-    supabase
-      .from("entitlements_v")
-      .select("user_id, plan")
-      .eq("user_id", userId)
-      .maybeSingle<Entitlement>(),
-    supabase
-      .from("subscriptions")
-      .select("user_id, status, current_period_end, cancel_at, price_id")
-      .eq("user_id", userId)
-      .maybeSingle<Subscription>(),
-    supabase
-      .from("profiles")
-      .select("user_id, email")
-      .eq("user_id", userId)
-      .maybeSingle<Profile>(),
-    supabase
-      .from("pro_trials")
-      .select("user_id, started_at, expires_at")
-      .eq("user_id", userId)
-      .maybeSingle<ProTrial>(),
-  ])
+  const sql = getDb()
+
+  const [entitlementRows, subscriptionRows, profileRows, proTrialRows] =
+    await Promise.all([
+      sql<Array<{ user_id: string; plan: Plan }>>`
+        select user_id, plan
+        from app.entitlements_v
+        where user_id = ${userId}
+      `,
+      sql<
+        Array<{
+          user_id: string
+          status: string
+          current_period_end: Date | null
+          cancel_at: Date | null
+          price_id: string | null
+        }>
+      >`
+        select user_id, status, current_period_end, cancel_at, price_id
+        from app.subscriptions
+        where user_id = ${userId}
+        limit 1
+      `,
+      sql<Array<{ user_id: string; email: string | null }>>`
+        select p.user_id, u.email
+        from app.profiles p
+        join auth.users u on u.id = p.user_id
+        where p.user_id = ${userId}
+      `,
+      sql<Array<{ user_id: string; started_at: Date; expires_at: Date }>>`
+        select user_id, started_at, expires_at
+        from app.pro_trials
+        where user_id = ${userId}
+      `,
+    ])
+
+  const subscription = subscriptionRows[0]
+    ? {
+        user_id: subscriptionRows[0].user_id,
+        status: subscriptionRows[0].status,
+        current_period_end: toIso(subscriptionRows[0].current_period_end),
+        cancel_at: toIso(subscriptionRows[0].cancel_at),
+        price_id: subscriptionRows[0].price_id,
+      }
+    : null
+
+  const proTrial = proTrialRows[0]
+    ? {
+        user_id: proTrialRows[0].user_id,
+        started_at: toIso(proTrialRows[0].started_at)!,
+        expires_at: toIso(proTrialRows[0].expires_at)!,
+      }
+    : null
 
   return {
-    email: profile.data?.email ?? fallbackEmail,
-    entitlement: entitlement.data ?? null,
-    subscription: subscription.data ?? null,
-    proTrial: proTrial.data ?? null,
+    email: profileRows[0]?.email ?? fallbackEmail,
+    entitlement: entitlementRows[0] ?? null,
+    subscription,
+    proTrial,
   }
 }

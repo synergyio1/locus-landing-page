@@ -44,7 +44,6 @@ export async function POST(request: NextRequest) {
 
   try {
     const { url } = await createCheckoutSession({
-      supabase,
       userId: user.id,
       email: user.email,
       priceId: stripePriceId,

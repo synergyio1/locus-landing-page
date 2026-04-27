@@ -83,7 +83,6 @@ describe("POST /api/checkout/create", () => {
     })
 
     expect(createCheckoutSessionMock).toHaveBeenCalledWith({
-      supabase: fakeSupabase,
       userId: "u1",
       email: "cook@example.com",
       priceId: "price_monthly_env",

@@ -30,11 +30,7 @@ export default async function AccountPage({
     redirect("/login?next=/account")
   }
 
-  const snapshot = await loadAccountSnapshot(
-    supabase,
-    user.id,
-    user.email ?? ""
-  )
+  const snapshot = await loadAccountSnapshot(user.id, user.email ?? "")
   const view = deriveAccountView(snapshot)
 
   const params = (await searchParams) ?? {}

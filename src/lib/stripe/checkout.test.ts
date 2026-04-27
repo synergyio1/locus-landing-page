@@ -27,11 +27,7 @@ describe("createCheckoutSession", () => {
       url: "https://checkout.stripe.com/c/pay/cs_test_abc",
     })
 
-    const fakeSupabase = { from: vi.fn() }
-
     const { url } = await createCheckoutSession({
-      // @ts-expect-error fake
-      supabase: fakeSupabase,
       userId: "u1",
       email: "cook@example.com",
       priceId: "price_monthly_xyz",
@@ -40,7 +36,6 @@ describe("createCheckoutSession", () => {
 
     expect(url).toBe("https://checkout.stripe.com/c/pay/cs_test_abc")
     expect(getOrCreateCustomerMock).toHaveBeenCalledWith({
-      supabase: fakeSupabase,
       userId: "u1",
       email: "cook@example.com",
     })
@@ -60,8 +55,6 @@ describe("createCheckoutSession", () => {
 
     await expect(
       createCheckoutSession({
-        // @ts-expect-error fake
-        supabase: { from: vi.fn() },
         userId: "u1",
         email: "cook@example.com",
         priceId: "price_yearly_abc",

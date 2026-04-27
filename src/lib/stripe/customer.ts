@@ -1,36 +1,29 @@
 import "server-only"
 
-import type { SupabaseClient } from "@supabase/supabase-js"
+import { getDb } from "@/lib/db/client"
 
 import { getStripeClient } from "./client"
 
-type ExistingRow = {
-  stripe_customer_id: string | null
-}
-
 export type GetOrCreateCustomerParams = {
-  supabase: SupabaseClient
   userId: string
   email: string
 }
 
 export async function getOrCreateCustomer({
-  supabase,
   userId,
   email,
 }: GetOrCreateCustomerParams): Promise<string> {
-  const { data: existing, error: lookupError } = await supabase
-    .from("subscriptions")
-    .select("stripe_customer_id")
-    .eq("user_id", userId)
-    .maybeSingle<ExistingRow>()
+  const sql = getDb()
 
-  if (lookupError) {
-    throw new Error(`Failed to look up subscription: ${lookupError.message}`)
-  }
+  const existing = await sql<Array<{ stripe_customer_id: string }>>`
+    select stripe_customer_id
+    from app.subscriptions
+    where user_id = ${userId}
+    limit 1
+  `
 
-  if (existing?.stripe_customer_id) {
-    return existing.stripe_customer_id
+  if (existing[0]?.stripe_customer_id) {
+    return existing[0].stripe_customer_id
   }
 
   const stripe = getStripeClient()
@@ -39,22 +32,10 @@ export async function getOrCreateCustomer({
     metadata: { supabase_user_id: userId },
   })
 
-  const { error: upsertError } = await supabase
-    .from("subscriptions")
-    .upsert(
-      {
-        user_id: userId,
-        stripe_customer_id: customer.id,
-        status: "incomplete",
-      },
-      { onConflict: "user_id" }
-    )
-
-  if (upsertError) {
-    throw new Error(
-      `Failed to persist Stripe customer id: ${upsertError.message}`
-    )
-  }
+  await sql`
+    insert into app.subscriptions (user_id, stripe_customer_id, status)
+    values (${userId}, ${customer.id}, 'incomplete')
+  `
 
   return customer.id
 }

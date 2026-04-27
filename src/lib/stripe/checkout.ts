@@ -1,12 +1,9 @@
 import "server-only"
 
-import type { SupabaseClient } from "@supabase/supabase-js"
-
 import { getStripeClient } from "./client"
 import { getOrCreateCustomer } from "./customer"
 
 export type CreateCheckoutSessionParams = {
-  supabase: SupabaseClient
   userId: string
   email: string
   priceId: string
@@ -14,13 +11,12 @@ export type CreateCheckoutSessionParams = {
 }
 
 export async function createCheckoutSession({
-  supabase,
   userId,
   email,
   priceId,
   origin,
 }: CreateCheckoutSessionParams): Promise<{ url: string }> {
-  const customerId = await getOrCreateCustomer({ supabase, userId, email })
+  const customerId = await getOrCreateCustomer({ userId, email })
 
   const stripe = getStripeClient()
   const session = await stripe.checkout.sessions.create({
