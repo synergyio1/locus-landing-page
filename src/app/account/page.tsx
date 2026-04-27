@@ -7,6 +7,7 @@ import { createServerClient } from "@/lib/supabase/server"
 
 import { ManageSubscriptionButton } from "./manage-subscription-button"
 import { SignOutButton } from "./sign-out-button"
+import { StartTrialButton } from "./start-trial-button"
 import { UpgradeButtons } from "./upgrade-buttons"
 
 const PLAN_CHIP_TONES: Record<PlanLabel, string> = {
@@ -84,7 +85,9 @@ export default async function AccountPage({
           <ManageSubscriptionButton />
         ) : null}
 
-        {view.trialCta ? (
+        {view.trialCta?.kind === "start" ? (
+          <StartTrialButton label={view.trialCta.label} />
+        ) : view.trialCta?.kind === "used" ? (
           <button
             type="button"
             disabled

@@ -74,11 +74,13 @@ describe("AccountPage", () => {
     expect(monthly.disabled).toBe(false)
     expect(yearly.disabled).toBe(false)
 
-    expect(
-      (screen.getByRole("button", {
-        name: /start 7-day pro trial/i,
-      }) as HTMLButtonElement).disabled
-    ).toBe(true)
+    const trialButton = screen.getByRole("button", {
+      name: /start 7-day pro trial/i,
+    }) as HTMLButtonElement
+    expect(trialButton.disabled).toBe(false)
+    expect(trialButton.textContent).toMatch(
+      /Free for 7 days, no card needed/i
+    )
   })
 
   it("renders 'Trial used on <date>' for a free user who consumed their trial", async () => {
