@@ -5,6 +5,7 @@ import { deriveAccountView, type PlanLabel } from "@/lib/account/derive"
 import { loadAccountSnapshot } from "@/lib/account/snapshot"
 import { createServerClient } from "@/lib/supabase/server"
 
+import { ManageSubscriptionButton } from "./manage-subscription-button"
 import { SignOutButton } from "./sign-out-button"
 import { UpgradeButtons } from "./upgrade-buttons"
 
@@ -80,14 +81,7 @@ export default async function AccountPage({
         {view.plan === "free" ? (
           <UpgradeButtons />
         ) : view.primaryCta.label === "Manage subscription" ? (
-          <button
-            type="button"
-            disabled
-            aria-disabled="true"
-            className="inline-flex items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-foreground)] transition disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {view.primaryCta.label}
-          </button>
+          <ManageSubscriptionButton />
         ) : null}
 
         {view.trialCta ? (

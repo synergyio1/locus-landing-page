@@ -155,7 +155,7 @@ describe("AccountPage", () => {
       (screen.getByRole("button", {
         name: /manage subscription/i,
       }) as HTMLButtonElement).disabled
-    ).toBe(true)
+    ).toBe(false)
     expect(
       screen.queryByRole("button", { name: /upgrade to pro/i })
     ).toBeNull()
