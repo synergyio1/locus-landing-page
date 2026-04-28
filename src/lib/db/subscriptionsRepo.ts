@@ -1,10 +1,10 @@
 import "server-only"
 
-import type { subscriptions } from "@prisma/client"
+import type { subscriptionsModel } from "@/generated/prisma/models"
 
 import { prisma } from "./prisma"
 
-export type SubscriptionRow = subscriptions
+export type SubscriptionRow = subscriptionsModel
 
 export type PromoteSubscriptionFields = {
   stripe_customer_id: string
