@@ -1,15 +1,9 @@
-// Domain models we own. Reads & writes go through Prisma Client.
-// Cross-schema relations to `auth.users` are kept for FK validity
-// but each is marked `@ignore` so the relation field is excluded
-// from the generated client (the target model `users` is itself
-// `@@ignore`d in auth.prisma).
-
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model pro_trials {
   user_id    String   @id @db.Uuid
   started_at DateTime @default(now()) @db.Timestamptz(6)
   expires_at DateTime @db.Timestamptz(6)
-  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction) @ignore
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@schema("app")
 }
@@ -22,7 +16,7 @@ model profiles {
   avatar_url String?
   created_at DateTime @default(now()) @db.Timestamptz(6)
   updated_at DateTime @default(now()) @db.Timestamptz(6)
-  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction) @ignore
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@schema("app")
 }
@@ -33,8 +27,8 @@ model stripe_events {
   event_type      String
   payload         Json
   user_id         String?  @db.Uuid
-  processed_at    DateTime @default(now()) @db.Timestamptz(6)
-  users           users?   @relation(fields: [user_id], references: [id], onUpdate: NoAction) @ignore
+  processed_at    DateTime @db.Timestamptz(6)
+  users           users?   @relation(fields: [user_id], references: [id], onUpdate: NoAction)
 
   @@schema("app")
 }
@@ -42,14 +36,8 @@ model stripe_events {
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
-//
-// NOTE: `subscriptions` is currently @@ignore'd by Prisma because the
-// table has no primary key / unique constraint Prisma can latch onto.
-// PRD #34 (Phase B) adds a sibling-repo migration that introduces
-// `UNIQUE(user_id)`; after that migration is applied and we re-pull,
-// this model becomes usable in the generated client.
 model subscriptions {
-  user_id                String    @db.Uuid
+  user_id                String    @unique(map: "subscriptions_user_id_unique") @db.Uuid
   stripe_customer_id     String
   stripe_subscription_id String?   @unique
   price_id               String?

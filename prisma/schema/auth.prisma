@@ -1,14 +1,3 @@
-// Supabase-managed `auth` schema — mirrored here only so Prisma can
-// validate cross-schema foreign keys from `app.*` to `auth.users`.
-// Every model carries `@@ignore` so it is excluded from the generated
-// Prisma Client. Reads of `auth.users` (e.g. `auth.users.email`) go
-// through `prisma.$queryRaw` with a hand-typed return shape — see
-// PRD #34 ("Schema mirror & codegen").
-//
-// The `@@ignore` directives below are preserved across re-introspection
-// (`npx prisma db pull`). Newly added auth tables shipped by Supabase
-// will land here without `@@ignore` and need it added by hand.
-
 /// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model audit_log_entries {
@@ -466,7 +455,7 @@ model users {
   pro_trials                  pro_trials?
   profiles                    profiles?
   stripe_events               stripe_events[]
-  subscriptions               subscriptions[]        @ignore
+  subscriptions               subscriptions?
   identities                  identities[]
   mfa_factors                 mfa_factors[]
   oauth_authorizations        oauth_authorizations[]

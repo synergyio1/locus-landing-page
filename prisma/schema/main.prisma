@@ -1,24 +1,3 @@
-// Multi-file Prisma schema. Split layout:
-//   - main.prisma — generator + datasource (this file).
-//   - app.prisma — our owned domain models.
-//   - auth.prisma — Supabase-managed auth schema. Every model carries
-//     @@ignore so it is excluded from the generated client. Listed in
-//     `schemas` only to satisfy cross-schema FK validation; we never
-//     read or write these tables through Prisma.
-//
-// Authoritative DB schema lives in the sibling repo:
-//   /Users/cippa/Desktop/fly/pomodoro-preview/locus-api/supabase/migrations/
-// Re-introspect (`npx prisma db pull`) after every schema change there.
-//
-// `app.entitlements_v` (the "is user Pro?" view) is not modeled here.
-// It is read via `prisma.$queryRaw` with a hand-typed return shape —
-// see PRD #34 ("Schema mirror & codegen"). Reads of `auth.users.email`
-// also go through `prisma.$queryRaw`.
-//
-// Prisma 7 note: connection URLs are not on the datasource block.
-// CLI commands read `DIRECT_URL` from `prisma.config.ts`; runtime
-// connections use the `@prisma/adapter-pg` driver adapter.
-
 generator client {
   provider        = "prisma-client-js"
   previewFeatures = ["partialIndexes"]
