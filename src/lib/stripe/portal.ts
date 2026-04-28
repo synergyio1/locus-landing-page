@@ -1,6 +1,6 @@
 import "server-only"
 
-import { getDb } from "@/lib/db/client"
+import { SubscriptionsRepo } from "@/lib/db/subscriptionsRepo"
 
 import { getStripeClient } from "./client"
 
@@ -13,16 +13,8 @@ export async function createPortalSession({
   userId,
   returnUrl,
 }: CreatePortalSessionParams): Promise<{ url: string }> {
-  const sql = getDb()
-
-  const rows = await sql<Array<{ stripe_customer_id: string | null }>>`
-    select stripe_customer_id
-    from app.subscriptions
-    where user_id = ${userId}
-    limit 1
-  `
-
-  const customerId = rows[0]?.stripe_customer_id
+  const row = await SubscriptionsRepo.findByUserId(userId)
+  const customerId = row?.stripe_customer_id
   if (!customerId) {
     throw new Error("No Stripe customer for this user")
   }

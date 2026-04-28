@@ -2,7 +2,8 @@ import "server-only"
 
 import type Stripe from "stripe"
 
-import { getDb } from "@/lib/db/client"
+import { prisma } from "@/lib/db/prisma"
+import { SubscriptionsRepo } from "@/lib/db/subscriptionsRepo"
 import { sendCancellation } from "@/lib/mail/sendCancellation"
 import { sendWelcome } from "@/lib/mail/sendWelcome"
 
@@ -46,9 +47,9 @@ export async function handleStripeEvent(
   }
 }
 
-function toIsoOrNull(timestamp: number | null | undefined): string | null {
+function toDateOrNull(timestamp: number | null | undefined): Date | null {
   if (!timestamp) return null
-  return new Date(timestamp * 1000).toISOString()
+  return new Date(timestamp * 1000)
 }
 
 function customerIdOf(value: string | { id: string } | null): string | null {
@@ -104,55 +105,15 @@ async function handleCheckoutSessionCompleted(
   const stripe = getStripeClient()
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
 
-  const sql = getDb()
-  // Promote the placeholder row inserted by getOrCreateCustomer (which has
-  // stripe_subscription_id = NULL) instead of inserting a duplicate. NULLs
-  // don't collide in a unique index, so an INSERT ... ON CONFLICT on
-  // stripe_subscription_id can't see the placeholder.
-  const promoted = await sql<Array<{ user_id: string }>>`
-    update app.subscriptions set
-      stripe_customer_id = ${customerId},
-      stripe_subscription_id = ${subscription.id},
-      status = ${subscription.status},
-      current_period_end = ${toIsoOrNull(currentPeriodEndOf(subscription))},
-      cancel_at = ${toIsoOrNull(subscription.cancel_at)},
-      trial_end = ${toIsoOrNull(subscription.trial_end)},
-      price_id = ${priceIdOf(subscription)}
-    where user_id = ${userId}
-      and stripe_subscription_id is null
-    returning user_id
-  `
-
-  if (promoted.length === 0) {
-    await sql`
-      insert into app.subscriptions (
-        user_id,
-        stripe_customer_id,
-        stripe_subscription_id,
-        status,
-        current_period_end,
-        cancel_at,
-        trial_end,
-        price_id
-      ) values (
-        ${userId},
-        ${customerId},
-        ${subscription.id},
-        ${subscription.status},
-        ${toIsoOrNull(currentPeriodEndOf(subscription))},
-        ${toIsoOrNull(subscription.cancel_at)},
-        ${toIsoOrNull(subscription.trial_end)},
-        ${priceIdOf(subscription)}
-      )
-      on conflict (stripe_subscription_id) do update set
-        stripe_customer_id = excluded.stripe_customer_id,
-        status = excluded.status,
-        current_period_end = excluded.current_period_end,
-        cancel_at = excluded.cancel_at,
-        trial_end = excluded.trial_end,
-        price_id = excluded.price_id
-    `
-  }
+  await SubscriptionsRepo.promoteOrInsertFromSubscription(userId, {
+    stripe_customer_id: customerId,
+    stripe_subscription_id: subscription.id,
+    status: subscription.status,
+    current_period_end: toDateOrNull(currentPeriodEndOf(subscription)),
+    cancel_at: toDateOrNull(subscription.cancel_at),
+    trial_end: toDateOrNull(subscription.trial_end),
+    price_id: priceIdOf(subscription),
+  })
 
   const recipientEmail =
     session.customer_details?.email ??
@@ -183,9 +144,8 @@ async function handleCheckoutSessionCompleted(
 }
 
 async function fetchUserEmail(userId: string): Promise<string | null> {
-  const sql = getDb()
-  const rows = await sql<Array<{ email: string | null }>>`
-    select email from auth.users where id = ${userId} limit 1
+  const rows = await prisma.$queryRaw<Array<{ email: string | null }>>`
+    select email from auth.users where id = ${userId}::uuid limit 1
   `
   return rows[0]?.email ?? null
 }
@@ -195,23 +155,26 @@ function buildDownloadUrl(): string {
   return `${base.replace(/\/$/, "")}/download`
 }
 
+function toIsoOrNull(date: Date | null): string | null {
+  return date ? date.toISOString() : null
+}
+
 async function handleSubscriptionUpdated(
   subscription: Stripe.Subscription,
   previousAttributes: Partial<Stripe.Subscription>
 ): Promise<HandleEventResult> {
-  const sql = getDb()
-  const rows = await sql<Array<{ user_id: string }>>`
-    update app.subscriptions set
-      status = ${subscription.status},
-      current_period_end = ${toIsoOrNull(currentPeriodEndOf(subscription))},
-      cancel_at = ${toIsoOrNull(subscription.cancel_at)},
-      trial_end = ${toIsoOrNull(subscription.trial_end)},
-      price_id = ${priceIdOf(subscription)}
-    where stripe_subscription_id = ${subscription.id}
-    returning user_id
-  `
+  const result = await SubscriptionsRepo.updateBySubscriptionId(
+    subscription.id,
+    {
+      status: subscription.status,
+      current_period_end: toDateOrNull(currentPeriodEndOf(subscription)),
+      cancel_at: toDateOrNull(subscription.cancel_at),
+      trial_end: toDateOrNull(subscription.trial_end),
+      price_id: priceIdOf(subscription),
+    }
+  )
 
-  if (rows.length === 0) {
+  if (!result) {
     return {
       handled: false,
       type: "customer.subscription.updated",
@@ -223,11 +186,11 @@ async function handleSubscriptionUpdated(
     previousAttributes.status === "active" && subscription.status === "canceled"
 
   if (cancellationTransition) {
-    const userId = rows[0].user_id
+    const userId = result.user_id
     const recipientEmail = await fetchUserEmail(userId)
     const accessUntil =
-      toIsoOrNull(currentPeriodEndOf(subscription)) ??
-      toIsoOrNull(subscription.cancel_at) ??
+      toIsoOrNull(toDateOrNull(currentPeriodEndOf(subscription))) ??
+      toIsoOrNull(toDateOrNull(subscription.cancel_at)) ??
       new Date().toISOString()
     if (recipientEmail) {
       try {
@@ -258,16 +221,11 @@ async function handleSubscriptionUpdated(
 async function handleSubscriptionDeleted(
   subscription: Stripe.Subscription
 ): Promise<HandleEventResult> {
-  const sql = getDb()
-  const rows = await sql<Array<{ user_id: string }>>`
-    update app.subscriptions set
-      status = 'canceled',
-      cancel_at = now()
-    where stripe_subscription_id = ${subscription.id}
-    returning user_id
-  `
+  const result = await SubscriptionsRepo.markCanceledBySubscriptionId(
+    subscription.id
+  )
 
-  if (rows.length === 0) {
+  if (!result) {
     return {
       handled: false,
       type: "customer.subscription.deleted",

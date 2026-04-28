@@ -1,7 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest"
 
-const portalSessionsCreate = vi.fn()
-const sqlFn = vi.fn()
+const { portalSessionsCreate, findByUserId } = vi.hoisted(() => ({
+  portalSessionsCreate: vi.fn(),
+  findByUserId: vi.fn(),
+}))
 
 vi.mock("./client", () => ({
   getStripeClient: () => ({
@@ -9,8 +11,8 @@ vi.mock("./client", () => ({
   }),
 }))
 
-vi.mock("@/lib/db/client", () => ({
-  getDb: () => sqlFn,
+vi.mock("@/lib/db/subscriptionsRepo", () => ({
+  SubscriptionsRepo: { findByUserId },
 }))
 
 import { createPortalSession } from "./portal"
@@ -20,7 +22,7 @@ const ORIGINAL_ENV = { ...process.env }
 describe("createPortalSession", () => {
   beforeEach(() => {
     portalSessionsCreate.mockReset()
-    sqlFn.mockReset()
+    findByUserId.mockReset()
     process.env.NEXT_PUBLIC_SITE_URL = "https://getlocus.tech"
   })
 
@@ -29,7 +31,10 @@ describe("createPortalSession", () => {
   })
 
   it("creates a Portal Session for the user's stripe_customer_id and returns the URL", async () => {
-    sqlFn.mockResolvedValueOnce([{ stripe_customer_id: "cus_existing" }])
+    findByUserId.mockResolvedValueOnce({
+      user_id: "u1",
+      stripe_customer_id: "cus_existing",
+    })
     portalSessionsCreate.mockResolvedValue({
       url: "https://billing.stripe.com/p/session/abc",
     })
@@ -47,7 +52,7 @@ describe("createPortalSession", () => {
   })
 
   it("throws when the user has no stripe_customer_id", async () => {
-    sqlFn.mockResolvedValueOnce([])
+    findByUserId.mockResolvedValueOnce(null)
 
     await expect(
       createPortalSession({
@@ -59,7 +64,10 @@ describe("createPortalSession", () => {
   })
 
   it("throws when Stripe returns a session without a URL", async () => {
-    sqlFn.mockResolvedValueOnce([{ stripe_customer_id: "cus_existing" }])
+    findByUserId.mockResolvedValueOnce({
+      user_id: "u1",
+      stripe_customer_id: "cus_existing",
+    })
     portalSessionsCreate.mockResolvedValue({ url: null })
 
     await expect(

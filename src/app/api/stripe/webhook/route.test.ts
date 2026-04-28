@@ -3,9 +3,13 @@ import { NextRequest } from "next/server"
 
 import checkoutCompletedFixture from "@/lib/stripe/events/__fixtures__/checkout.session.completed.json"
 
-const constructEvent = vi.fn()
-const sqlFn = vi.fn()
-const handleStripeEventMock = vi.fn()
+const { constructEvent, recordIfNew, handleStripeEventMock } = vi.hoisted(
+  () => ({
+    constructEvent: vi.fn(),
+    recordIfNew: vi.fn(),
+    handleStripeEventMock: vi.fn(),
+  })
+)
 
 vi.mock("@/lib/stripe/client", () => ({
   getStripeClient: () => ({
@@ -13,8 +17,8 @@ vi.mock("@/lib/stripe/client", () => ({
   }),
 }))
 
-vi.mock("@/lib/db/client", () => ({
-  getDb: () => sqlFn,
+vi.mock("@/lib/db/stripeEventsRepo", () => ({
+  StripeEventsRepo: { recordIfNew },
 }))
 
 vi.mock("@/lib/stripe/events/handle", () => ({
@@ -38,7 +42,7 @@ function postWebhook(rawBody: string, signature: string | null = "t=1,v1=sig") {
 describe("POST /api/stripe/webhook", () => {
   beforeEach(() => {
     constructEvent.mockReset()
-    sqlFn.mockReset()
+    recordIfNew.mockReset()
     handleStripeEventMock.mockReset()
     process.env.STRIPE_WEBHOOK_SECRET = "whsec_test_123"
   })
@@ -53,7 +57,7 @@ describe("POST /api/stripe/webhook", () => {
     )
     expect(response.status).toBe(400)
     expect(constructEvent).not.toHaveBeenCalled()
-    expect(sqlFn).not.toHaveBeenCalled()
+    expect(recordIfNew).not.toHaveBeenCalled()
     expect(handleStripeEventMock).not.toHaveBeenCalled()
   })
 
@@ -68,16 +72,17 @@ describe("POST /api/stripe/webhook", () => {
     )
 
     expect(response.status).toBe(400)
-    expect(sqlFn).not.toHaveBeenCalled()
+    expect(recordIfNew).not.toHaveBeenCalled()
     expect(handleStripeEventMock).not.toHaveBeenCalled()
     errSpy.mockRestore()
   })
 
-  it("inserts into stripe_events and dispatches the event when fresh", async () => {
+  it("records a fresh event and dispatches to the handler", async () => {
     constructEvent.mockReturnValue(checkoutCompletedFixture)
-    sqlFn.mockResolvedValueOnce([
-      { stripe_event_id: checkoutCompletedFixture.id },
-    ])
+    recordIfNew.mockResolvedValueOnce({
+      claimed: true,
+      processedAt: new Date(),
+    })
     handleStripeEventMock.mockResolvedValueOnce({
       handled: true,
       type: checkoutCompletedFixture.type,
@@ -92,16 +97,17 @@ describe("POST /api/stripe/webhook", () => {
       "t=1,v1=valid",
       "whsec_test_123"
     )
-    expect(sqlFn).toHaveBeenCalledTimes(1)
-    const insertArgs = sqlFn.mock.calls[0]
-    expect(insertArgs).toContain(checkoutCompletedFixture.id)
-    expect(insertArgs).toContain(checkoutCompletedFixture.type)
+    expect(recordIfNew).toHaveBeenCalledWith(
+      checkoutCompletedFixture.id,
+      checkoutCompletedFixture.type,
+      rawBody
+    )
     expect(handleStripeEventMock).toHaveBeenCalledWith(checkoutCompletedFixture)
   })
 
-  it("returns 200 without dispatching when stripe_events insert affects zero rows (duplicate)", async () => {
+  it("returns 200 without dispatching when the event was already recorded (duplicate)", async () => {
     constructEvent.mockReturnValue(checkoutCompletedFixture)
-    sqlFn.mockResolvedValueOnce([])
+    recordIfNew.mockResolvedValueOnce({ claimed: false, processedAt: null })
 
     const response = await POST(
       postWebhook(JSON.stringify(checkoutCompletedFixture))
@@ -114,9 +120,10 @@ describe("POST /api/stripe/webhook", () => {
   it("returns 500 when the dispatcher throws so Stripe retries", async () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {})
     constructEvent.mockReturnValue(checkoutCompletedFixture)
-    sqlFn.mockResolvedValueOnce([
-      { stripe_event_id: checkoutCompletedFixture.id },
-    ])
+    recordIfNew.mockResolvedValueOnce({
+      claimed: true,
+      processedAt: new Date(),
+    })
     handleStripeEventMock.mockRejectedValueOnce(new Error("db down"))
 
     const response = await POST(

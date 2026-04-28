@@ -8,13 +8,36 @@ import subscriptionPriceswapFixture from "./__fixtures__/customer.subscription.u
 import subscriptionDeletedFixture from "./__fixtures__/customer.subscription.deleted.json"
 import unknownEventFixture from "./__fixtures__/unknown.event.json"
 
-const sqlFn = vi.fn()
-const subscriptionsRetrieve = vi.fn()
-const sendWelcomeMock = vi.fn()
-const sendCancellationMock = vi.fn()
+const {
+  promoteOrInsertFromSubscription,
+  updateBySubscriptionId,
+  markCanceledBySubscriptionId,
+  queryRaw,
+  subscriptionsRetrieve,
+  sendWelcomeMock,
+  sendCancellationMock,
+} = vi.hoisted(() => ({
+  promoteOrInsertFromSubscription: vi.fn(),
+  updateBySubscriptionId: vi.fn(),
+  markCanceledBySubscriptionId: vi.fn(),
+  queryRaw: vi.fn(),
+  subscriptionsRetrieve: vi.fn(),
+  sendWelcomeMock: vi.fn(),
+  sendCancellationMock: vi.fn(),
+}))
 
-vi.mock("@/lib/db/client", () => ({
-  getDb: () => sqlFn,
+vi.mock("@/lib/db/subscriptionsRepo", () => ({
+  SubscriptionsRepo: {
+    promoteOrInsertFromSubscription,
+    updateBySubscriptionId,
+    markCanceledBySubscriptionId,
+  },
+}))
+
+vi.mock("@/lib/db/prisma", () => ({
+  prisma: {
+    $queryRaw: queryRaw,
+  },
 }))
 
 vi.mock("../client", () => ({
@@ -35,7 +58,10 @@ import { handleStripeEvent } from "./handle"
 
 describe("handleStripeEvent", () => {
   beforeEach(() => {
-    sqlFn.mockReset()
+    promoteOrInsertFromSubscription.mockReset()
+    updateBySubscriptionId.mockReset()
+    markCanceledBySubscriptionId.mockReset()
+    queryRaw.mockReset()
     subscriptionsRetrieve.mockReset()
     sendWelcomeMock.mockReset()
     sendWelcomeMock.mockResolvedValue(undefined)
@@ -46,7 +72,7 @@ describe("handleStripeEvent", () => {
   describe("checkout.session.completed", () => {
     it("retrieves the embedded subscription and upserts subscriptions row by user_id", async () => {
       subscriptionsRetrieve.mockResolvedValueOnce(subscriptionRetrieveFixture)
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
+      promoteOrInsertFromSubscription.mockResolvedValueOnce({ promoted: true })
 
       const result = await handleStripeEvent(
         checkoutCompletedFixture as unknown as Stripe.Event
@@ -59,13 +85,15 @@ describe("handleStripeEvent", () => {
       expect(subscriptionsRetrieve).toHaveBeenCalledWith(
         "sub_1QabcDEFghIJklMNop"
       )
-      expect(sqlFn).toHaveBeenCalledTimes(1)
-      const args = sqlFn.mock.calls[0]
-      expect(args).toContain("user-uuid-123")
-      expect(args).toContain("cus_RaBcDeFgH")
-      expect(args).toContain("sub_1QabcDEFghIJklMNop")
-      expect(args).toContain("active")
-      expect(args).toContain("price_monthly_xyz")
+      expect(promoteOrInsertFromSubscription).toHaveBeenCalledTimes(1)
+      const [userId, fields] = promoteOrInsertFromSubscription.mock.calls[0]
+      expect(userId).toBe("user-uuid-123")
+      expect(fields).toMatchObject({
+        stripe_customer_id: "cus_RaBcDeFgH",
+        stripe_subscription_id: "sub_1QabcDEFghIJklMNop",
+        status: "active",
+        price_id: "price_monthly_xyz",
+      })
     })
 
     it("returns missing_client_reference_id and writes nothing if client_reference_id is absent", async () => {
@@ -89,13 +117,13 @@ describe("handleStripeEvent", () => {
         reason: "missing_client_reference_id",
       })
       expect(subscriptionsRetrieve).not.toHaveBeenCalled()
-      expect(sqlFn).not.toHaveBeenCalled()
+      expect(promoteOrInsertFromSubscription).not.toHaveBeenCalled()
       expect(sendWelcomeMock).not.toHaveBeenCalled()
     })
 
     it("sends a welcome email after the upsert with the buyer's email + a download URL", async () => {
       subscriptionsRetrieve.mockResolvedValueOnce(subscriptionRetrieveFixture)
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
+      promoteOrInsertFromSubscription.mockResolvedValueOnce({ promoted: true })
       const previousSiteUrl = process.env.NEXT_PUBLIC_SITE_URL
       process.env.NEXT_PUBLIC_SITE_URL = "https://preview.getlocus.tech"
 
@@ -131,8 +159,8 @@ describe("handleStripeEvent", () => {
         },
       }
       subscriptionsRetrieve.mockResolvedValueOnce(subscriptionRetrieveFixture)
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
-      sqlFn.mockResolvedValueOnce([{ email: "fallback@example.com" }])
+      promoteOrInsertFromSubscription.mockResolvedValueOnce({ promoted: true })
+      queryRaw.mockResolvedValueOnce([{ email: "fallback@example.com" }])
 
       await handleStripeEvent(fixture as unknown as Stripe.Event)
 
@@ -143,7 +171,7 @@ describe("handleStripeEvent", () => {
 
     it("does not throw if the welcome email send fails (handler must succeed for Stripe)", async () => {
       subscriptionsRetrieve.mockResolvedValueOnce(subscriptionRetrieveFixture)
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
+      promoteOrInsertFromSubscription.mockResolvedValueOnce({ promoted: true })
       sendWelcomeMock.mockRejectedValueOnce(new Error("resend down"))
       const errSpy = vi.spyOn(console, "error").mockImplementation(() => {})
 
@@ -161,8 +189,8 @@ describe("handleStripeEvent", () => {
 
   describe("customer.subscription.updated", () => {
     it("updates the row located by stripe_subscription_id with new status / period / cancel_at / trial_end / price_id", async () => {
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
-      sqlFn.mockResolvedValueOnce([{ email: "ada@example.com" }])
+      updateBySubscriptionId.mockResolvedValueOnce({ user_id: "user-uuid-123" })
+      queryRaw.mockResolvedValueOnce([{ email: "ada@example.com" }])
 
       const result = await handleStripeEvent(
         subscriptionCanceledFixture as unknown as Stripe.Event
@@ -172,15 +200,17 @@ describe("handleStripeEvent", () => {
         handled: true,
         type: "customer.subscription.updated",
       })
-      const updateArgs = sqlFn.mock.calls[0]
-      expect(updateArgs).toContain("sub_1QabcDEFghIJklMNop")
-      expect(updateArgs).toContain("canceled")
-      expect(updateArgs).toContain("price_monthly_xyz")
+      const [stripeSubId, fields] = updateBySubscriptionId.mock.calls[0]
+      expect(stripeSubId).toBe("sub_1QabcDEFghIJklMNop")
+      expect(fields).toMatchObject({
+        status: "canceled",
+        price_id: "price_monthly_xyz",
+      })
     })
 
     it("flags an active->canceled transition for cancellation email follow-up", async () => {
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
-      sqlFn.mockResolvedValueOnce([{ email: "ada@example.com" }])
+      updateBySubscriptionId.mockResolvedValueOnce({ user_id: "user-uuid-123" })
+      queryRaw.mockResolvedValueOnce([{ email: "ada@example.com" }])
 
       const result = await handleStripeEvent(
         subscriptionCanceledFixture as unknown as Stripe.Event
@@ -193,8 +223,8 @@ describe("handleStripeEvent", () => {
     })
 
     it("sends a cancellation email with the access-until date on an active->canceled transition", async () => {
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
-      sqlFn.mockResolvedValueOnce([{ email: "ada@example.com" }])
+      updateBySubscriptionId.mockResolvedValueOnce({ user_id: "user-uuid-123" })
+      queryRaw.mockResolvedValueOnce([{ email: "ada@example.com" }])
 
       await handleStripeEvent(
         subscriptionCanceledFixture as unknown as Stripe.Event
@@ -209,7 +239,7 @@ describe("handleStripeEvent", () => {
     })
 
     it("does not send a cancellation email on a non-cancellation update (price swap)", async () => {
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
+      updateBySubscriptionId.mockResolvedValueOnce({ user_id: "user-uuid-123" })
 
       await handleStripeEvent(
         subscriptionPriceswapFixture as unknown as Stripe.Event
@@ -219,7 +249,7 @@ describe("handleStripeEvent", () => {
     })
 
     it("does not flag a price-swap update as a cancellation transition", async () => {
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
+      updateBySubscriptionId.mockResolvedValueOnce({ user_id: "user-uuid-123" })
 
       const result = await handleStripeEvent(
         subscriptionPriceswapFixture as unknown as Stripe.Event
@@ -232,8 +262,8 @@ describe("handleStripeEvent", () => {
     })
 
     it("does not throw if the cancellation email send fails", async () => {
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
-      sqlFn.mockResolvedValueOnce([{ email: "ada@example.com" }])
+      updateBySubscriptionId.mockResolvedValueOnce({ user_id: "user-uuid-123" })
+      queryRaw.mockResolvedValueOnce([{ email: "ada@example.com" }])
       sendCancellationMock.mockRejectedValueOnce(new Error("resend down"))
       const errSpy = vi.spyOn(console, "error").mockImplementation(() => {})
 
@@ -249,7 +279,7 @@ describe("handleStripeEvent", () => {
     })
 
     it("returns subscription_not_found when no row matches", async () => {
-      sqlFn.mockResolvedValueOnce([])
+      updateBySubscriptionId.mockResolvedValueOnce(null)
 
       const result = await handleStripeEvent(
         subscriptionCanceledFixture as unknown as Stripe.Event
@@ -265,7 +295,9 @@ describe("handleStripeEvent", () => {
 
   describe("customer.subscription.deleted", () => {
     it("marks the row canceled and sets cancel_at to now()", async () => {
-      sqlFn.mockResolvedValueOnce([{ user_id: "user-uuid-123" }])
+      markCanceledBySubscriptionId.mockResolvedValueOnce({
+        user_id: "user-uuid-123",
+      })
 
       const result = await handleStripeEvent(
         subscriptionDeletedFixture as unknown as Stripe.Event
@@ -275,13 +307,13 @@ describe("handleStripeEvent", () => {
         handled: true,
         type: "customer.subscription.deleted",
       })
-      expect(sqlFn).toHaveBeenCalledTimes(1)
-      const args = sqlFn.mock.calls[0]
-      expect(args).toContain("sub_1QabcDEFghIJklMNop")
+      expect(markCanceledBySubscriptionId).toHaveBeenCalledWith(
+        "sub_1QabcDEFghIJklMNop"
+      )
     })
 
     it("returns subscription_not_found when no row matches", async () => {
-      sqlFn.mockResolvedValueOnce([])
+      markCanceledBySubscriptionId.mockResolvedValueOnce(null)
 
       const result = await handleStripeEvent(
         subscriptionDeletedFixture as unknown as Stripe.Event
@@ -306,7 +338,9 @@ describe("handleStripeEvent", () => {
         type: "invoice.payment_succeeded",
         reason: "unknown_type",
       })
-      expect(sqlFn).not.toHaveBeenCalled()
+      expect(promoteOrInsertFromSubscription).not.toHaveBeenCalled()
+      expect(updateBySubscriptionId).not.toHaveBeenCalled()
+      expect(markCanceledBySubscriptionId).not.toHaveBeenCalled()
       expect(subscriptionsRetrieve).not.toHaveBeenCalled()
     })
   })

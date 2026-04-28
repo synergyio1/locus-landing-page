@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 import type Stripe from "stripe"
 
-import { getDb } from "@/lib/db/client"
+import { StripeEventsRepo } from "@/lib/db/stripeEventsRepo"
 import { getStripeClient } from "@/lib/stripe/client"
 import { handleStripeEvent } from "@/lib/stripe/events/handle"
 
@@ -33,15 +33,13 @@ export async function POST(request: NextRequest) {
     return new NextResponse("Invalid signature", { status: 400 })
   }
 
-  const sql = getDb()
-  const inserted = await sql<Array<{ stripe_event_id: string }>>`
-    insert into app.stripe_events (stripe_event_id, event_type, payload)
-    values (${event.id}, ${event.type}, ${rawBody}::jsonb)
-    on conflict (stripe_event_id) do nothing
-    returning stripe_event_id
-  `
+  const { claimed } = await StripeEventsRepo.recordIfNew(
+    event.id,
+    event.type,
+    rawBody
+  )
 
-  if (inserted.length === 0) {
+  if (!claimed) {
     return NextResponse.json({ received: true, duplicate: true })
   }
 

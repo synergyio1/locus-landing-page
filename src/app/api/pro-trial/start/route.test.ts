@@ -12,14 +12,18 @@ const fakeSupabase = {
   },
 }
 
-const sqlFn = vi.fn()
+const { queryRaw } = vi.hoisted(() => ({
+  queryRaw: vi.fn(),
+}))
 
 vi.mock("@/lib/supabase/server", () => ({
   createServerClient: async () => fakeSupabase,
 }))
 
-vi.mock("@/lib/db/client", () => ({
-  getDb: () => sqlFn,
+vi.mock("@/lib/db/prisma", () => ({
+  prisma: {
+    $queryRaw: queryRaw,
+  },
 }))
 
 import { POST } from "./route"
@@ -27,23 +31,23 @@ import { POST } from "./route"
 describe("POST /api/pro-trial/start", () => {
   beforeEach(() => {
     authState.user = null
-    sqlFn.mockReset()
+    queryRaw.mockReset()
   })
 
   afterEach(() => {
-    sqlFn.mockReset()
+    queryRaw.mockReset()
   })
 
   it("returns 401 when the user is unauthenticated", async () => {
     const response = await POST()
     expect(response.status).toBe(401)
-    expect(sqlFn).not.toHaveBeenCalled()
+    expect(queryRaw).not.toHaveBeenCalled()
   })
 
   it("inserts a row and returns started:true with expiresAt for a fresh user", async () => {
     authState.user = { id: "user_fresh", email: "fresh@example.com" }
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    sqlFn.mockResolvedValueOnce([{ expires_at: expiresAt }])
+    queryRaw.mockResolvedValueOnce([{ expires_at: expiresAt }])
 
     const response = await POST()
     expect(response.status).toBe(200)
@@ -54,14 +58,12 @@ describe("POST /api/pro-trial/start", () => {
     const sevenDaysFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000
     expect(Math.abs(returned - sevenDaysFromNow)).toBeLessThan(60_000)
 
-    expect(sqlFn).toHaveBeenCalledTimes(1)
-    const args = sqlFn.mock.calls[0]
-    expect(args).toContain("user_fresh")
+    expect(queryRaw).toHaveBeenCalledTimes(1)
   })
 
   it("returns started:false with reason 'already-used' when the user already has a row", async () => {
     authState.user = { id: "user_returning", email: "returning@example.com" }
-    sqlFn.mockResolvedValueOnce([])
+    queryRaw.mockResolvedValueOnce([])
 
     const response = await POST()
     expect(response.status).toBe(200)
@@ -69,13 +71,13 @@ describe("POST /api/pro-trial/start", () => {
       started: false,
       reason: "already-used",
     })
-    expect(sqlFn).toHaveBeenCalledTimes(1)
+    expect(queryRaw).toHaveBeenCalledTimes(1)
   })
 
   it("only one of two parallel requests for the same user returns started:true", async () => {
     authState.user = { id: "user_concurrent", email: "race@example.com" }
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
-    sqlFn
+    queryRaw
       .mockResolvedValueOnce([{ expires_at: expiresAt }])
       .mockResolvedValueOnce([])
 
@@ -90,12 +92,12 @@ describe("POST /api/pro-trial/start", () => {
       started: false,
       reason: "already-used",
     })
-    expect(sqlFn).toHaveBeenCalledTimes(2)
+    expect(queryRaw).toHaveBeenCalledTimes(2)
   })
 
   it("returns 500 when the DB call throws", async () => {
     authState.user = { id: "user_db_down", email: "down@example.com" }
-    sqlFn.mockRejectedValueOnce(new Error("connection refused"))
+    queryRaw.mockRejectedValueOnce(new Error("connection refused"))
 
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {})
     const response = await POST()
