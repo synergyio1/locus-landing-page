@@ -2,54 +2,50 @@
 
 import { useState } from "react"
 
-type Plan = "monthly" | "yearly"
+import {
+  startCheckout,
+  type CheckoutCadence,
+} from "@/lib/billing/start-checkout"
 
 type ButtonState =
   | { kind: "idle" }
-  | { kind: "pending"; plan: Plan }
+  | { kind: "pending"; plan: CheckoutCadence }
   | { kind: "error"; message: string }
 
 export function UpgradeButtons() {
   const [state, setState] = useState<ButtonState>({ kind: "idle" })
 
-  async function startCheckout(plan: Plan) {
+  async function handleClick(plan: CheckoutCadence) {
     setState({ kind: "pending", plan })
-    try {
-      const response = await fetch("/api/checkout/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ priceId: plan }),
-      })
-
-      if (!response.ok) {
-        const body = (await response.json().catch(() => null)) as {
-          error?: string
-        } | null
+    const result = await startCheckout(plan)
+    switch (result.kind) {
+      case "ok":
+        window.location.href = result.url
+        return
+      case "price_not_configured":
         setState({
           kind: "error",
-          message:
-            body?.error === "price_not_configured"
-              ? "Stripe pricing isn't configured yet. Try again shortly."
-              : "Couldn't start checkout. Please try again.",
+          message: "Stripe pricing isn't configured yet. Try again shortly.",
         })
         return
-      }
-
-      const body = (await response.json()) as { url?: string }
-      if (!body.url) {
+      case "malformed_response":
         setState({
           kind: "error",
           message: "Checkout response was malformed. Please try again.",
         })
         return
-      }
-
-      window.location.href = body.url
-    } catch {
-      setState({
-        kind: "error",
-        message: "Network error. Please try again.",
-      })
+      case "network_error":
+        setState({
+          kind: "error",
+          message: "Network error. Please try again.",
+        })
+        return
+      case "http_error":
+        setState({
+          kind: "error",
+          message: "Couldn't start checkout. Please try again.",
+        })
+        return
     }
   }
 
@@ -61,7 +57,7 @@ export function UpgradeButtons() {
     <>
       <button
         type="button"
-        onClick={() => startCheckout("monthly")}
+        onClick={() => handleClick("monthly")}
         disabled={anyPending}
         className="inline-flex items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-foreground)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
       >
@@ -69,7 +65,7 @@ export function UpgradeButtons() {
       </button>
       <button
         type="button"
-        onClick={() => startCheckout("yearly")}
+        onClick={() => handleClick("yearly")}
         disabled={anyPending}
         className="inline-flex items-center justify-center rounded-md border border-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-text)] transition hover:bg-[var(--accent-subtle)] disabled:cursor-not-allowed disabled:opacity-60"
       >
