@@ -3,8 +3,6 @@
   "object": "subscription",
   "customer": "cus_RaBcDeFgH",
   "status": "active",
-  "current_period_start": 1735689600,
-  "current_period_end": 1738281600,
   "cancel_at": null,
   "cancel_at_period_end": false,
   "canceled_at": null,
@@ -17,6 +15,8 @@
       {
         "id": "si_RaBcItem01",
         "object": "subscription_item",
+        "current_period_start": 1735689600,
+        "current_period_end": 1738281600,
         "price": {
           "id": "price_monthly_xyz",
           "object": "price",

@@ -1,7 +1,7 @@
 {
   "id": "evt_subscription_updated_priceswap_001",
   "object": "event",
-  "api_version": "2024-12-18.acacia",
+  "api_version": "2026-03-25.dahlia",
   "created": 1735776000,
   "type": "customer.subscription.updated",
   "livemode": false,
@@ -13,8 +13,6 @@
       "object": "subscription",
       "customer": "cus_RaBcDeFgH",
       "status": "active",
-      "current_period_start": 1735776000,
-      "current_period_end": 1767312000,
       "cancel_at": null,
       "cancel_at_period_end": false,
       "canceled_at": null,
@@ -27,6 +25,8 @@
           {
             "id": "si_RaBcItem01",
             "object": "subscription_item",
+            "current_period_start": 1735776000,
+            "current_period_end": 1767312000,
             "price": {
               "id": "price_yearly_abc",
               "object": "price",

@@ -64,14 +64,8 @@ function priceIdOf(subscription: Stripe.Subscription): string | null {
   return typeof price === "string" ? price : price.id
 }
 
-// `current_period_end` is present on the wire payload (and on subscriptions
-// returned for our pinned 2024-12-18.acacia API version) but stripe-node v22's
-// type moved it to per-item. Read it through a narrow shape to keep types honest.
-type WithPeriodEnd = { current_period_end?: number | null }
-function currentPeriodEndOf(
-  subscription: Stripe.Subscription | (Stripe.Subscription & WithPeriodEnd)
-): number | null {
-  return (subscription as WithPeriodEnd).current_period_end ?? null
+function currentPeriodEndOf(subscription: Stripe.Subscription): number | null {
+  return subscription.items?.data?.[0]?.current_period_end ?? null
 }
 
 async function handleCheckoutSessionCompleted(

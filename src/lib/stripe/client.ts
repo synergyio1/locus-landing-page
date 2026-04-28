@@ -13,9 +13,7 @@ export function getStripeClient(): Stripe {
   }
 
   cached = new Stripe(secret, {
-    // Pinned per PRD #3. Cast required because stripe-node's `apiVersion`
-    // type is locked to the SDK's bundled version.
-    apiVersion: "2024-12-18.acacia" as never,
+    apiVersion: "2026-04-22.dahlia",
   })
   return cached
 }
