@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
   const sql = getDb()
   const inserted = await sql<Array<{ stripe_event_id: string }>>`
-    insert into app.stripe_events (stripe_event_id, type, payload)
+    insert into app.stripe_events (stripe_event_id, event_type, payload)
     values (${event.id}, ${event.type}, ${rawBody}::jsonb)
     on conflict (stripe_event_id) do nothing
     returning stripe_event_id
