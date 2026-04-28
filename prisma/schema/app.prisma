@@ -1,0 +1,69 @@
+// Domain models we own. Reads & writes go through Prisma Client.
+// Cross-schema relations to `auth.users` are kept for FK validity
+// but each is marked `@ignore` so the relation field is excluded
+// from the generated client (the target model `users` is itself
+// `@@ignore`d in auth.prisma).
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model pro_trials {
+  user_id    String   @id @db.Uuid
+  started_at DateTime @default(now()) @db.Timestamptz(6)
+  expires_at DateTime @db.Timestamptz(6)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction) @ignore
+
+  @@schema("app")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model profiles {
+  user_id    String   @id @db.Uuid
+  name       String?
+  handle     String?  @unique
+  avatar_url String?
+  created_at DateTime @default(now()) @db.Timestamptz(6)
+  updated_at DateTime @default(now()) @db.Timestamptz(6)
+  users      users    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction) @ignore
+
+  @@schema("app")
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model stripe_events {
+  stripe_event_id String   @id
+  event_type      String
+  payload         Json
+  user_id         String?  @db.Uuid
+  processed_at    DateTime @default(now()) @db.Timestamptz(6)
+  users           users?   @relation(fields: [user_id], references: [id], onUpdate: NoAction) @ignore
+
+  @@schema("app")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+//
+// NOTE: `subscriptions` is currently @@ignore'd by Prisma because the
+// table has no primary key / unique constraint Prisma can latch onto.
+// PRD #34 (Phase B) adds a sibling-repo migration that introduces
+// `UNIQUE(user_id)`; after that migration is applied and we re-pull,
+// this model becomes usable in the generated client.
+model subscriptions {
+  user_id                String    @db.Uuid
+  stripe_customer_id     String
+  stripe_subscription_id String?   @unique
+  price_id               String?
+  status                 String
+  current_period_end     DateTime? @db.Timestamptz(6)
+  cancel_at              DateTime? @db.Timestamptz(6)
+  trial_end              DateTime? @db.Timestamptz(6)
+  renewal_reminder_sent  Boolean   @default(false)
+  created_at             DateTime  @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime  @default(now()) @db.Timestamptz(6)
+  users                  users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([current_period_end], map: "subscriptions_renewal_window_idx", where: raw("(status = ANY (ARRAY['active'::text, 'trialing'::text]))"))
+  @@index([user_id])
+  @@ignore
+  @@schema("app")
+}
