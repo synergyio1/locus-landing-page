@@ -36,11 +36,17 @@ export default async function AccountPage({
   const view = deriveAccountView(snapshot)
 
   const params = (await searchParams) ?? {}
-  const showWelcome = params.welcome === "1"
+  const welcomeParam = params.welcome
+  const welcomeKind =
+    welcomeParam === "1"
+      ? "paid"
+      : welcomeParam === "trial"
+        ? "trial"
+        : null
 
   return (
     <section className="mx-auto max-w-2xl px-6 py-16">
-      {showWelcome ? (
+      {welcomeKind === "paid" ? (
         <div
           role="status"
           data-testid="welcome-banner"
@@ -49,6 +55,14 @@ export default async function AccountPage({
           <strong className="font-semibold">Welcome to Pro.</strong>{" "}
           Your subscription is being set up — refresh in a moment if your plan
           chip still says Free.
+        </div>
+      ) : welcomeKind === "trial" ? (
+        <div
+          role="status"
+          data-testid="welcome-banner"
+          className="mb-8 rounded-md border border-[var(--accent)] bg-[var(--accent-subtle)] px-4 py-3 text-sm text-[var(--accent-text)]"
+        >
+          {"You're on Pro for the next 7 days. Make it count."}
         </div>
       ) : null}
 

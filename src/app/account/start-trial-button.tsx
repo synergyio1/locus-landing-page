@@ -42,7 +42,7 @@ export function StartTrialButton({ label }: StartTrialButtonProps) {
         return
       }
 
-      router.refresh()
+      router.replace("/account?welcome=trial")
     } catch {
       setState({
         kind: "error",

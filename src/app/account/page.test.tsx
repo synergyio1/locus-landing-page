@@ -248,7 +248,7 @@ describe("AccountPage", () => {
     expect(link.getAttribute("href")).toBe("/download")
   })
 
-  it("renders a welcome banner when ?welcome=1 is set", async () => {
+  it("renders the paid Pro welcome banner with latency disclaimer when ?welcome=1 is set", async () => {
     setSnapshot({
       email: "cook@example.com",
       entitlement: {
@@ -266,12 +266,42 @@ describe("AccountPage", () => {
     })
     render(jsx)
 
-    expect(screen.getByTestId("welcome-banner").textContent).toMatch(
-      /welcome to pro/i
-    )
+    const banner = screen.getByTestId("welcome-banner")
+    expect(banner.textContent).toMatch(/welcome to pro/i)
+    expect(banner.textContent).toMatch(/refresh in a moment/i)
   })
 
-  it("does not render the welcome banner without ?welcome=1", async () => {
+  it("renders the trial welcome banner with Coach copy when ?welcome=trial is set", async () => {
+    setSnapshot({
+      email: "cook@example.com",
+      entitlement: {
+        user_id: "u1",
+        plan: "pro",
+        source: "trial",
+        active_until: "2026-05-04T12:00:00.000Z",
+      },
+      subscription: null,
+      proTrial: {
+        user_id: "u1",
+        started_at: "2026-04-27T12:00:00.000Z",
+        expires_at: "2026-05-04T12:00:00.000Z",
+      },
+    })
+
+    const jsx = await AccountPage({
+      searchParams: Promise.resolve({ welcome: "trial" }),
+    })
+    render(jsx)
+
+    const banner = screen.getByTestId("welcome-banner")
+    expect(banner.textContent).toMatch(
+      /you're on pro for the next 7 days\. make it count\./i
+    )
+    expect(banner.textContent).not.toMatch(/welcome to pro/i)
+    expect(banner.textContent).not.toMatch(/refresh in a moment/i)
+  })
+
+  it("does not render the welcome banner without a ?welcome= param", async () => {
     setSnapshot({
       email: "cook@example.com",
       entitlement: {
