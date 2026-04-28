@@ -1,0 +1,31 @@
+{
+  "id": "evt_invoice_payment_failed_001",
+  "object": "event",
+  "api_version": "2026-03-25.dahlia",
+  "created": 1740000000,
+  "type": "invoice.payment_failed",
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": { "id": "req_PfAi001", "idempotency_key": null },
+  "data": {
+    "object": {
+      "id": "in_1QabcInvoiceFailed",
+      "object": "invoice",
+      "customer": "cus_RaBcDeFgH",
+      "customer_email": "ada@example.com",
+      "customer_name": "Ada Lovelace",
+      "subscription": "sub_1QabcDEFghIJklMNop",
+      "status": "open",
+      "billing_reason": "subscription_cycle",
+      "attempt_count": 1,
+      "next_payment_attempt": 1740100000,
+      "hosted_invoice_url": "https://invoice.stripe.com/i/test_xyz",
+      "invoice_pdf": "https://invoice.stripe.com/i/test_xyz/pdf",
+      "amount_due": 600,
+      "amount_paid": 0,
+      "amount_remaining": 600,
+      "currency": "usd",
+      "livemode": false
+    }
+  }
+}

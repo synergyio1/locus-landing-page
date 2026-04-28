@@ -1,0 +1,30 @@
+{
+  "id": "evt_checkout_completed_001",
+  "object": "event",
+  "api_version": "2026-03-25.dahlia",
+  "created": 1735689600,
+  "type": "checkout.session.completed",
+  "livemode": false,
+  "pending_webhooks": 1,
+  "request": { "id": "req_AbC123", "idempotency_key": null },
+  "data": {
+    "object": {
+      "id": "cs_test_a1B2c3D4e5",
+      "object": "checkout.session",
+      "client_reference_id": "user-uuid-123",
+      "customer": "cus_RaBcDeFgH",
+      "customer_email": null,
+      "customer_details": {
+        "email": "ada@example.com",
+        "name": "Ada Lovelace"
+      },
+      "subscription": "sub_1QabcDEFghIJklMNop",
+      "mode": "subscription",
+      "status": "complete",
+      "payment_status": "paid",
+      "currency": "usd",
+      "amount_total": 600,
+      "livemode": false
+    }
+  }
+}

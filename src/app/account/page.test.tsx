@@ -51,10 +51,15 @@ describe("AccountPage", () => {
     )
   })
 
-  it("renders Free chip + Upgrade + Start-trial CTA for a new free user", async () => {
+  it("renders Free chip + Monthly/Yearly upgrade buttons + disabled trial for a new free user", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: null,
     })
@@ -64,22 +69,34 @@ describe("AccountPage", () => {
 
     expect(screen.getByText("cook@example.com")).toBeTruthy()
     expect(screen.getByTestId("plan-chip").textContent).toBe("Free")
-    expect(
-      (screen.getByRole("button", {
-        name: /upgrade to pro/i,
-      }) as HTMLButtonElement).disabled
-    ).toBe(true)
-    expect(
-      (screen.getByRole("button", {
-        name: /start 7-day pro trial/i,
-      }) as HTMLButtonElement).disabled
-    ).toBe(true)
+
+    const monthly = screen.getByRole("button", {
+      name: /upgrade to pro — monthly/i,
+    }) as HTMLButtonElement
+    const yearly = screen.getByRole("button", {
+      name: /upgrade to pro — yearly/i,
+    }) as HTMLButtonElement
+    expect(monthly.disabled).toBe(false)
+    expect(yearly.disabled).toBe(false)
+
+    const trialButton = screen.getByRole("button", {
+      name: /start 7-day pro trial/i,
+    }) as HTMLButtonElement
+    expect(trialButton.disabled).toBe(false)
+    expect(trialButton.textContent).toMatch(
+      /Free for 7 days, no card needed/i
+    )
   })
 
   it("renders 'Trial used on <date>' for a free user who consumed their trial", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: {
         user_id: "u1",
@@ -102,10 +119,15 @@ describe("AccountPage", () => {
     ).toBeNull()
   })
 
-  it("renders Trial chip with expiry date for an active trial", async () => {
+  it("renders Trial chip with day-granular countdown for an active trial", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "trial" },
+      entitlement: {
+        user_id: "u1",
+        plan: "pro",
+        source: "trial",
+        active_until: "2026-04-30T12:00:00.000Z",
+      },
       subscription: null,
       proTrial: {
         user_id: "u1",
@@ -114,23 +136,45 @@ describe("AccountPage", () => {
       },
     })
 
-    const jsx = await AccountPage()
-    render(jsx)
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-04-27T12:00:00.000Z"))
+    try {
+      const jsx = await AccountPage()
+      render(jsx)
 
-    expect(screen.getByTestId("plan-chip").textContent).toBe("Trial")
-    expect(screen.getByText(/trial expires april 30, 2026/i)).toBeTruthy()
-    expect(
-      screen.queryByRole("button", { name: /start 7-day pro trial/i })
-    ).toBeNull()
-    expect(
-      screen.queryByRole("button", { name: /trial used on/i })
-    ).toBeNull()
+      expect(screen.getByTestId("plan-chip").textContent).toBe("Trial")
+      expect(
+        screen.getByText(/3 days left · expires april 30, 2026/i)
+      ).toBeTruthy()
+      expect(
+        screen.queryByRole("button", { name: /start 7-day pro trial/i })
+      ).toBeNull()
+      expect(
+        screen.queryByRole("button", { name: /trial used on/i })
+      ).toBeNull()
+      expect(
+        screen.queryByRole("button", { name: /manage subscription/i })
+      ).toBeNull()
+      expect(
+        screen.getByRole("button", { name: /upgrade to pro — monthly/i })
+      ).toBeTruthy()
+      expect(
+        screen.getByRole("button", { name: /upgrade to pro — yearly/i })
+      ).toBeTruthy()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it("renders Pro chip with renewal date for an active subscription", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "pro" },
+      entitlement: {
+        user_id: "u1",
+        plan: "pro",
+        source: "subscription",
+        active_until: "2026-05-25T12:00:00.000Z",
+      },
       subscription: {
         user_id: "u1",
         status: "active",
@@ -150,7 +194,7 @@ describe("AccountPage", () => {
       (screen.getByRole("button", {
         name: /manage subscription/i,
       }) as HTMLButtonElement).disabled
-    ).toBe(true)
+    ).toBe(false)
     expect(
       screen.queryByRole("button", { name: /upgrade to pro/i })
     ).toBeNull()
@@ -159,7 +203,12 @@ describe("AccountPage", () => {
   it("renders 'Pro until <date>, will not renew' when subscription is cancelling", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "pro" },
+      entitlement: {
+        user_id: "u1",
+        plan: "pro",
+        source: "subscription",
+        active_until: "2026-05-25T12:00:00.000Z",
+      },
       subscription: {
         user_id: "u1",
         status: "active",
@@ -182,7 +231,12 @@ describe("AccountPage", () => {
   it("links to /download", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: null,
     })
@@ -194,10 +248,89 @@ describe("AccountPage", () => {
     expect(link.getAttribute("href")).toBe("/download")
   })
 
+  it("renders the paid Pro welcome banner with latency disclaimer when ?welcome=1 is set", async () => {
+    setSnapshot({
+      email: "cook@example.com",
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
+      subscription: null,
+      proTrial: null,
+    })
+
+    const jsx = await AccountPage({
+      searchParams: Promise.resolve({ welcome: "1" }),
+    })
+    render(jsx)
+
+    const banner = screen.getByTestId("welcome-banner")
+    expect(banner.textContent).toMatch(/welcome to pro/i)
+    expect(banner.textContent).toMatch(/refresh in a moment/i)
+    expect(banner.textContent).toMatch(/hasn't updated yet/i)
+    expect(banner.textContent).not.toMatch(/still says free/i)
+  })
+
+  it("renders the trial welcome banner with Coach copy when ?welcome=trial is set", async () => {
+    setSnapshot({
+      email: "cook@example.com",
+      entitlement: {
+        user_id: "u1",
+        plan: "pro",
+        source: "trial",
+        active_until: "2026-05-04T12:00:00.000Z",
+      },
+      subscription: null,
+      proTrial: {
+        user_id: "u1",
+        started_at: "2026-04-27T12:00:00.000Z",
+        expires_at: "2026-05-04T12:00:00.000Z",
+      },
+    })
+
+    const jsx = await AccountPage({
+      searchParams: Promise.resolve({ welcome: "trial" }),
+    })
+    render(jsx)
+
+    const banner = screen.getByTestId("welcome-banner")
+    expect(banner.textContent).toMatch(
+      /you're on pro for the next 7 days\. make it count\./i
+    )
+    expect(banner.textContent).not.toMatch(/welcome to pro/i)
+    expect(banner.textContent).not.toMatch(/refresh in a moment/i)
+  })
+
+  it("does not render the welcome banner without a ?welcome= param", async () => {
+    setSnapshot({
+      email: "cook@example.com",
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
+      subscription: null,
+      proTrial: null,
+    })
+
+    const jsx = await AccountPage()
+    render(jsx)
+
+    expect(screen.queryByTestId("welcome-banner")).toBeNull()
+  })
+
   it("retains the 'Sign out everywhere' button", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: null,
     })

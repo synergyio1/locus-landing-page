@@ -5,7 +5,10 @@ import { deriveAccountView, type PlanLabel } from "@/lib/account/derive"
 import { loadAccountSnapshot } from "@/lib/account/snapshot"
 import { createServerClient } from "@/lib/supabase/server"
 
+import { ManageSubscriptionButton } from "./manage-subscription-button"
 import { SignOutButton } from "./sign-out-button"
+import { StartTrialButton } from "./start-trial-button"
+import { UpgradeButtons } from "./upgrade-buttons"
 
 const PLAN_CHIP_TONES: Record<PlanLabel, string> = {
   Free: "bg-[var(--surface-raised)] text-[var(--fg)]/70",
@@ -13,7 +16,13 @@ const PLAN_CHIP_TONES: Record<PlanLabel, string> = {
   Pro: "bg-[var(--accent)] text-[var(--accent-foreground)]",
 }
 
-export default async function AccountPage() {
+type AccountPageProps = {
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}
+
+export default async function AccountPage({
+  searchParams,
+}: AccountPageProps = {}) {
   const supabase = await createServerClient()
   const {
     data: { user },
@@ -23,15 +32,39 @@ export default async function AccountPage() {
     redirect("/login?next=/account")
   }
 
-  const snapshot = await loadAccountSnapshot(
-    supabase,
-    user.id,
-    user.email ?? ""
-  )
+  const snapshot = await loadAccountSnapshot(user.id, user.email ?? "")
   const view = deriveAccountView(snapshot)
+
+  const params = (await searchParams) ?? {}
+  const welcomeParam = params.welcome
+  const welcomeKind =
+    welcomeParam === "1"
+      ? "paid"
+      : welcomeParam === "trial"
+        ? "trial"
+        : null
 
   return (
     <section className="mx-auto max-w-2xl px-6 py-16">
+      {welcomeKind === "paid" ? (
+        <div
+          role="status"
+          data-testid="welcome-banner"
+          className="mb-8 rounded-md border border-[var(--accent)] bg-[var(--accent-subtle)] px-4 py-3 text-sm text-[var(--accent-text)]"
+        >
+          <strong className="font-semibold">Welcome to Pro.</strong>{" "}
+          {"Your subscription is being set up — refresh in a moment if your plan chip hasn't updated yet."}
+        </div>
+      ) : welcomeKind === "trial" ? (
+        <div
+          role="status"
+          data-testid="welcome-banner"
+          className="mb-8 rounded-md border border-[var(--accent)] bg-[var(--accent-subtle)] px-4 py-3 text-sm text-[var(--accent-text)]"
+        >
+          {"You're on Pro for the next 7 days. Make it count."}
+        </div>
+      ) : null}
+
       <h1 className="text-3xl font-semibold tracking-tight">Your account</h1>
 
       <dl className="mt-8 grid gap-6">
@@ -59,16 +92,15 @@ export default async function AccountPage() {
       </dl>
 
       <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        <button
-          type="button"
-          disabled
-          aria-disabled="true"
-          className="inline-flex items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-foreground)] transition disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {view.primaryCta.label}
-        </button>
+        {view.displayPlan === "pro" ? (
+          <ManageSubscriptionButton />
+        ) : (
+          <UpgradeButtons />
+        )}
 
-        {view.trialCta ? (
+        {view.trialCta?.kind === "start" ? (
+          <StartTrialButton label={view.trialCta.label} />
+        ) : view.trialCta?.kind === "used" ? (
           <button
             type="button"
             disabled

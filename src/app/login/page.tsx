@@ -5,7 +5,7 @@ import { createServerClient } from "@/lib/supabase/server"
 import { LoginForm } from "./login-form"
 
 type PageProps = {
-  searchParams: Promise<{ next?: string; error?: string }>
+  searchParams: Promise<{ next?: string; error?: string; notice?: string }>
 }
 
 function sanitizeNext(next: string | undefined): string {
@@ -21,8 +21,13 @@ function errorMessageFor(code: string | undefined): string | undefined {
   return "Something went wrong. Please try again."
 }
 
+function noticeMessageFor(code: string | undefined): string | undefined {
+  if (code === "signin") return "Please sign in to continue."
+  return undefined
+}
+
 export default async function LoginPage({ searchParams }: PageProps) {
-  const { next, error } = await searchParams
+  const { next, error, notice } = await searchParams
   const safeNext = sanitizeNext(next)
 
   const supabase = await createServerClient()
@@ -41,7 +46,11 @@ export default async function LoginPage({ searchParams }: PageProps) {
         Welcome back — pick up where you left off.
       </p>
       <div className="mt-8">
-        <LoginForm next={safeNext} errorMessage={errorMessageFor(error)} />
+        <LoginForm
+          next={safeNext}
+          errorMessage={errorMessageFor(error)}
+          noticeMessage={noticeMessageFor(notice)}
+        />
       </div>
     </section>
   )
