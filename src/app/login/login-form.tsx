@@ -7,6 +7,7 @@ import { createBrowserClient } from "@/lib/supabase/browser"
 type LoginFormProps = {
   next: string
   errorMessage?: string
+  noticeMessage?: string
 }
 
 type Status =
@@ -25,7 +26,7 @@ function buildRedirectUrl(next: string): string {
   return url.toString()
 }
 
-export function LoginForm({ next, errorMessage }: LoginFormProps) {
+export function LoginForm({ next, errorMessage, noticeMessage }: LoginFormProps) {
   const [status, setStatus] = useState<Status>({ kind: "idle" })
   const [email, setEmail] = useState("")
 
@@ -58,6 +59,14 @@ export function LoginForm({ next, errorMessage }: LoginFormProps) {
 
   return (
     <div className="mx-auto w-full max-w-sm space-y-6">
+      {noticeMessage ? (
+        <p
+          role="status"
+          className="rounded-md bg-[#0047AB]/10 px-3 py-2 text-sm text-[#0047AB]"
+        >
+          {noticeMessage}
+        </p>
+      ) : null}
       {errorMessage ? (
         <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-900">
           {errorMessage}
