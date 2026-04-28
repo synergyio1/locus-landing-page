@@ -119,7 +119,7 @@ describe("AccountPage", () => {
     ).toBeNull()
   })
 
-  it("renders Trial chip with expiry date for an active trial", async () => {
+  it("renders Trial chip with day-granular countdown for an active trial", async () => {
     setSnapshot({
       email: "cook@example.com",
       entitlement: {
@@ -136,26 +136,34 @@ describe("AccountPage", () => {
       },
     })
 
-    const jsx = await AccountPage()
-    render(jsx)
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-04-27T12:00:00.000Z"))
+    try {
+      const jsx = await AccountPage()
+      render(jsx)
 
-    expect(screen.getByTestId("plan-chip").textContent).toBe("Trial")
-    expect(screen.getByText(/trial expires april 30, 2026/i)).toBeTruthy()
-    expect(
-      screen.queryByRole("button", { name: /start 7-day pro trial/i })
-    ).toBeNull()
-    expect(
-      screen.queryByRole("button", { name: /trial used on/i })
-    ).toBeNull()
-    expect(
-      screen.queryByRole("button", { name: /manage subscription/i })
-    ).toBeNull()
-    expect(
-      screen.getByRole("button", { name: /upgrade to pro — monthly/i })
-    ).toBeTruthy()
-    expect(
-      screen.getByRole("button", { name: /upgrade to pro — yearly/i })
-    ).toBeTruthy()
+      expect(screen.getByTestId("plan-chip").textContent).toBe("Trial")
+      expect(
+        screen.getByText(/3 days left · expires april 30, 2026/i)
+      ).toBeTruthy()
+      expect(
+        screen.queryByRole("button", { name: /start 7-day pro trial/i })
+      ).toBeNull()
+      expect(
+        screen.queryByRole("button", { name: /trial used on/i })
+      ).toBeNull()
+      expect(
+        screen.queryByRole("button", { name: /manage subscription/i })
+      ).toBeNull()
+      expect(
+        screen.getByRole("button", { name: /upgrade to pro — monthly/i })
+      ).toBeTruthy()
+      expect(
+        screen.getByRole("button", { name: /upgrade to pro — yearly/i })
+      ).toBeTruthy()
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it("renders Pro chip with renewal date for an active subscription", async () => {

@@ -29,12 +29,26 @@ function formatDate(iso: string | null): string | null {
   if (!iso) return null
   const date = new Date(iso)
   if (Number.isNaN(date.getTime())) return null
+  return formatDateUtc(date)
+}
+
+function formatDateUtc(date: Date): string {
   return date.toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
     timeZone: "UTC",
   })
+}
+
+const MS_PER_DAY = 86_400_000
+
+export function formatTrialDateLine(activeUntil: Date, now: Date): string {
+  const diff = activeUntil.getTime() - now.getTime()
+  if (diff < MS_PER_DAY) return "Trial expires today"
+  const daysLeft = Math.ceil(diff / MS_PER_DAY)
+  const noun = daysLeft === 1 ? "day" : "days"
+  return `${daysLeft} ${noun} left · expires ${formatDateUtc(activeUntil)}`
 }
 
 function computeDisplayPlan(snapshot: AccountSnapshot): DisplayPlan {
@@ -46,7 +60,10 @@ function computeDisplayPlan(snapshot: AccountSnapshot): DisplayPlan {
   return "free"
 }
 
-export function deriveAccountView(snapshot: AccountSnapshot): AccountView {
+export function deriveAccountView(
+  snapshot: AccountSnapshot,
+  now: Date = new Date()
+): AccountView {
   const displayPlan = computeDisplayPlan(snapshot)
   const planLabel = PLAN_LABELS[displayPlan]
 
@@ -61,9 +78,12 @@ export function deriveAccountView(snapshot: AccountSnapshot): AccountView {
       dateLine = `Renews on ${renewal}`
     }
   } else if (displayPlan === "trial") {
-    const expires = formatDate(snapshot.entitlement?.active_until ?? null)
-    if (expires) {
-      dateLine = `Trial expires ${expires}`
+    const activeUntilIso = snapshot.entitlement?.active_until ?? null
+    if (activeUntilIso) {
+      const activeUntil = new Date(activeUntilIso)
+      if (!Number.isNaN(activeUntil.getTime())) {
+        dateLine = formatTrialDateLine(activeUntil, now)
+      }
     }
   }
 

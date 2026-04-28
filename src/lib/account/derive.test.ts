@@ -58,11 +58,11 @@ describe("deriveAccountView", () => {
       },
     }
 
-    const view = deriveAccountView(snapshot)
+    const view = deriveAccountView(snapshot, new Date("2026-04-27T12:00:00.000Z"))
 
     expect(view.displayPlan).toBe("trial")
     expect(view.planLabel).toBe("Trial")
-    expect(view.dateLine).toMatch(/Trial expires .+/)
+    expect(view.dateLine).toBe("3 days left · expires April 30, 2026")
     expect(view.primaryCta.label).not.toBe("Manage subscription")
   })
 
