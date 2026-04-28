@@ -53,8 +53,7 @@ export default async function AccountPage({
           className="mb-8 rounded-md border border-[var(--accent)] bg-[var(--accent-subtle)] px-4 py-3 text-sm text-[var(--accent-text)]"
         >
           <strong className="font-semibold">Welcome to Pro.</strong>{" "}
-          Your subscription is being set up — refresh in a moment if your plan
-          chip still says Free.
+          {"Your subscription is being set up — refresh in a moment if your plan chip hasn't updated yet."}
         </div>
       ) : welcomeKind === "trial" ? (
         <div

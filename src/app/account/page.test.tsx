@@ -269,6 +269,8 @@ describe("AccountPage", () => {
     const banner = screen.getByTestId("welcome-banner")
     expect(banner.textContent).toMatch(/welcome to pro/i)
     expect(banner.textContent).toMatch(/refresh in a moment/i)
+    expect(banner.textContent).toMatch(/hasn't updated yet/i)
+    expect(banner.textContent).not.toMatch(/still says free/i)
   })
 
   it("renders the trial welcome banner with Coach copy when ?welcome=trial is set", async () => {
