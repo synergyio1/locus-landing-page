@@ -1,5 +1,9 @@
-import { afterEach, describe, expect, it } from "vitest"
+import { afterEach, describe, expect, it, vi } from "vitest"
 import { cleanup, fireEvent, render, screen } from "@testing-library/react"
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/",
+}))
 
 import { Pricing } from "./pricing"
 
@@ -25,5 +29,31 @@ describe("<Pricing />", () => {
     const { container } = render(<Pricing />)
     expect(container.textContent).not.toMatch(/14 days/i)
     expect(container.textContent).not.toMatch(/no card required/i)
+  })
+
+  it("renders the Pro CTA as an anchor when isAuthed=false", () => {
+    render(<Pricing isAuthed={false} />)
+    const proLink = screen.getByRole("link", { name: /get pro/i })
+    expect(proLink.tagName).toBe("A")
+    expect(proLink.getAttribute("href")).toMatch(/\/login\?next=.*notice=signin/)
+  })
+
+  it("renders the Pro CTA as a button when isAuthed=true", () => {
+    render(<Pricing isAuthed />)
+    const proButton = screen.getByRole("button", { name: /get pro/i })
+    expect(proButton.tagName).toBe("BUTTON")
+    expect(screen.queryByRole("link", { name: /get pro/i })).toBeNull()
+  })
+
+  it("keeps the Free plan CTA pointing to /download in both auth states", () => {
+    const { rerender } = render(<Pricing isAuthed={false} />)
+    expect(
+      screen.getByRole("link", { name: /download for macos/i }).getAttribute("href")
+    ).toBe("/download")
+
+    rerender(<Pricing isAuthed />)
+    expect(
+      screen.getByRole("link", { name: /download for macos/i }).getAttribute("href")
+    ).toBe("/download")
   })
 })

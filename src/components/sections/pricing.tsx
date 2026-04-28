@@ -6,8 +6,8 @@ import { AnimatePresence, LayoutGroup, motion } from "motion/react"
 
 import { PageShell } from "@/components/layout/page-shell"
 import { SpringReveal } from "@/components/motion"
+import { ProCta } from "@/components/sections/pro-cta"
 import { buttonVariants } from "@/components/ui/button"
-import { MagneticButton } from "@/components/ui/magnetic-button"
 import { SpotlightBorder } from "@/components/ui/spotlight-border"
 import {
   pricing,
@@ -18,8 +18,10 @@ import { cn } from "@/lib/utils"
 
 export function Pricing({
   headingLevel = "h2",
+  isAuthed = false,
 }: {
   headingLevel?: "h1" | "h2"
+  isAuthed?: boolean
 } = {}) {
   const [cadence, setCadence] = React.useState<PricingCadence>(
     pricing.defaultCadence
@@ -57,7 +59,7 @@ export function Pricing({
         <div className="mt-14 grid gap-6 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:gap-8">
           {pricing.plans.map((plan, i) => (
             <SpringReveal key={plan.id} delay={120 + i * 90} as="div">
-              <PlanCard plan={plan} cadence={cadence} />
+              <PlanCard plan={plan} cadence={cadence} isAuthed={isAuthed} />
             </SpringReveal>
           ))}
         </div>
@@ -127,9 +129,11 @@ function CadenceToggle({
 function PlanCard({
   plan,
   cadence,
+  isAuthed,
 }: {
   plan: PricingPlan
   cadence: PricingCadence
+  isAuthed: boolean
 }) {
   const price = plan.price[cadence]
   const isFree = plan.id === "free"
@@ -226,16 +230,11 @@ function PlanCard({
 
       <div className="mt-auto pt-2">
         {plan.featured ? (
-          <MagneticButton href={plan.cta.href} className="w-full">
-            <span
-              className={cn(
-                buttonVariants({ size: "lg", variant: "default" }),
-                "w-full shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
-              )}
-            >
-              {plan.cta.label}
-            </span>
-          </MagneticButton>
+          <ProCta
+            cadence={cadence}
+            isAuthed={isAuthed}
+            label={plan.cta.label}
+          />
         ) : (
           <Link
             href={plan.cta.href}
