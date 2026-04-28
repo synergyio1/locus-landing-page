@@ -1,10 +1,12 @@
-import type { AccountSnapshot, Plan } from "./snapshot"
+import type { AccountSnapshot } from "./snapshot"
+
+export type DisplayPlan = "free" | "trial" | "pro"
 
 export type PlanLabel = "Free" | "Trial" | "Pro"
 
 export type AccountView = {
   email: string
-  plan: Plan
+  displayPlan: DisplayPlan
   planLabel: PlanLabel
   dateLine: string | null
   primaryCta: { label: "Upgrade to Pro" | "Manage subscription" }
@@ -14,7 +16,7 @@ export type AccountView = {
     | null
 }
 
-const PLAN_LABELS: Record<Plan, PlanLabel> = {
+const PLAN_LABELS: Record<DisplayPlan, PlanLabel> = {
   free: "Free",
   trial: "Trial",
   pro: "Pro",
@@ -35,12 +37,21 @@ function formatDate(iso: string | null): string | null {
   })
 }
 
+function computeDisplayPlan(snapshot: AccountSnapshot): DisplayPlan {
+  const entitlement = snapshot.entitlement
+  if (entitlement?.plan === "pro") {
+    if (entitlement.source === "subscription") return "pro"
+    if (entitlement.source === "trial") return "trial"
+  }
+  return "free"
+}
+
 export function deriveAccountView(snapshot: AccountSnapshot): AccountView {
-  const plan: Plan = snapshot.entitlement?.plan ?? "free"
-  const planLabel = PLAN_LABELS[plan]
+  const displayPlan = computeDisplayPlan(snapshot)
+  const planLabel = PLAN_LABELS[displayPlan]
 
   let dateLine: string | null = null
-  if (plan === "pro" && snapshot.subscription) {
+  if (displayPlan === "pro" && snapshot.subscription) {
     const sub = snapshot.subscription
     const cancelAt = formatDate(sub.cancel_at)
     const renewal = formatDate(sub.current_period_end)
@@ -49,20 +60,20 @@ export function deriveAccountView(snapshot: AccountSnapshot): AccountView {
     } else if (renewal) {
       dateLine = `Renews on ${renewal}`
     }
-  } else if (plan === "trial" && snapshot.proTrial) {
-    const expires = formatDate(snapshot.proTrial.expires_at)
+  } else if (displayPlan === "trial") {
+    const expires = formatDate(snapshot.entitlement?.active_until ?? null)
     if (expires) {
       dateLine = `Trial expires ${expires}`
     }
   }
 
   const primaryCta: AccountView["primaryCta"] =
-    plan === "pro"
+    displayPlan === "pro"
       ? { label: "Manage subscription" }
       : { label: "Upgrade to Pro" }
 
   let trialCta: AccountView["trialCta"] = null
-  if (plan === "free") {
+  if (displayPlan === "free") {
     if (snapshot.proTrial) {
       const usedDate = formatDate(snapshot.proTrial.started_at)
       trialCta = {
@@ -76,7 +87,7 @@ export function deriveAccountView(snapshot: AccountSnapshot): AccountView {
 
   return {
     email: snapshot.email,
-    plan,
+    displayPlan,
     planLabel,
     dateLine,
     primaryCta,

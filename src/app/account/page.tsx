@@ -79,11 +79,11 @@ export default async function AccountPage({
       </dl>
 
       <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        {view.plan === "free" ? (
-          <UpgradeButtons />
-        ) : view.primaryCta.label === "Manage subscription" ? (
+        {view.displayPlan === "pro" ? (
           <ManageSubscriptionButton />
-        ) : null}
+        ) : (
+          <UpgradeButtons />
+        )}
 
         {view.trialCta?.kind === "start" ? (
           <StartTrialButton label={view.trialCta.label} />

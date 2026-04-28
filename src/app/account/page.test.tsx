@@ -54,7 +54,12 @@ describe("AccountPage", () => {
   it("renders Free chip + Monthly/Yearly upgrade buttons + disabled trial for a new free user", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: null,
     })
@@ -86,7 +91,12 @@ describe("AccountPage", () => {
   it("renders 'Trial used on <date>' for a free user who consumed their trial", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: {
         user_id: "u1",
@@ -112,7 +122,12 @@ describe("AccountPage", () => {
   it("renders Trial chip with expiry date for an active trial", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "trial" },
+      entitlement: {
+        user_id: "u1",
+        plan: "pro",
+        source: "trial",
+        active_until: "2026-04-30T12:00:00.000Z",
+      },
       subscription: null,
       proTrial: {
         user_id: "u1",
@@ -132,12 +147,26 @@ describe("AccountPage", () => {
     expect(
       screen.queryByRole("button", { name: /trial used on/i })
     ).toBeNull()
+    expect(
+      screen.queryByRole("button", { name: /manage subscription/i })
+    ).toBeNull()
+    expect(
+      screen.getByRole("button", { name: /upgrade to pro — monthly/i })
+    ).toBeTruthy()
+    expect(
+      screen.getByRole("button", { name: /upgrade to pro — yearly/i })
+    ).toBeTruthy()
   })
 
   it("renders Pro chip with renewal date for an active subscription", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "pro" },
+      entitlement: {
+        user_id: "u1",
+        plan: "pro",
+        source: "subscription",
+        active_until: "2026-05-25T12:00:00.000Z",
+      },
       subscription: {
         user_id: "u1",
         status: "active",
@@ -166,7 +195,12 @@ describe("AccountPage", () => {
   it("renders 'Pro until <date>, will not renew' when subscription is cancelling", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "pro" },
+      entitlement: {
+        user_id: "u1",
+        plan: "pro",
+        source: "subscription",
+        active_until: "2026-05-25T12:00:00.000Z",
+      },
       subscription: {
         user_id: "u1",
         status: "active",
@@ -189,7 +223,12 @@ describe("AccountPage", () => {
   it("links to /download", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: null,
     })
@@ -204,7 +243,12 @@ describe("AccountPage", () => {
   it("renders a welcome banner when ?welcome=1 is set", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: null,
     })
@@ -222,7 +266,12 @@ describe("AccountPage", () => {
   it("does not render the welcome banner without ?welcome=1", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: null,
     })
@@ -236,7 +285,12 @@ describe("AccountPage", () => {
   it("retains the 'Sign out everywhere' button", async () => {
     setSnapshot({
       email: "cook@example.com",
-      entitlement: { user_id: "u1", plan: "free" },
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
       subscription: null,
       proTrial: null,
     })

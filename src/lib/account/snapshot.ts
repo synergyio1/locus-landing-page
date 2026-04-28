@@ -14,9 +14,13 @@ export type SubscriptionStatus =
   | "unpaid"
   | "paused"
 
+export type EntitlementSource = "subscription" | "trial"
+
 export type Entitlement = {
   user_id: string
   plan: Plan
+  source: EntitlementSource | null
+  active_until: string | null
 }
 
 export type Subscription = {
@@ -58,8 +62,15 @@ export async function loadAccountSnapshot(
 
   const [entitlementRows, subscriptionRows, profileRows, proTrialRows] =
     await Promise.all([
-      sql<Array<{ user_id: string; plan: Plan }>>`
-        select user_id, plan
+      sql<
+        Array<{
+          user_id: string
+          plan: Plan
+          source: EntitlementSource | null
+          active_until: Date | null
+        }>
+      >`
+        select user_id, plan, source, active_until
         from app.entitlements_v
         where user_id = ${userId}
       `,
@@ -108,9 +119,19 @@ export async function loadAccountSnapshot(
       }
     : null
 
+  const entitlementRow = entitlementRows[0]
+  const entitlement: Entitlement | null = entitlementRow
+    ? {
+        user_id: entitlementRow.user_id,
+        plan: entitlementRow.plan,
+        source: entitlementRow.source,
+        active_until: toIso(entitlementRow.active_until),
+      }
+    : null
+
   return {
     email: profileRows[0]?.email ?? fallbackEmail,
-    entitlement: entitlementRows[0] ?? null,
+    entitlement,
     subscription,
     proTrial,
   }
