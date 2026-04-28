@@ -111,34 +111,54 @@ async function handleCheckoutSessionCompleted(
   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
 
   const sql = getDb()
-  await sql`
-    insert into app.subscriptions (
-      user_id,
-      stripe_customer_id,
-      stripe_subscription_id,
-      status,
-      current_period_end,
-      cancel_at,
-      trial_end,
-      price_id
-    ) values (
-      ${userId},
-      ${customerId},
-      ${subscription.id},
-      ${subscription.status},
-      ${toIsoOrNull(currentPeriodEndOf(subscription))},
-      ${toIsoOrNull(subscription.cancel_at)},
-      ${toIsoOrNull(subscription.trial_end)},
-      ${priceIdOf(subscription)}
-    )
-    on conflict (stripe_subscription_id) do update set
-      stripe_customer_id = excluded.stripe_customer_id,
-      status = excluded.status,
-      current_period_end = excluded.current_period_end,
-      cancel_at = excluded.cancel_at,
-      trial_end = excluded.trial_end,
-      price_id = excluded.price_id
+  // Promote the placeholder row inserted by getOrCreateCustomer (which has
+  // stripe_subscription_id = NULL) instead of inserting a duplicate. NULLs
+  // don't collide in a unique index, so an INSERT ... ON CONFLICT on
+  // stripe_subscription_id can't see the placeholder.
+  const promoted = await sql<Array<{ user_id: string }>>`
+    update app.subscriptions set
+      stripe_customer_id = ${customerId},
+      stripe_subscription_id = ${subscription.id},
+      status = ${subscription.status},
+      current_period_end = ${toIsoOrNull(currentPeriodEndOf(subscription))},
+      cancel_at = ${toIsoOrNull(subscription.cancel_at)},
+      trial_end = ${toIsoOrNull(subscription.trial_end)},
+      price_id = ${priceIdOf(subscription)}
+    where user_id = ${userId}
+      and stripe_subscription_id is null
+    returning user_id
   `
+
+  if (promoted.length === 0) {
+    await sql`
+      insert into app.subscriptions (
+        user_id,
+        stripe_customer_id,
+        stripe_subscription_id,
+        status,
+        current_period_end,
+        cancel_at,
+        trial_end,
+        price_id
+      ) values (
+        ${userId},
+        ${customerId},
+        ${subscription.id},
+        ${subscription.status},
+        ${toIsoOrNull(currentPeriodEndOf(subscription))},
+        ${toIsoOrNull(subscription.cancel_at)},
+        ${toIsoOrNull(subscription.trial_end)},
+        ${priceIdOf(subscription)}
+      )
+      on conflict (stripe_subscription_id) do update set
+        stripe_customer_id = excluded.stripe_customer_id,
+        status = excluded.status,
+        current_period_end = excluded.current_period_end,
+        cancel_at = excluded.cancel_at,
+        trial_end = excluded.trial_end,
+        price_id = excluded.price_id
+    `
+  }
 
   const recipientEmail =
     session.customer_details?.email ??
