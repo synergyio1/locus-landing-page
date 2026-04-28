@@ -33,14 +33,20 @@ export async function POST(request: NextRequest) {
     return new NextResponse("Invalid signature", { status: 400 })
   }
 
-  const { claimed } = await StripeEventsRepo.recordIfNew(
+  const { claimed, processedAt } = await StripeEventsRepo.recordIfNew(
     event.id,
     event.type,
     rawBody
   )
 
   if (!claimed) {
-    return NextResponse.json({ received: true, duplicate: true })
+    if (processedAt) {
+      return NextResponse.json({ received: true, duplicate: true })
+    }
+    // A prior delivery claimed the row but hasn't finished processing (or
+    // failed). Return non-200 so Stripe retries; a future delivery will
+    // re-run the handler and stamp processed_at on success.
+    return new NextResponse("Webhook in flight", { status: 409 })
   }
 
   try {
@@ -52,6 +58,8 @@ export async function POST(request: NextRequest) {
     )
     return new NextResponse("Webhook processing error", { status: 500 })
   }
+
+  await StripeEventsRepo.markProcessed(event.id)
 
   return NextResponse.json({ received: true })
 }

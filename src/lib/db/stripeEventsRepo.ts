@@ -8,11 +8,11 @@ export type RecordIfNewResult = {
 }
 
 export const StripeEventsRepo = {
-  // Insert a row for the given Stripe event id; if one already exists, leave
-  // it alone. Returns whether the caller claimed the row, plus the row's
-  // current processed_at timestamp (used by the post-fix webhook route in
-  // a follow-up issue to short-circuit only when handling has actually
-  // succeeded).
+  // Insert a row for the given Stripe event id with processed_at = NULL; if
+  // one already exists, leave it alone. Returns whether the caller claimed
+  // the row, plus the row's current processed_at timestamp. Callers
+  // short-circuit only when processed_at IS NOT NULL — a non-null value
+  // means the handler succeeded for a prior delivery.
   async recordIfNew(
     eventId: string,
     eventType: string,
@@ -22,7 +22,7 @@ export const StripeEventsRepo = {
       Array<{ processed_at: Date | null }>
     >`
       insert into app.stripe_events (stripe_event_id, event_type, payload, processed_at)
-      values (${eventId}, ${eventType}, ${payload}::jsonb, now())
+      values (${eventId}, ${eventType}, ${payload}::jsonb, null)
       on conflict (stripe_event_id) do nothing
       returning processed_at
     `

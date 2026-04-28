@@ -6,6 +6,7 @@ import subscriptionRetrieveFixture from "./__fixtures__/customer.subscription.re
 import subscriptionCanceledFixture from "./__fixtures__/customer.subscription.updated.canceled.json"
 import subscriptionPriceswapFixture from "./__fixtures__/customer.subscription.updated.priceswap.json"
 import subscriptionDeletedFixture from "./__fixtures__/customer.subscription.deleted.json"
+import invoicePaymentFailedFixture from "./__fixtures__/invoice.payment_failed.json"
 import unknownEventFixture from "./__fixtures__/unknown.event.json"
 
 const {
@@ -16,6 +17,7 @@ const {
   subscriptionsRetrieve,
   sendWelcomeMock,
   sendCancellationMock,
+  sendPaymentFailedMock,
 } = vi.hoisted(() => ({
   promoteOrInsertFromSubscription: vi.fn(),
   updateBySubscriptionId: vi.fn(),
@@ -24,6 +26,7 @@ const {
   subscriptionsRetrieve: vi.fn(),
   sendWelcomeMock: vi.fn(),
   sendCancellationMock: vi.fn(),
+  sendPaymentFailedMock: vi.fn(),
 }))
 
 vi.mock("@/lib/db/subscriptionsRepo", () => ({
@@ -54,6 +57,10 @@ vi.mock("@/lib/mail/sendCancellation", () => ({
   sendCancellation: (...args: unknown[]) => sendCancellationMock(...args),
 }))
 
+vi.mock("@/lib/mail/sendPaymentFailed", () => ({
+  sendPaymentFailed: (...args: unknown[]) => sendPaymentFailedMock(...args),
+}))
+
 import { handleStripeEvent } from "./handle"
 
 describe("handleStripeEvent", () => {
@@ -67,6 +74,8 @@ describe("handleStripeEvent", () => {
     sendWelcomeMock.mockResolvedValue(undefined)
     sendCancellationMock.mockReset()
     sendCancellationMock.mockResolvedValue(undefined)
+    sendPaymentFailedMock.mockReset()
+    sendPaymentFailedMock.mockResolvedValue(undefined)
   })
 
   describe("checkout.session.completed", () => {
@@ -324,6 +333,99 @@ describe("handleStripeEvent", () => {
         type: "customer.subscription.deleted",
         reason: "subscription_not_found",
       })
+    })
+  })
+
+  describe("invoice.payment_failed", () => {
+    it("dispatches the dunning email with the hosted_invoice_url and customer email", async () => {
+      const result = await handleStripeEvent(
+        invoicePaymentFailedFixture as unknown as Stripe.Event
+      )
+
+      expect(result).toEqual({
+        handled: true,
+        type: "invoice.payment_failed",
+      })
+      expect(sendPaymentFailedMock).toHaveBeenCalledTimes(1)
+      const [recipient, options] = sendPaymentFailedMock.mock.calls[0]
+      expect(recipient).toEqual({ email: "ada@example.com" })
+      expect(options).toEqual({
+        updatePaymentUrl: "https://invoice.stripe.com/i/test_xyz",
+      })
+    })
+
+    it("does not write to the DB beyond the events row", async () => {
+      await handleStripeEvent(
+        invoicePaymentFailedFixture as unknown as Stripe.Event
+      )
+      expect(promoteOrInsertFromSubscription).not.toHaveBeenCalled()
+      expect(updateBySubscriptionId).not.toHaveBeenCalled()
+      expect(markCanceledBySubscriptionId).not.toHaveBeenCalled()
+    })
+
+    it("falls back to the account URL when hosted_invoice_url is absent", async () => {
+      const fixture = {
+        ...invoicePaymentFailedFixture,
+        data: {
+          object: {
+            ...invoicePaymentFailedFixture.data.object,
+            hosted_invoice_url: null,
+          },
+        },
+      }
+      const previousSiteUrl = process.env.NEXT_PUBLIC_SITE_URL
+      process.env.NEXT_PUBLIC_SITE_URL = "https://preview.getlocus.tech"
+      try {
+        await handleStripeEvent(fixture as unknown as Stripe.Event)
+      } finally {
+        if (previousSiteUrl === undefined) {
+          delete process.env.NEXT_PUBLIC_SITE_URL
+        } else {
+          process.env.NEXT_PUBLIC_SITE_URL = previousSiteUrl
+        }
+      }
+      const [, options] = sendPaymentFailedMock.mock.calls[0]
+      expect(options.updatePaymentUrl).toBe(
+        "https://preview.getlocus.tech/account"
+      )
+    })
+
+    it("does not throw if the dunning email send fails", async () => {
+      sendPaymentFailedMock.mockRejectedValueOnce(new Error("resend down"))
+      const errSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+
+      const result = await handleStripeEvent(
+        invoicePaymentFailedFixture as unknown as Stripe.Event
+      )
+      errSpy.mockRestore()
+
+      expect(result).toEqual({
+        handled: true,
+        type: "invoice.payment_failed",
+      })
+    })
+
+    it("returns handled:true without error when no recipient email is available", async () => {
+      const fixture = {
+        ...invoicePaymentFailedFixture,
+        data: {
+          object: {
+            ...invoicePaymentFailedFixture.data.object,
+            customer_email: null,
+            customer: "cus_RaBcDeFgH",
+          },
+        },
+      }
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
+
+      const result = await handleStripeEvent(fixture as unknown as Stripe.Event)
+      warnSpy.mockRestore()
+
+      expect(result).toEqual({
+        handled: true,
+        type: "invoice.payment_failed",
+      })
+      expect(sendPaymentFailedMock).not.toHaveBeenCalled()
     })
   })
 

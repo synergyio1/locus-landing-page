@@ -3,13 +3,13 @@ import { NextRequest } from "next/server"
 
 import checkoutCompletedFixture from "@/lib/stripe/events/__fixtures__/checkout.session.completed.json"
 
-const { constructEvent, recordIfNew, handleStripeEventMock } = vi.hoisted(
-  () => ({
+const { constructEvent, recordIfNew, markProcessed, handleStripeEventMock } =
+  vi.hoisted(() => ({
     constructEvent: vi.fn(),
     recordIfNew: vi.fn(),
+    markProcessed: vi.fn(),
     handleStripeEventMock: vi.fn(),
-  })
-)
+  }))
 
 vi.mock("@/lib/stripe/client", () => ({
   getStripeClient: () => ({
@@ -18,7 +18,7 @@ vi.mock("@/lib/stripe/client", () => ({
 }))
 
 vi.mock("@/lib/db/stripeEventsRepo", () => ({
-  StripeEventsRepo: { recordIfNew },
+  StripeEventsRepo: { recordIfNew, markProcessed },
 }))
 
 vi.mock("@/lib/stripe/events/handle", () => ({
@@ -43,6 +43,8 @@ describe("POST /api/stripe/webhook", () => {
   beforeEach(() => {
     constructEvent.mockReset()
     recordIfNew.mockReset()
+    markProcessed.mockReset()
+    markProcessed.mockResolvedValue({ updated: true })
     handleStripeEventMock.mockReset()
     process.env.STRIPE_WEBHOOK_SECRET = "whsec_test_123"
   })
@@ -77,12 +79,9 @@ describe("POST /api/stripe/webhook", () => {
     errSpy.mockRestore()
   })
 
-  it("records a fresh event and dispatches to the handler", async () => {
+  it("on the success path: records, dispatches, and stamps processed_at", async () => {
     constructEvent.mockReturnValue(checkoutCompletedFixture)
-    recordIfNew.mockResolvedValueOnce({
-      claimed: true,
-      processedAt: new Date(),
-    })
+    recordIfNew.mockResolvedValueOnce({ claimed: true, processedAt: null })
     handleStripeEventMock.mockResolvedValueOnce({
       handled: true,
       type: checkoutCompletedFixture.type,
@@ -103,27 +102,13 @@ describe("POST /api/stripe/webhook", () => {
       rawBody
     )
     expect(handleStripeEventMock).toHaveBeenCalledWith(checkoutCompletedFixture)
+    expect(markProcessed).toHaveBeenCalledWith(checkoutCompletedFixture.id)
   })
 
-  it("returns 200 without dispatching when the event was already recorded (duplicate)", async () => {
-    constructEvent.mockReturnValue(checkoutCompletedFixture)
-    recordIfNew.mockResolvedValueOnce({ claimed: false, processedAt: null })
-
-    const response = await POST(
-      postWebhook(JSON.stringify(checkoutCompletedFixture))
-    )
-
-    expect(response.status).toBe(200)
-    expect(handleStripeEventMock).not.toHaveBeenCalled()
-  })
-
-  it("returns 500 when the dispatcher throws so Stripe retries", async () => {
+  it("on the failure path: dispatcher throws, processed_at is left null, response is 500", async () => {
     const errSpy = vi.spyOn(console, "error").mockImplementation(() => {})
     constructEvent.mockReturnValue(checkoutCompletedFixture)
-    recordIfNew.mockResolvedValueOnce({
-      claimed: true,
-      processedAt: new Date(),
-    })
+    recordIfNew.mockResolvedValueOnce({ claimed: true, processedAt: null })
     handleStripeEventMock.mockRejectedValueOnce(new Error("db down"))
 
     const response = await POST(
@@ -131,7 +116,38 @@ describe("POST /api/stripe/webhook", () => {
     )
 
     expect(response.status).toBe(500)
+    expect(markProcessed).not.toHaveBeenCalled()
     errSpy.mockRestore()
+  })
+
+  it("on retried delivery after a prior success: short-circuits with duplicate:true", async () => {
+    constructEvent.mockReturnValue(checkoutCompletedFixture)
+    recordIfNew.mockResolvedValueOnce({
+      claimed: false,
+      processedAt: new Date("2026-04-28T18:00:00Z"),
+    })
+
+    const response = await POST(
+      postWebhook(JSON.stringify(checkoutCompletedFixture))
+    )
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({ received: true, duplicate: true })
+    expect(handleStripeEventMock).not.toHaveBeenCalled()
+    expect(markProcessed).not.toHaveBeenCalled()
+  })
+
+  it("on retried delivery while a prior attempt left processed_at null: returns non-200 so Stripe retries again", async () => {
+    constructEvent.mockReturnValue(checkoutCompletedFixture)
+    recordIfNew.mockResolvedValueOnce({ claimed: false, processedAt: null })
+
+    const response = await POST(
+      postWebhook(JSON.stringify(checkoutCompletedFixture))
+    )
+
+    expect(response.status).not.toBe(200)
+    expect(handleStripeEventMock).not.toHaveBeenCalled()
+    expect(markProcessed).not.toHaveBeenCalled()
   })
 
   it("returns 500 when STRIPE_WEBHOOK_SECRET is not configured", async () => {

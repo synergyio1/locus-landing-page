@@ -5,6 +5,7 @@ import type Stripe from "stripe"
 import { prisma } from "@/lib/db/prisma"
 import { SubscriptionsRepo } from "@/lib/db/subscriptionsRepo"
 import { sendCancellation } from "@/lib/mail/sendCancellation"
+import { sendPaymentFailed } from "@/lib/mail/sendPaymentFailed"
 import { sendWelcome } from "@/lib/mail/sendWelcome"
 
 import { getStripeClient } from "../client"
@@ -41,6 +42,8 @@ export async function handleStripeEvent(
       return handleSubscriptionDeleted(
         event.data.object as Stripe.Subscription
       )
+    case "invoice.payment_failed":
+      return handleInvoicePaymentFailed(event.data.object as Stripe.Invoice)
     default:
       console.log(`[stripe-webhook] ignoring event type ${event.type}`)
       return { handled: false, type: event.type, reason: "unknown_type" }
@@ -216,6 +219,51 @@ async function handleSubscriptionUpdated(
     type: "customer.subscription.updated",
     ...(cancellationTransition ? { cancellationTransition: true } : {}),
   }
+}
+
+function recipientEmailFromInvoice(invoice: Stripe.Invoice): string | null {
+  const direct = invoice.customer_email
+  if (direct) return direct
+  const customer = invoice.customer
+  if (customer && typeof customer !== "string" && "email" in customer) {
+    const inferred = (customer as { email?: string | null }).email
+    if (inferred) return inferred
+  }
+  return null
+}
+
+function buildAccountUrl(): string {
+  const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://getlocus.tech"
+  return `${base.replace(/\/$/, "")}/account`
+}
+
+async function handleInvoicePaymentFailed(
+  invoice: Stripe.Invoice
+): Promise<HandleEventResult> {
+  const recipientEmail = recipientEmailFromInvoice(invoice)
+  if (!recipientEmail) {
+    console.warn(
+      `[stripe-webhook] no recipient email for payment_failed (invoice ${invoice.id})`
+    )
+    return { handled: true, type: "invoice.payment_failed" }
+  }
+
+  const updatePaymentUrl =
+    invoice.hosted_invoice_url ?? buildAccountUrl()
+
+  try {
+    await sendPaymentFailed(
+      { email: recipientEmail },
+      { updatePaymentUrl }
+    )
+  } catch (error) {
+    console.error(
+      `[stripe-webhook] failed to send payment_failed email (invoice ${invoice.id})`,
+      error
+    )
+  }
+
+  return { handled: true, type: "invoice.payment_failed" }
 }
 
 async function handleSubscriptionDeleted(

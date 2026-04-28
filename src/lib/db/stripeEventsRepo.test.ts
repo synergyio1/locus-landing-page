@@ -17,9 +17,8 @@ beforeEach(() => {
 })
 
 describe("StripeEventsRepo.recordIfNew", () => {
-  it("returns claimed:true with the row's processed_at when the INSERT succeeds", async () => {
-    const ts = new Date("2026-04-28T18:00:00Z")
-    queryRaw.mockResolvedValueOnce([{ processed_at: ts }])
+  it("returns claimed:true with processed_at NULL when the INSERT succeeds (post-fix)", async () => {
+    queryRaw.mockResolvedValueOnce([{ processed_at: null }])
 
     const result = await StripeEventsRepo.recordIfNew(
       "evt_1",
@@ -27,7 +26,7 @@ describe("StripeEventsRepo.recordIfNew", () => {
       "{}"
     )
 
-    expect(result).toEqual({ claimed: true, processedAt: ts })
+    expect(result).toEqual({ claimed: true, processedAt: null })
     expect(queryRaw).toHaveBeenCalledTimes(1)
   })
 
