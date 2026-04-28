@@ -131,9 +131,8 @@ async function handleCheckoutSessionCompleted(
       ${toIsoOrNull(subscription.trial_end)},
       ${priceIdOf(subscription)}
     )
-    on conflict (user_id) do update set
+    on conflict (stripe_subscription_id) do update set
       stripe_customer_id = excluded.stripe_customer_id,
-      stripe_subscription_id = excluded.stripe_subscription_id,
       status = excluded.status,
       current_period_end = excluded.current_period_end,
       cancel_at = excluded.cancel_at,
