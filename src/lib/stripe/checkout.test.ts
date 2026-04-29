@@ -51,6 +51,7 @@ describe("createCheckoutSession", () => {
       client_reference_id: "u1",
       success_url: "https://getlocus.tech/account?welcome=1",
       cancel_url: "https://getlocus.tech/pricing",
+      adaptive_pricing: { enabled: true },
     })
     expect(options).toEqual({
       idempotencyKey: expect.stringMatching(/^checkout:u1:price_monthly_xyz:\d+$/),
