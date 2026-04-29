@@ -41,6 +41,7 @@ export async function createCheckoutSession({
       client_reference_id: userId,
       success_url: `${origin}/account?welcome=1`,
       cancel_url: `${origin}/pricing`,
+      adaptive_pricing: { enabled: true },
     },
     {
       idempotencyKey: buildIdempotencyKey(userId, priceId, now ?? new Date()),
