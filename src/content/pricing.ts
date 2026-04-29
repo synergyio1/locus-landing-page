@@ -68,7 +68,7 @@ export const pricing: PricingContent = {
         },
       },
       features: [
-        "Plan My Day — an AI planner that shapes your day around your goal",
+        "Google Calendar sync — pulls meetings to plan around, pushes completed sessions back as events",
         "AI drift catch — flags when the active window doesn't match your session goal",
         "AI Friday review — walked through, not just charted",
         "Priority email support",

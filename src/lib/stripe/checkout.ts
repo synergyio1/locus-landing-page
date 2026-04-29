@@ -39,7 +39,10 @@ export async function createCheckoutSession({
       customer_update: { address: "auto", name: "auto" },
       line_items: [{ price: priceId, quantity: 1 }],
       client_reference_id: userId,
-      success_url: `${origin}/account?welcome=1`,
+      // PROTIER-07 (#301): Checkout return goes back to the Mac app via
+      // a custom URL scheme. The macOS DeepLinkRouter resolves
+      // `locus://checkout-complete` → entitlements refresh.
+      success_url: "locus://checkout-complete",
       cancel_url: `${origin}/pricing`,
       adaptive_pricing: { enabled: true },
     },
