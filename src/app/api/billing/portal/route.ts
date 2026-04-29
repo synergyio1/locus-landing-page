@@ -1,15 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 import { createPortalSession } from "@/lib/stripe/portal"
-import { createServerClient } from "@/lib/supabase/server"
+import { getAuthenticatedUser } from "@/lib/supabase/auth"
 
 export const runtime = "nodejs"
 
 export async function POST(request: NextRequest) {
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  const user = await getAuthenticatedUser(request)
 
   if (!user) {
     return NextResponse.json({ error: "unauthenticated" }, { status: 401 })
