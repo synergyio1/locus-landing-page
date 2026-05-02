@@ -45,7 +45,7 @@ export type PersonaSectionContent = {
 }
 
 export const personaSection: PersonaSectionContent = {
-  id: "persona-section",
+  id: "personas",
   eyebrow: "See Locus in your work",
   headline: "Whose Locus would you like to look at?",
   body: "The hero above shows what Locus looks like in general. Switch tabs to see what Locus looks like for someone with your job — same product, your projects, your tools, your shape of day.",

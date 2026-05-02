@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 type NavItem = { href: string; label: string }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/#day-in-locus", label: "How it works" },
+  { href: "/#personas", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
   { href: "/changelog", label: "Changelog" },
 ]

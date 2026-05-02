@@ -1,68 +1,39 @@
-import Image, { type ImageProps } from "next/image"
-
 import { cn } from "@/lib/utils"
 
-type AppScreenshotProps = Omit<ImageProps, "src" | "alt"> & {
+type AppScreenshotProps = {
   src: string
   alt: string
+  width: number
+  height: number
   sizes?: string
   className?: string
   priority?: boolean
-  /**
-   * Constrain the outer container to a specific aspect ratio and crop the
-   * image via `object-cover` + `object-position`. Useful for source PNGs that
-   * contain large empty regions (e.g. a sparse task list or a card with heavy
-   * outer padding).
-   */
   cropAspect?: string
   cropPosition?: "top" | "center" | "bottom"
 }
 
+// Temporary placeholder until real screenshots return — flip this file back
+// to its prior next/image render when assets land.
 export function AppScreenshot({
-  src,
-  alt,
   width,
   height,
-  sizes = "(max-width: 768px) 100vw, (max-width: 1400px) 60vw, 840px",
-  priority,
   className,
   cropAspect,
-  cropPosition = "top",
-  ...props
 }: AppScreenshotProps) {
-  const image = (
-    <Image
-      src={src}
-      alt={alt}
-      width={width}
-      height={height}
-      sizes={sizes}
-      priority={priority}
-      quality={90}
-      loading={priority ? undefined : "lazy"}
-      data-slot="app-screenshot"
-      className={cn(
-        cropAspect
-          ? "absolute inset-0 h-full w-full object-cover select-none"
-          : "h-auto w-full select-none",
-        cropPosition === "top" && cropAspect && "object-top",
-        cropPosition === "bottom" && cropAspect && "object-bottom",
-        cropPosition === "center" && cropAspect && "object-center",
-        className
-      )}
-      {...props}
-    />
-  )
-
-  if (!cropAspect) return image
-
+  const aspectRatio = cropAspect ?? `${width} / ${height}`
   return (
     <div
-      data-slot="app-screenshot-crop"
-      className="relative w-full overflow-hidden"
-      style={{ aspectRatio: cropAspect }}
+      aria-hidden
+      data-slot="app-screenshot"
+      style={{ aspectRatio }}
+      className={cn(
+        "flex w-full items-center justify-center bg-[color-mix(in_oklab,var(--fg)_4%,var(--bg))]",
+        className
+      )}
     >
-      {image}
+      <span className="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted-foreground)]">
+        Screenshot coming soon
+      </span>
     </div>
   )
 }

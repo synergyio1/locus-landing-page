@@ -25,8 +25,8 @@ export const hero: HeroContent = {
     href: "/download",
   },
   secondaryCta: {
-    label: "See a day in Locus",
-    href: "#day-in-locus",
+    label: "See it in your work",
+    href: "#personas",
   },
   screenshot: {
     src: "/screenshots/screens/CommandView_running_dark.png",
