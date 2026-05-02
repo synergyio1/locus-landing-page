@@ -9,6 +9,6 @@ export default function Image() {
     eyebrow: "AI-native execution OS — for macOS",
     title: "Finish the things you keep starting.",
     subtitle:
-      "An AI plans your day, catches you when you drift, and on Friday walks you through what actually moved.",
+      "Plans the day. Catches the drift. Stacks the wins. Even 10% more consistent is a different year.",
   })
 }

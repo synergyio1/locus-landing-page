@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://getlocus.tech"),
   title: "Locus — finish the things you keep starting",
   description:
-    "An AI plans your day around what matters, catches you the moment you drift, and on Friday shows you what actually moved. The AI-native execution OS for macOS.",
+    "Plans the day. Catches the drift. Stacks the wins. The AI-native execution OS for macOS — even 10% more consistent is a different year.",
 };
 
 export default function RootLayout({
