@@ -1,4 +1,3 @@
-import { DayInLocus } from "@/components/sections/day-in-locus"
 import { Depth } from "@/components/sections/depth"
 import { Faq } from "@/components/sections/faq"
 import { Hero } from "@/components/sections/hero"
@@ -17,7 +16,6 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <DayInLocus />
       <PersonaSection />
       <Review />
       <Depth />
