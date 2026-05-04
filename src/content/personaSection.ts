@@ -4,8 +4,10 @@
  * generic hero first, hear the Day-in-Locus narrative, then arrive here
  * and switch tabs to find someone with their job.
  *
- * PERSONAS-02 ships only Maya (`designer`). PERSONAS-03 / -04 will
- * append Dev / Frida / Pim. Layout must render cleanly with 1 → 4 tabs.
+ * PERSONAS-02 shipped Maya (`designer`). PERSONAS-03 adds Dev (`developer`)
+ * — a deliberate fan-out stress-test against a structurally-different
+ * persona. PERSONAS-04 will append Frida / Pim. Layout must render cleanly
+ * with 1 → 4 tabs.
  */
 
 export type PersonaTabId = "designer" | "developer" | "founder" | "product"
@@ -68,6 +70,27 @@ export const personaSection: PersonaSectionContent = {
       supporting: {
         src: "/screenshots/screens/designer/dark/ProjectDetail.png",
         alt: "Maya's Q2 onboarding redesign — project detail view showing 18 of 28 sessions logged with linked Dribbble references in the notes canvas.",
+        width: 2880,
+        height: 1800,
+      },
+    },
+    {
+      id: "developer",
+      initials: "DS",
+      name: "Dev Singh",
+      role: "Senior iOS Engineer",
+      blurb:
+        "An iOS engineer at a payments-infrastructure startup. iOS 18 migration on a tight ship-by date, code-review queue every morning, Xcode + Cursor + Terminal all day.",
+      tools: ["Xcode", "Cursor", "GitHub", "Linear"],
+      anchor: {
+        src: "/screenshots/screens/developer/dark/CommandView_running.png",
+        alt: "Locus running a focus session on Dev's iOS 18 migration project, with Xcode and Cursor windows classified as on-track.",
+        width: 2880,
+        height: 1800,
+      },
+      supporting: {
+        src: "/screenshots/screens/developer/dark/ProjectDetail.png",
+        alt: "Dev's iOS 18 migration — project detail view showing the URLSession migration on AddressService with deadline tracking and linked tasks.",
         width: 2880,
         height: 1800,
       },
