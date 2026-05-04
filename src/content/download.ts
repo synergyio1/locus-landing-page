@@ -1,3 +1,5 @@
+export const MAC_DOWNLOAD_URL = "https://downloads.getlocus.tech/Locus-latest.dmg"
+
 export type DownloadContent = {
   eyebrow: string
   headline: string

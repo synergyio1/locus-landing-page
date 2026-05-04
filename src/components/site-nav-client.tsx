@@ -88,9 +88,20 @@ export function SiteNavClient({ email }: SiteNavClientProps) {
             {isAuthed ? (
               <AccountMenu email={email} className="hidden md:block" />
             ) : (
-              <MagneticButton href="/download" className="hidden md:inline-flex">
-                <span className={cn(buttonVariants({ size: "sm" }))}>Download</span>
-              </MagneticButton>
+              <>
+                <Link
+                  href="/login"
+                  className={cn(
+                    buttonVariants({ variant: "ghost", size: "sm" }),
+                    "hidden md:inline-flex"
+                  )}
+                >
+                  Log in
+                </Link>
+                <MagneticButton href="/download" className="hidden md:inline-flex">
+                  <span className={cn(buttonVariants({ size: "sm" }))}>Download</span>
+                </MagneticButton>
+              </>
             )}
             <MobileToggle open={open} onToggle={() => setOpen((v) => !v)} />
           </div>
@@ -222,7 +233,15 @@ function MobileSheet({
                 </button>
               </form>
             </>
-          ) : null}
+          ) : (
+            <Link
+              href="/login"
+              onClick={onClose}
+              className="rounded-md px-3 py-3 text-base text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)]"
+            >
+              Log in
+            </Link>
+          )}
         </nav>
         {!isAuthed ? (
           <Link
