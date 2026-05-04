@@ -1,9 +1,12 @@
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
+import { buttonVariants } from "@/components/ui/button"
+import { MAC_DOWNLOAD_URL } from "@/content/download"
 import { deriveAccountView, type PlanLabel } from "@/lib/account/derive"
 import { loadAccountSnapshot } from "@/lib/account/snapshot"
 import { createServerClient } from "@/lib/supabase/server"
+import { cn } from "@/lib/utils"
 
 import { ManageSubscriptionButton } from "./manage-subscription-button"
 import { SignOutButton } from "./sign-out-button"
@@ -92,6 +95,31 @@ export default async function AccountPage({
       </dl>
 
       <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        {view.displayPlan === "pro" || view.displayPlan === "trial" ? (
+          <a
+            href={MAC_DOWNLOAD_URL}
+            download
+            aria-label="Download Locus for Mac (.dmg)"
+            className={cn(buttonVariants({ size: "lg" }))}
+          >
+            <svg
+              aria-hidden
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="size-4"
+            >
+              <path d="M10 3v10" />
+              <path d="M5 9l5 5 5-5" />
+              <path d="M4 17h12" />
+            </svg>
+            Download for Mac
+          </a>
+        ) : null}
+
         {view.displayPlan === "pro" ? (
           <ManageSubscriptionButton />
         ) : (
@@ -114,14 +142,16 @@ export default async function AccountPage({
         <SignOutButton />
       </div>
 
-      <div className="mt-12 border-t border-[var(--border)] pt-6">
-        <Link
-          href="/download"
-          className="text-sm text-[var(--accent-text)] underline-offset-4 hover:underline"
-        >
-          Download Locus for Mac →
-        </Link>
-      </div>
+      {view.displayPlan === "free" ? (
+        <div className="mt-12 border-t border-[var(--border)] pt-6">
+          <Link
+            href="/download"
+            className="text-sm text-[var(--accent-text)] underline-offset-4 hover:underline"
+          >
+            Download Locus for Mac →
+          </Link>
+        </div>
+      ) : null}
     </section>
   )
 }
