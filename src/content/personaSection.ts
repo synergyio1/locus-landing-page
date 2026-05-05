@@ -4,10 +4,9 @@
  * generic hero first, hear the Day-in-Locus narrative, then arrive here
  * and switch tabs to find someone with their job.
  *
- * PERSONAS-02 shipped Maya (`designer`). PERSONAS-03 adds Dev (`developer`)
- * — a deliberate fan-out stress-test against a structurally-different
- * persona. PERSONAS-04 will append Frida / Pim. Layout must render cleanly
- * with 1 → 4 tabs.
+ * PERSONAS-02 shipped Maya (`designer`). PERSONAS-03 added Dev
+ * (`developer`). PERSONAS-04 completes the set with Frida (`founder`) and
+ * Pim (`product`). Layout renders cleanly with all four tabs.
  */
 
 export type PersonaTabId = "designer" | "developer" | "founder" | "product"
@@ -91,6 +90,48 @@ export const personaSection: PersonaSectionContent = {
       supporting: {
         src: "/screenshots/screens/developer/dark/ProjectDetail.png",
         alt: "Dev's iOS 18 migration — project detail view showing the URLSession migration on AddressService with deadline tracking and linked tasks.",
+        width: 2880,
+        height: 1800,
+      },
+    },
+    {
+      id: "founder",
+      initials: "FH",
+      name: "Frida Hernández",
+      role: "Founder, Series A SaaS",
+      blurb:
+        "A second-time founder running a finance-ops B2B SaaS. Q2 board deck mid-progress, 47-day journaling streak, Pages + Notion + Stripe protecting the writing time the meeting/Slack hurricane wants to take.",
+      tools: ["Pages", "Notion", "Calendar", "Stripe"],
+      anchor: {
+        src: "/screenshots/screens/founder/dark/CommandView_running.png",
+        alt: "Locus running a focus session on Frida's Q2 board deck project, with Pages and Notion windows classified as on-track and Slack as work-but-shallow.",
+        width: 2880,
+        height: 1800,
+      },
+      supporting: {
+        src: "/screenshots/screens/founder/dark/ProjectDetail.png",
+        alt: "Frida's Q2 board deck — project detail view showing the cohort retention argument with deadline tracking and linked tasks.",
+        width: 2880,
+        height: 1800,
+      },
+    },
+    {
+      id: "product",
+      initials: "PT",
+      name: "Pim Tanaka",
+      role: "Senior Product Manager",
+      blurb:
+        "A growth PM at a B2B sales-enablement company. PRD on a tight scoping deadline, daily metrics scan, Notion + Linear + Looker carrying the structured-thinking work that doesn't fit between meetings.",
+      tools: ["Notion", "Linear", "Looker", "Pages"],
+      anchor: {
+        src: "/screenshots/screens/product/dark/CommandView_running.png",
+        alt: "Locus running a focus session on Pim's collaborative comments PRD, with Notion and Linear windows classified as on-track.",
+        width: 2880,
+        height: 1800,
+      },
+      supporting: {
+        src: "/screenshots/screens/product/dark/ProjectDetail.png",
+        alt: "Pim's PRD — collaborative comments — project detail view showing the activation hypotheses with deadline tracking and linked tasks.",
         width: 2880,
         height: 1800,
       },
