@@ -3,7 +3,6 @@
 import * as React from "react"
 import { AnimatePresence, motion } from "motion/react"
 
-import { AppScreenshot } from "@/components/media/app-screenshot"
 import { useReducedMotion } from "@/components/motion"
 import { cn } from "@/lib/utils"
 import type { HeroWidgetMode } from "@/content/heroWidget"
@@ -63,19 +62,22 @@ export function PreviewPanel({ mode }: PreviewPanelProps) {
   )
 }
 
-function PreviewTile({ mode }: { mode: HeroWidgetMode }) {
+function PreviewTile({ mode: _mode }: { mode: HeroWidgetMode }) {
   return (
-    <div className={cn("w-full")}>
-      <AppScreenshot
-        src={mode.previewImage.src}
-        alt={mode.previewImage.alt}
-        width={mode.previewImage.width}
-        height={mode.previewImage.height}
-        sizes="(max-width: 768px) 100vw, (max-width: 1400px) 60vw, 720px"
-        cropAspect="16/10"
-        cropPosition="top"
-        priority
-      />
+    <div
+      className={cn(
+        "flex w-full items-center justify-center bg-[color-mix(in_oklab,var(--bg)_88%,#000_12%)]"
+      )}
+      style={{ aspectRatio: "16 / 10" }}
+    >
+      <div className="flex flex-col items-center gap-2 px-6 text-center">
+        <span className="font-mono text-[10px] uppercase tracking-[0.24em] text-[var(--muted-foreground)]">
+          Preview
+        </span>
+        <span className="text-sm text-[var(--fg)] md:text-base">
+          Screenshot coming soon
+        </span>
+      </div>
     </div>
   )
 }

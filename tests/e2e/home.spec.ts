@@ -12,7 +12,7 @@ test("home page responds 200 and renders the sticky nav", async ({ page }) => {
   ).toBeVisible()
 })
 
-test("hero renders headline, CTAs, and the CommandView screenshot", async ({
+test("hero renders headline, CTAs, and the product demo", async ({
   page,
 }) => {
   await page.goto("/")
@@ -30,10 +30,11 @@ test("hero renders headline, CTAs, and the CommandView screenshot", async ({
   const seeDay = page.getByRole("link", { name: /see a day in locus/i })
   await expect(seeDay).toHaveAttribute("href", "#day-in-locus")
 
-  const screenshot = page.getByRole("img", {
-    name: /focus session running/i,
-  })
-  await expect(screenshot).toBeVisible()
+  const demo = page.getByTestId("hero-widget")
+  await expect(demo).toBeVisible()
+  await expect(
+    demo.getByRole("tab", { name: /session tracking/i })
+  ).toBeVisible()
 })
 
 test("'A day in Locus' placeholder renders the three value modes", async ({

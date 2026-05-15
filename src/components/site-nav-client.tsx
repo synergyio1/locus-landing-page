@@ -49,7 +49,7 @@ export function SiteNavClient({ email }: SiteNavClientProps) {
   return (
     <header
       data-slot="site-nav"
-      className="sticky top-3 z-50 w-full md:top-5"
+      className="fixed inset-x-0 top-3 z-50 md:top-5"
     >
       <div className="mx-auto flex max-w-[720px] items-center justify-center px-4">
         <motion.div
