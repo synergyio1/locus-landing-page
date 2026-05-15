@@ -72,7 +72,7 @@ B2C — single persona, intentionally broad to match the broadest-TAM strategy.
 - **Built on the best models** — leading frontier AI models, called via Locus's backend. (Internal: OpenAI + Anthropic. **Public-facing copy keeps providers unnamed** — user preference 2026-04-25.) We don't ship a watered-down local model to look "private" at the cost of being weak. The intelligence has to be good for the system to earn its place.
 - **Goal-anchored everything** — every session, project, habit, and task references a goal you set. The day on screen is always a day in service of something.
 - **Coach voice, not surveillance voice** — the product takes a stance against the punitive register of trackers. Catches drift gently, once. Doesn't shame missed days.
-- **Native-Mac craft** — menu-bar breathing dot, Sparkle auto-update, macOS 14+ APIs. Not an Electron port.
+- **Native-Mac craft** — menu-bar breathing dot, Sparkle auto-update, macOS Tahoe APIs. Not an Electron port.
 
 **How we do it differently:** The day is shaped *before* it starts (AI planner), monitored *during* (AI drift catch), and reviewed *after* (AI Friday summary) — and all three reference the same goal you named in the morning. Most tools handle one of those three.
 
@@ -136,7 +136,7 @@ B2C — single persona, intentionally broad to match the broadest-TAM strategy.
 - "Will I lose my time-tracking history?" (No import path today.)
 - "Is this just another app I'll abandon in three weeks?"
 - "What does the AI actually do with my data?" (Answered briefly and honestly in FAQ.)
-- "Will it work on my older Mac?" (macOS 14+ requirement.)
+- "Will it work on my older Mac?" (macOS Tahoe required for now; older macOS support will come later.)
 
 ## Customer Language
 **How they describe the problem (no real beta quotes yet — placeholders below; replace once captured):**
@@ -198,7 +198,7 @@ B2C — single persona, intentionally broad to match the broadest-TAM strategy.
 | AI-native, built on the best models | Leading frontier models under the hood (OpenAI + Anthropic — internal only; not named in copy). Show the planner, classifier, and review actually working — don't badge "AI-powered" on top. |
 | Coach, not cop | "Gently, once." Tone consistent across drift-catch, FAQ, missed-day handling. |
 | The loop is forever | Free tier covers sessions/projects/habits/tasks indefinitely — no trial-then-bait. |
-| Native Mac craft | Menu-bar breathing dot, Sparkle auto-update, macOS 14+ requirement, no Electron. |
+| Native Mac craft | Menu-bar breathing dot, Sparkle auto-update, macOS Tahoe requirement for now, no Electron. |
 
 ## Goals
 **Business goal:** Drive Mac downloads → in-app Try Pro unlock → paid Pro conversions.

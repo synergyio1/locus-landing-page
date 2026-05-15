@@ -17,16 +17,16 @@ export type HeroContent = {
 }
 
 export const hero: HeroContent = {
-  headline: "Finish the things you keep starting.",
+  headline: "The missing OS for modern work.",
   subheadline:
-    "Plans the day. Catches the drift. Stacks the wins. Even 10% more consistent is a different year.",
+    "Work got faster. Life got fuller. Locus helps you declare intent, see what actually happened, and turn each day into a better tomorrow.",
   primaryCta: {
-    label: "Download for macOS — free",
+    label: "Download free for macOS",
     href: "/download",
   },
   secondaryCta: {
-    label: "See it in your work",
-    href: "#personas",
+    label: "See a day in Locus",
+    href: "#day-in-locus",
   },
   screenshot: {
     src: "/screenshots/screens/CommandView_running_dark.png",

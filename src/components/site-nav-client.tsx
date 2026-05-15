@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 type NavItem = { href: string; label: string }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/#personas", label: "How it works" },
+  { href: "/#day-in-locus", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
   { href: "/changelog", label: "Changelog" },
 ]
@@ -249,7 +249,7 @@ function MobileSheet({
             onClick={onClose}
             className={cn(buttonVariants({ size: "lg" }), "mt-3 w-full")}
           >
-            Download for macOS
+            Download free for macOS
           </Link>
         ) : null}
       </div>

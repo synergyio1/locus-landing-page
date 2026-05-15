@@ -60,9 +60,10 @@ describe("faq content", () => {
     expect(serialized).not.toMatch(/openai|anthropic|gpt-?\d|claude/i)
   })
 
-  it("macOS requirement answer states Sonoma / 14", () => {
+  it("macOS requirement answer states Tahoe", () => {
     const req = faq.items.find((i) => i.id === "macos-requirement")
-    expect(req!.answer).toMatch(/sonoma|14/i)
+    expect(req!.answer).toMatch(/tahoe/i)
+    expect(req!.answer).toMatch(/older macOS versions/i)
   })
 
   it("does not resurrect killed 14-day trial copy", () => {

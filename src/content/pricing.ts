@@ -53,7 +53,7 @@ export const pricing: PricingContent = {
         "Weekly review view",
         "Local-only data, no account needed",
       ],
-      cta: { label: "Download for macOS", href: "/download" },
+      cta: { label: "Download free for macOS", href: "/download" },
     },
     {
       id: "pro",
