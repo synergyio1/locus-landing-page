@@ -5,7 +5,8 @@ export type DownloadContent = {
   headline: string
   body: string
   requirement: string
-  notify: {
+  support: string
+  cta: {
     label: string
     href: string
     note: string
@@ -14,13 +15,14 @@ export type DownloadContent = {
 
 export const download: DownloadContent = {
   eyebrow: "Download",
-  headline: "Coming soon.",
+  headline: "Download Locus for macOS.",
   body:
-    "Locus is in final polish before the first public build. The Mac app will ship as a direct download and auto-update through Sparkle.",
-  requirement: "Requires macOS 14 Sonoma or later.",
-  notify: {
-    label: "Notify me at launch",
-    href: "mailto:support@getlocus.tech?subject=Notify%20me%20when%20Locus%20ships",
-    note: "Drop us a line and we'll email you the day it ships.",
+    "The public Mac download is open. Grab the free DMG, install Locus, and sign in inside the app when you want your account, trial, or Pro features.",
+  requirement: "Requires macOS Tahoe for now.",
+  support: "Support for older macOS versions will come later.",
+  cta: {
+    label: "Download free for macOS",
+    href: MAC_DOWNLOAD_URL,
+    note: "Direct DMG download. No web login required; Locus asks you to sign in after launch.",
   },
 }

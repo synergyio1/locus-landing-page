@@ -1,9 +1,7 @@
-import { Depth } from "@/components/sections/depth"
 import { Faq } from "@/components/sections/faq"
 import { Hero } from "@/components/sections/hero"
-import { PersonaSection } from "@/components/sections/persona-section"
 import { Pricing } from "@/components/sections/pricing"
-import { Review } from "@/components/sections/review"
+import { SystemDemonstrationPlaceholder } from "@/components/sections/system-demonstration-placeholder"
 import { createServerClient } from "@/lib/supabase/server"
 
 export default async function Home() {
@@ -16,9 +14,7 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <PersonaSection />
-      <Review />
-      <Depth />
+      <SystemDemonstrationPlaceholder />
       <Pricing isAuthed={isAuthed} />
       <Faq />
     </>

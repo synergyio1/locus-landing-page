@@ -12,7 +12,7 @@ test("home page responds 200 and renders the sticky nav", async ({ page }) => {
   ).toBeVisible()
 })
 
-test("hero renders headline, CTAs, and the CommandView screenshot", async ({
+test("hero renders headline, CTAs, and the product demo", async ({
   page,
 }) => {
   await page.goto("/")
@@ -20,23 +20,24 @@ test("hero renders headline, CTAs, and the CommandView screenshot", async ({
   await expect(
     page.getByRole("heading", {
       level: 1,
-      name: "Finish the things you keep starting.",
+      name: "The missing OS for modern work.",
     })
   ).toBeVisible()
 
-  const download = page.getByRole("link", { name: /download for macos/i })
+  const download = page.getByRole("link", { name: /download free for macos/i })
   await expect(download.first()).toHaveAttribute("href", "/download")
 
   const seeDay = page.getByRole("link", { name: /see a day in locus/i })
   await expect(seeDay).toHaveAttribute("href", "#day-in-locus")
 
-  const screenshot = page.getByRole("img", {
-    name: /focus session running/i,
-  })
-  await expect(screenshot).toBeVisible()
+  const demo = page.getByTestId("hero-widget")
+  await expect(demo).toBeVisible()
+  await expect(
+    demo.getByRole("tab", { name: /session tracking/i })
+  ).toBeVisible()
 })
 
-test("'A day in Locus' showpiece renders the four stages in order", async ({
+test("'A day in Locus' placeholder renders the three value modes", async ({
   page,
 }) => {
   await page.goto("/")
@@ -44,23 +45,22 @@ test("'A day in Locus' showpiece renders the four stages in order", async ({
   const section = page.locator("#day-in-locus")
   await expect(section).toBeVisible()
 
-  const stageIds = ["plan", "focus", "catch", "close"] as const
-  for (const id of stageIds) {
-    await expect(section.locator(`#stage-${id}`)).toHaveCount(1)
+  const labels = ["Session Tracking", "Day Visibility", "Review Loop"]
+  for (const label of labels) {
+    await expect(
+      section.getByRole("heading", { level: 3, name: label })
+    ).toBeVisible()
   }
+})
 
-  const rail = section.getByRole("navigation", {
-    name: /a day in locus/i,
-  })
-  const railLinks = rail.getByRole("link")
-  await expect(railLinks).toHaveCount(4)
+test("home page uses the OS narrative section inventory", async ({ page }) => {
+  await page.goto("/")
 
-  const labels = ["Morning plan", "In the work", "Drift caught", "End of the day"]
-  for (let i = 0; i < labels.length; i++) {
-    await expect(railLinks.nth(i)).toContainText(labels[i])
-    await expect(railLinks.nth(i)).toHaveAttribute(
-      "href",
-      `#stage-${stageIds[i]}`
-    )
-  }
+  await expect(page.locator("#day-in-locus")).toBeVisible()
+  await expect(page.locator("#pricing")).toBeVisible()
+  await expect(page.locator("#faq")).toBeVisible()
+
+  await expect(page.locator("#personas")).toHaveCount(0)
+  await expect(page.locator("#review")).toHaveCount(0)
+  await expect(page.locator("#depth")).toHaveCount(0)
 })

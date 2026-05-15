@@ -37,7 +37,8 @@ export function Footer() {
               }}
             />
             <p className="max-w-xs text-sm text-[var(--muted-foreground)]">
-              The bridge between the things you said you&rsquo;d do and the things you actually did. For macOS.
+              The missing OS for modern work. Declare intent, read the day,
+              and make tomorrow less random. For macOS.
             </p>
           </div>
 
@@ -79,7 +80,7 @@ export function Footer() {
 
           <div className="flex flex-col gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted-foreground)] md:text-right">
             <span>v0.1.0</span>
-            <span>macOS 14+</span>
+            <span>macOS Tahoe</span>
             <span>Made in Europe</span>
           </div>
         </div>

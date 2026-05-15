@@ -7,20 +7,16 @@ describe("hero content", () => {
     expect(hero.primaryCta.href).toBe("/download")
   })
 
-  it("secondary CTA anchors to the personas section", () => {
-    expect(hero.secondaryCta.href).toBe("#personas")
-  })
-
-  it("screenshot resolves to the bare CommandView raw under screens/", () => {
-    expect(hero.screenshot.src).toBe(
-      "/screenshots/screens/CommandView_running_dark.png"
-    )
-    expect(hero.screenshot.width).toBeGreaterThan(0)
-    expect(hero.screenshot.height).toBeGreaterThan(0)
+  it("secondary CTA anchors to the system demonstration", () => {
+    expect(hero.secondaryCta.href).toBe("#day-in-locus")
   })
 
   it("has non-empty headline and subheadline strings", () => {
     expect(hero.headline.length).toBeGreaterThan(0)
     expect(hero.subheadline.length).toBeGreaterThan(0)
+  })
+
+  it("leads with the modern-work OS positioning", () => {
+    expect(hero.headline).toMatch(/missing OS for modern work/i)
   })
 })

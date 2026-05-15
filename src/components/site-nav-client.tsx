@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils"
 type NavItem = { href: string; label: string }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/#personas", label: "How it works" },
+  { href: "/#day-in-locus", label: "How it works" },
   { href: "/pricing", label: "Pricing" },
   { href: "/changelog", label: "Changelog" },
 ]
@@ -49,7 +49,7 @@ export function SiteNavClient({ email }: SiteNavClientProps) {
   return (
     <header
       data-slot="site-nav"
-      className="sticky top-3 z-50 w-full md:top-5"
+      className="fixed inset-x-0 top-3 z-50 md:top-5"
     >
       <div className="mx-auto flex max-w-[720px] items-center justify-center px-4">
         <motion.div
@@ -249,7 +249,7 @@ function MobileSheet({
             onClick={onClose}
             className={cn(buttonVariants({ size: "lg" }), "mt-3 w-full")}
           >
-            Download for macOS
+            Download free for macOS
           </Link>
         ) : null}
       </div>

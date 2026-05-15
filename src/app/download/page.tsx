@@ -1,16 +1,16 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 
 import { PageShell } from "@/components/layout/page-shell"
 import { BreathingDot, SpringReveal } from "@/components/motion"
 import { buttonVariants } from "@/components/ui/button"
+import { Icon } from "@/components/ui/icon"
 import { download } from "@/content/download"
 import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
   title: "Download — Locus",
   description:
-    "Locus is coming soon for macOS 14 Sonoma or later. Get notified when the first build ships.",
+    "Download Locus free for macOS Tahoe. The public DMG is available now.",
 }
 
 export default function DownloadPage() {
@@ -41,19 +41,22 @@ export default function DownloadPage() {
             {download.requirement}
           </p>
           <p className="mt-1 text-sm text-[var(--muted-foreground)]">
-            Apple Silicon and Intel Macs both supported.
+            {download.support}
           </p>
         </SpringReveal>
 
         <SpringReveal delay={160} className="flex flex-col gap-3">
-          <Link
-            href={download.notify.href}
+          <a
+            href={download.cta.href}
+            download
+            aria-label="Download free for macOS DMG"
             className={cn(buttonVariants({ size: "lg" }), "self-start")}
           >
-            {download.notify.label}
-          </Link>
+            <Icon name="download" />
+            {download.cta.label}
+          </a>
           <p className="text-sm text-[var(--muted-foreground)]">
-            {download.notify.note}
+            {download.cta.note}
           </p>
         </SpringReveal>
       </div>

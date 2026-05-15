@@ -15,6 +15,7 @@ type AppScreenshotProps = {
 // Temporary placeholder until real screenshots return — flip this file back
 // to its prior next/image render when assets land.
 export function AppScreenshot({
+  alt,
   width,
   height,
   className,
@@ -23,7 +24,8 @@ export function AppScreenshot({
   const aspectRatio = cropAspect ?? `${width} / ${height}`
   return (
     <div
-      aria-hidden
+      role="img"
+      aria-label={alt}
       data-slot="app-screenshot"
       style={{ aspectRatio }}
       className={cn(

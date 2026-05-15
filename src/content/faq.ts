@@ -69,7 +69,7 @@ export const faq: FaqContent = {
       id: "macos-requirement",
       question: "Which macOS versions are supported?",
       answer:
-        "Locus requires macOS 14 Sonoma or later. It runs natively on both Apple Silicon and Intel Macs that can install Sonoma.",
+        "Locus requires macOS Tahoe for now. Support for older macOS versions will come later.",
     },
     {
       id: "refund",

@@ -48,12 +48,16 @@ describe("<Pricing />", () => {
   it("keeps the Free plan CTA pointing to /download in both auth states", () => {
     const { rerender } = render(<Pricing isAuthed={false} />)
     expect(
-      screen.getByRole("link", { name: /download for macos/i }).getAttribute("href")
+      screen
+        .getByRole("link", { name: /download free for macos/i })
+        .getAttribute("href")
     ).toBe("/download")
 
     rerender(<Pricing isAuthed />)
     expect(
-      screen.getByRole("link", { name: /download for macos/i }).getAttribute("href")
+      screen
+        .getByRole("link", { name: /download free for macos/i })
+        .getAttribute("href")
     ).toBe("/download")
   })
 })
