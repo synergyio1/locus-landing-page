@@ -73,7 +73,7 @@ export function SiteNavClient({ email }: SiteNavClientProps) {
             aria-label="Locus home"
             className="-ml-1 inline-flex items-center rounded-full p-1 text-[var(--fg)] transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
           >
-            <Logo size={28} />
+            <Logo size={34} />
           </Link>
         </div>
 

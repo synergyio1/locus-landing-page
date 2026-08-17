@@ -10,6 +10,10 @@
 //
 // The three app parts mirror the app's own sidebar families
 // (LocusUI/SidebarTab.swift: Execution · Inputs · AI) — keep them in lockstep.
+// The app's onboarding intro quotes each part verbatim as its three screens
+// (LocusUI/Onboarding/IntroPhaseView.swift → IntroPillar.headline = the
+// "Your ___." lead, .subhead = the rest; pinned by IntroPhaseNavigationTests)
+// — edit here and there together.
 
 export type ManifestoPart = {
   name: string
@@ -88,15 +92,20 @@ export const manifesto: ManifestoContent = {
     { kind: "h", text: "Every day is a battle" },
     {
       kind: "p",
-      text: "And there is a paradox in it. To win the day, you have to be as present as possible — head down, in the work. To win the war — the months, the years, the decades — you have to learn as much as possible from each day and improve continuously. Doing one is hard enough.",
+      text: "The tricky part is fighting the battle with the war in mind. To win the day, you have to be as present as possible — head down, in the work. To win the war — the months, the years, the decades — you have to lift your head: learn as much as possible from each day, connect the days, and improve continuously.",
     },
     {
       kind: "p",
-      text: "What makes it harder still is that the bridge between the two has to be built in the middle of the daily battleground — from your goals for the months and years ahead to how you are actually performing. There is what you want to achieve: tasks, projects, goals. There is what you plan in order to get there. There is what you actually do.",
+      text: "Doing one is hard enough. The bridge between the two is harder still. It runs through the weeks and months in between — the tasks, the projects, the goals you set for them. Follow the plan, and keep checking that the plan still leads where you want to go. It is a delicate equilibrium — one that willpower alone rarely holds.",
     },
     {
       kind: "p",
-      text: "It is all one day, yet today's tools split it into separate apps. A to-do list holds the intent and never sees the outcome. A calendar holds the plan and never learns what happened. A timer counts minutes without knowing what they were for. Nothing holds all of it at once — so nothing can learn from it.",
+      text: "But both are achievable. The people who pull it off do it in one of two ways: brute-force self-discipline, or a great system. One is in your hands. The other is in ours.",
+    },
+    { kind: "h", text: "The problem with today's tools" },
+    {
+      kind: "p",
+      text: "Most of the tools we rely on were built before AI, and they still barely use what it can now do: take in huge amounts of context and help you draw real insight from it. It is all one day, yet today's tools split it into separate apps. A to-do list holds the intent and never sees the outcome. A calendar holds the plan and never learns what happened. A timer counts minutes without knowing what they were for. Nothing holds all of it at once — so nothing can learn from it.",
     },
     {
       kind: "p",

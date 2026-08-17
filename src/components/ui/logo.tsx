@@ -19,10 +19,10 @@ type LogoProps = Omit<React.SVGAttributes<SVGSVGElement>, "width" | "height"> & 
  * Drawn as ONE closed path (no mask), so it renders identically in the browser,
  * in `next/og`, and in any SVG tool. Source of truth: `public/brand/locus/build_mark.py`.
  *
- * Optical sizing: at ≤ 32px the slot would collapse in the raster, so we swap to a
+ * Optical sizing: at ≤ 36px the slot would collapse in the raster, so we swap to a
  * variant with a slightly wider slot (same silhouette, tuned for nav/footer sizes).
  */
-const OPTICAL_SMALL_MAX = 32
+const OPTICAL_SMALL_MAX = 36
 export function Logo({
   size = 22,
   variant = "cobalt",
