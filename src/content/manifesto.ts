@@ -32,7 +32,14 @@ export type ManifestoContent = {
   blocks: ManifestoBlock[]
   decisionsHeading: string
   decisionsIntro: string
-  /** Exactly the core design decisions Luis wants named — six as of 2026-08-17. */
+  /**
+   * Exactly the core design decisions Luis wants named — five as of 2026-08-17,
+   * reframed the same day around build / borrow / leave-open. The day feedback
+   * loop was cut from this list on purpose, and "Bring your own AI" was folded
+   * into "Choose your model" (they were redundant); don't re-add either.
+   * Every summary must fit two lines in the letter column at >=1280w (~165
+   * chars max, verified in-browser) — Luis's cap.
+   */
   decisions: ManifestoDecision[]
   blog: {
     text: string
@@ -67,7 +74,7 @@ export const manifesto: ManifestoContent = {
   blocks: [
     {
       kind: "p",
-      text: "Locus was born out of necessity: a system to help us deal with the intense, super-fast, noisy, high-stress times we increasingly live in.",
+      text: "Locus was born out of necessity: a system to help us deal with the fast, noisy, high-stress times we increasingly live in.",
     },
     {
       kind: "p",
@@ -155,43 +162,38 @@ export const manifesto: ManifestoContent = {
     },
   ],
   decisionsHeading: "How we made it",
-  decisionsIntro: "Six decisions carry most of the weight:",
+  decisionsIntro:
+    "Early on we split the system in three: the parts we should build ourselves, the parts we should borrow, and the parts we should leave open for the community to evolve. Most of what follows comes from that split:",
   decisions: [
     {
-      id: "local-first",
-      title: "Your day lives on your Mac.",
+      id: "build-the-armor",
+      title: "We build the armor, not the brain.",
       summary:
-        "Local-first and private by design: your data stays on your device.",
-    },
-    {
-      id: "byo-ai",
-      title: "Bring your own AI.",
-      summary:
-        "Plug in a great harness — Claude Code or Codex — as the brain. Locus is the armor around it: sensors, tools, and UI.",
+        "Rather than rebuild an agentic core, we lean on the state-of-the-art harnesses and put our craft where we truly add value: the sensors, tools, and UI around them.",
     },
     {
       id: "choose-your-model",
       title: "Choose your model.",
       summary:
-        "Use the subscription you already pay for, an API key from a provider like OpenRouter, or Locus Remote — and pick the model you want.",
-    },
-    {
-      id: "day-feedback-loop",
-      title: "The day feedback loop.",
-      summary:
-        "Observe, interpret, structure, work, adapt — firmly when a pattern is real, gently when the day was just noise.",
+        "Your Claude Code or Codex subscription, an API key (say, OpenRouter), or Locus Remote — your choice. Pick the model you prefer, and swap it anytime.",
     },
     {
       id: "routines-are-files",
       title: "Routines are files.",
       summary:
-        "Every AI behavior is a Markdown file you can open, read, and edit.",
+        "Different personalities want different approaches. So we left this part deliberately open: every AI behavior is a Markdown file — read, edit, share, or add your own.",
     },
     {
-      id: "memory-you-can-correct",
-      title: "Memory you can correct.",
+      id: "gets-to-know-you",
+      title: "It gets to know you.",
       summary:
-        "What Locus knows about you lives in a wiki on your Mac. If it gets something wrong, you change it.",
+        "The more you use it, the better it adapts — your patterns, your rhythms, what actually works. That picture is a wiki on your Mac; if it's wrong, you fix it.",
+    },
+    {
+      id: "local-first",
+      title: "Your day lives on your Mac.",
+      summary:
+        "Local-first and private by design: your data, your routines, and everything Locus knows about you stay on your device. You only log in for the subscription.",
     },
   ],
   blog: {

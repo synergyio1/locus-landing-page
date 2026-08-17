@@ -39,19 +39,25 @@ describe("manifesto content", () => {
     expect(JSON.stringify(manifesto.blocks)).toMatch(/James Clear/)
   })
 
-  it("lists exactly the six core design decisions", () => {
-    expect(manifesto.decisions).toHaveLength(6)
+  it("lists exactly the five core design decisions", () => {
+    expect(manifesto.decisions).toHaveLength(5)
+    // Build → borrow → leave-open, then the two things that are yours.
+    // The day feedback loop was cut from this list on purpose (2026-08-17),
+    // and "Bring your own AI" was folded into "Choose your model" the same day.
     expect(manifesto.decisions.map((d) => d.id)).toEqual([
-      "local-first",
-      "byo-ai",
+      "build-the-armor",
       "choose-your-model",
-      "day-feedback-loop",
       "routines-are-files",
-      "memory-you-can-correct",
+      "gets-to-know-you",
+      "local-first",
     ])
+    expect(manifesto.decisions.map((d) => d.id)).not.toContain("day-feedback-loop")
+    expect(manifesto.decisions.map((d) => d.id)).not.toContain("byo-ai")
     for (const decision of manifesto.decisions) {
       expect(decision.title.length).toBeGreaterThan(0)
       expect(decision.summary.length).toBeGreaterThan(0)
+      // Luis's cap: every summary fits two lines in the letter column at >=1280w.
+      expect(decision.summary.length).toBeLessThanOrEqual(170)
     }
   })
 
