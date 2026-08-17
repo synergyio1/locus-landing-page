@@ -2,19 +2,17 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { LayoutGroup, motion, useMotionValueEvent, useScroll } from "motion/react"
-
+import { usePathname } from "next/navigation"
 import { AccountMenu } from "@/components/account-menu"
-import { buttonVariants } from "@/components/ui/button"
+import { PageShell } from "@/components/layout/page-shell"
 import { Logo } from "@/components/ui/logo"
-import { MagneticButton } from "@/components/ui/magnetic-button"
 import { signOutAction } from "@/lib/auth/sign-out"
 import { cn } from "@/lib/utils"
 
 type NavItem = { href: string; label: string }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: "/#day-in-locus", label: "How it works" },
+  { href: "/#manifesto", label: "Manifesto" },
   { href: "/pricing", label: "Pricing" },
   { href: "/changelog", label: "Changelog" },
 ]
@@ -23,15 +21,28 @@ type SiteNavClientProps = {
   email: string | null
 }
 
+/**
+ * Site header (2026-08-17, redesign).
+ *
+ * Structure is the settled one — mark left, three links dead-centre, a
+ * single "Log in" right (the hero owns Download) — but the chrome is new:
+ *
+ *  · Progressive glass. Stacked backdrop layers, taller than the bar,
+ *    whose blur + canvas tint dissolve through staggered bottom masks.
+ *    There is no seam where the header "ends" — footage and page content
+ *    simply come into focus beneath it. Same at every scroll position,
+ *    no JS.
+ *  · True centre. A 1fr/auto/1fr grid keeps the links on the page's
+ *    axis regardless of how wide the logo or the right cluster is.
+ *  · Focus, not pills. Hovering one link softens its siblings instead of
+ *    drawing a background behind it. Active route sits in full ink.
+ *  · Ink pill for Log in — the same rounded-full language as the hero
+ *    buttons, so it reads as a real action rather than a form control.
+ */
 export function SiteNavClient({ email }: SiteNavClientProps) {
   const [open, setOpen] = React.useState(false)
-  const [compact, setCompact] = React.useState(false)
-  const { scrollY } = useScroll()
+  const pathname = usePathname()
   const isAuthed = email !== null
-
-  useMotionValueEvent(scrollY, "change", (value) => {
-    setCompact(value > 80)
-  })
 
   React.useEffect(() => {
     if (!open) return
@@ -49,64 +60,70 @@ export function SiteNavClient({ email }: SiteNavClientProps) {
   return (
     <header
       data-slot="site-nav"
-      className="fixed inset-x-0 top-3 z-50 md:top-5"
+      data-state={open ? "open" : "closed"}
+      className="fixed inset-x-0 top-0 z-50"
     >
-      <div className="mx-auto flex max-w-[720px] items-center justify-center px-4">
-        <motion.div
-          layout
-          transition={{ type: "spring", stiffness: 320, damping: 30 }}
-          data-compact={compact ? "true" : "false"}
-          className={cn(
-            "relative flex w-full items-center justify-between gap-4 rounded-full border border-[var(--border)] backdrop-blur-xl transition-[padding,background-color] duration-200",
-            "shadow-[0_10px_30px_-15px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)]",
-            compact
-              ? "bg-[color-mix(in_oklab,var(--bg)_94%,transparent)] backdrop-saturate-150 px-3 py-1.5"
-              : "bg-[color-mix(in_oklab,var(--bg)_72%,transparent)] px-4 py-2"
-          )}
-        >
+      <ProgressiveGlass />
+
+      <PageShell className="grid h-14 grid-cols-[1fr_auto_1fr] items-center md:h-16">
+        {/* Left — the mark, optically flush with the content edge. */}
+        <div className="flex items-center">
           <Link
             href="/"
             aria-label="Locus home"
-            className="inline-flex items-center gap-2 pl-1 font-semibold tracking-tight text-[var(--fg)]"
+            className="-ml-1 inline-flex items-center rounded-full p-1 text-[var(--fg)] transition-opacity hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]"
           >
-            <Logo size={18} />
-            <span className={cn("text-sm", compact ? "sr-only md:not-sr-only" : "")}>Locus</span>
+            <Logo size={28} />
           </Link>
+        </div>
 
-          <LayoutGroup id="site-nav-hover">
-            <nav
-              aria-label="Primary"
-              className="hidden items-center gap-0.5 md:flex"
+        {/* Centre — primary links. Sibling-dim on hover; no pill. */}
+        <nav
+          aria-label="Primary"
+          className="group/nav col-start-2 hidden items-center gap-1 md:flex"
+        >
+          {NAV_ITEMS.map((item) => {
+            const active = item.href === pathname
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={active ? "page" : undefined}
+                className={cn(
+                  "relative rounded-full px-3 py-1.5 text-[14px] font-medium tracking-[-0.01em] transition-[color,opacity] duration-200",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]",
+                  active
+                    ? "text-[var(--fg)]"
+                    : "text-[var(--muted-foreground)] hover:text-[var(--fg)]",
+                  "group-hover/nav:not-hover:opacity-55"
+                )}
+              >
+                {item.label}
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* Right — one action. */}
+        <div className="col-start-3 flex items-center justify-end gap-2">
+          {isAuthed ? (
+            <AccountMenu email={email} className="hidden md:block" />
+          ) : (
+            <Link
+              href="/login"
+              className={cn(
+                "hidden h-8 items-center rounded-full bg-[var(--fg)] px-3.5 text-[13px] font-medium text-[var(--bg)] md:inline-flex",
+                "shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]",
+                "transition-[background-color,transform,box-shadow] duration-200 hover:bg-[color-mix(in_oklab,var(--fg)_86%,white)] active:scale-[0.97]",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)]"
+              )}
             >
-              {NAV_ITEMS.map((item) => (
-                <NavHoverLink key={item.href} item={item} />
-              ))}
-            </nav>
-          </LayoutGroup>
-
-          <div className="flex items-center gap-1.5">
-            {isAuthed ? (
-              <AccountMenu email={email} className="hidden md:block" />
-            ) : (
-              <>
-                <Link
-                  href="/login"
-                  className={cn(
-                    buttonVariants({ variant: "ghost", size: "sm" }),
-                    "hidden md:inline-flex"
-                  )}
-                >
-                  Log in
-                </Link>
-                <MagneticButton href="/download" className="hidden md:inline-flex">
-                  <span className={cn(buttonVariants({ size: "sm" }))}>Download</span>
-                </MagneticButton>
-              </>
-            )}
-            <MobileToggle open={open} onToggle={() => setOpen((v) => !v)} />
-          </div>
-        </motion.div>
-      </div>
+              Log in
+            </Link>
+          )}
+          <MobileToggle open={open} onToggle={() => setOpen((v) => !v)} />
+        </div>
+      </PageShell>
 
       <MobileSheet
         open={open}
@@ -117,26 +134,26 @@ export function SiteNavClient({ email }: SiteNavClientProps) {
   )
 }
 
-function NavHoverLink({ item }: { item: NavItem }) {
-  const [hover, setHover] = React.useState(false)
+/**
+ * The header's only surface — a progressive blur, not a band.
+ *
+ * Three backdrop layers, each confined to a soft band by a bottom mask and
+ * each blurring what the layers beneath it already painted, so the blur
+ * compounds toward the top and thins to nothing at the tail. A canvas tint
+ * rides on top to carry the row and is gone before the blur is. The whole
+ * thing is taller than the bar, so nothing ever "ends" at the row's edge.
+ */
+function ProgressiveGlass() {
   return (
-    <Link
-      href={item.href}
-      onPointerEnter={() => setHover(true)}
-      onPointerLeave={() => setHover(false)}
-      onFocus={() => setHover(true)}
-      onBlur={() => setHover(false)}
-      className="relative rounded-full px-3 py-1.5 text-sm text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+4rem)]"
     >
-      {hover ? (
-        <motion.span
-          layoutId="site-nav-hover-pill"
-          transition={{ type: "spring", stiffness: 420, damping: 32 }}
-          className="absolute inset-0 rounded-full bg-[var(--surface-raised)]"
-        />
-      ) : null}
-      <span className="relative">{item.label}</span>
-    </Link>
+      <div className="absolute inset-0 backdrop-blur-[3px] mask-b-from-55% mask-b-to-100%" />
+      <div className="absolute inset-0 backdrop-blur-[8px] mask-b-from-40% mask-b-to-80%" />
+      <div className="absolute inset-0 backdrop-blur-[16px] backdrop-saturate-150 mask-b-from-25% mask-b-to-60%" />
+      <div className="absolute inset-0 [background:linear-gradient(to_bottom,color-mix(in_oklab,var(--bg)_84%,transparent)_0%,color-mix(in_oklab,var(--bg)_74%,transparent)_25%,color-mix(in_oklab,var(--bg)_54%,transparent)_50%,color-mix(in_oklab,var(--bg)_28%,transparent)_75%,color-mix(in_oklab,var(--bg)_8%,transparent)_92%,transparent_100%)]" />
+    </div>
   )
 }
 
@@ -147,6 +164,8 @@ function MobileToggle({
   open: boolean
   onToggle: () => void
 }) {
+  const bar =
+    "absolute left-1/2 top-1/2 h-[1.5px] w-[18px] -translate-x-1/2 rounded-full bg-current transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]"
   return (
     <button
       type="button"
@@ -154,30 +173,17 @@ function MobileToggle({
       aria-expanded={open}
       aria-controls="site-nav-sheet"
       onClick={onToggle}
-      className="inline-flex size-8 items-center justify-center rounded-full text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)] md:hidden"
+      className="relative -mr-2 inline-flex size-9 items-center justify-center rounded-full text-[var(--fg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] md:hidden"
     >
       <span className="sr-only">{open ? "Close menu" : "Open menu"}</span>
-      <svg
+      <span
         aria-hidden
-        viewBox="0 0 20 20"
-        fill="none"
-        className="size-5"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-      >
-        {open ? (
-          <>
-            <path d="M5 5l10 10" />
-            <path d="M15 5L5 15" />
-          </>
-        ) : (
-          <>
-            <path d="M3 7h14" />
-            <path d="M3 13h14" />
-          </>
-        )}
-      </svg>
+        className={cn(bar, open ? "rotate-45" : "-translate-y-[4px]")}
+      />
+      <span
+        aria-hidden
+        className={cn(bar, open ? "-rotate-45" : "translate-y-[4px]")}
+      />
     </button>
   )
 }
@@ -191,68 +197,74 @@ function MobileSheet({
   onClose: () => void
   isAuthed: boolean
 }) {
+  const item =
+    "block rounded-xl px-3 py-3 text-[17px] font-medium tracking-[-0.01em] text-[var(--fg)] transition-colors hover:bg-[color-mix(in_oklab,var(--fg)_6%,transparent)]"
   return (
-    <div
-      id="site-nav-sheet"
-      data-state={open ? "open" : "closed"}
-      className={cn(
-        "fixed inset-x-0 top-14 z-40 mx-4 overflow-hidden rounded-2xl border border-[var(--border)] bg-[color-mix(in_oklab,var(--bg)_95%,transparent)] backdrop-blur-xl transition-[opacity,transform] duration-200 md:hidden",
-        open
-          ? "pointer-events-auto translate-y-0 opacity-100"
-          : "pointer-events-none -translate-y-2 opacity-0"
-      )}
-      aria-hidden={!open}
-    >
-      <div className="p-4">
-        <nav aria-label="Mobile" className="flex flex-col gap-1">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onClose}
-              className="rounded-md px-3 py-3 text-base text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)]"
-            >
-              {item.label}
-            </Link>
-          ))}
-          {isAuthed ? (
-            <>
+    <>
+      {/* Scrim — tap anywhere outside the sheet to close. Sits behind the
+          bar and the sheet, above the page. */}
+      <div
+        aria-hidden
+        onClick={onClose}
+        className={cn(
+          "fixed inset-0 -z-20 bg-[color-mix(in_oklab,var(--fg)_18%,transparent)] transition-opacity duration-300 md:hidden",
+          open ? "opacity-100" : "pointer-events-none opacity-0"
+        )}
+      />
+      {/* The sheet starts at the very top and pads past the bar, so the bar
+          and the menu share one continuous surface — no seam between them. */}
+      <div
+        id="site-nav-sheet"
+        data-state={open ? "open" : "closed"}
+        className={cn(
+          "absolute inset-x-0 top-0 -z-[5] rounded-b-[24px] pt-14 md:hidden",
+          "bg-[color-mix(in_oklab,var(--bg)_94%,transparent)] backdrop-blur-xl backdrop-saturate-150",
+          "shadow-[0_24px_48px_-24px_rgba(11,26,51,0.28)]",
+          "transition-[opacity,transform] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+          open
+            ? "pointer-events-auto translate-y-0 opacity-100"
+            : "pointer-events-none -translate-y-2 opacity-0"
+        )}
+        aria-hidden={!open}
+      >
+        <PageShell className="pb-6 pt-2">
+          <nav aria-label="Mobile" className="flex flex-col gap-0.5">
+            {NAV_ITEMS.map((navItem) => (
               <Link
-                href="/account"
+                key={navItem.href}
+                href={navItem.href}
                 onClick={onClose}
-                className="rounded-md px-3 py-3 text-base text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)]"
+                className={item}
               >
-                Account
+                {navItem.label}
               </Link>
-              <form action={signOutAction}>
-                <button
-                  type="submit"
-                  className="w-full rounded-md px-3 py-3 text-left text-base text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)]"
-                >
-                  Log out
-                </button>
-              </form>
-            </>
-          ) : (
-            <Link
-              href="/login"
-              onClick={onClose}
-              className="rounded-md px-3 py-3 text-base text-[var(--fg)] transition-colors hover:bg-[var(--surface-raised)]"
-            >
-              Log in
-            </Link>
-          )}
-        </nav>
-        {!isAuthed ? (
-          <Link
-            href="/download"
-            onClick={onClose}
-            className={cn(buttonVariants({ size: "lg" }), "mt-3 w-full")}
-          >
-            Download free for macOS
-          </Link>
-        ) : null}
+            ))}
+            {isAuthed ? (
+              <>
+                <Link href="/account" onClick={onClose} className={item}>
+                  Account
+                </Link>
+                <form action={signOutAction}>
+                  <button
+                    type="submit"
+                    className={cn(item, "w-full text-left")}
+                  >
+                    Log out
+                  </button>
+                </form>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                onClick={onClose}
+                className="mt-3 inline-flex h-11 items-center justify-center rounded-full bg-[var(--fg)] px-5 text-[15px] font-medium text-[var(--bg)] shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-transform active:scale-[0.98]"
+              >
+                Log in
+              </Link>
+            )}
+          </nav>
+        </PageShell>
       </div>
-    </div>
+    </>
   )
 }

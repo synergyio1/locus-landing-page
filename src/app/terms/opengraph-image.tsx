@@ -9,6 +9,6 @@ export default function Image() {
     eyebrow: "Terms",
     title: "Terms of service.",
     subtitle:
-      "The terms that govern your use of the Locus app, the website, and Pro subscriptions.",
+      "The terms that govern your use of the Locus app, the website, and your subscription.",
   })
 }

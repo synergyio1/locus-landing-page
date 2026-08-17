@@ -8,13 +8,18 @@ test("home page responds 200 and renders the sticky nav", async ({ page }) => {
   await expect(nav).toBeVisible()
 
   await expect(
-    page.getByRole("link", { name: "Download", exact: true })
-  ).toBeVisible()
+    nav.getByRole("link", { name: "Manifesto", exact: true })
+  ).toHaveAttribute("href", "/#manifesto")
+  await expect(
+    page.getByRole("link", { name: "Log in", exact: true })
+  ).toHaveAttribute("href", "/login")
+  // The header carries no Download — the hero owns that CTA.
+  await expect(
+    page.locator("header").getByRole("link", { name: /download/i })
+  ).toHaveCount(0)
 })
 
-test("hero renders headline, CTAs, and the product demo", async ({
-  page,
-}) => {
+test("hero renders the locked headline and both CTAs", async ({ page }) => {
   await page.goto("/")
 
   await expect(
@@ -24,43 +29,62 @@ test("hero renders headline, CTAs, and the product demo", async ({
     })
   ).toBeVisible()
 
-  const download = page.getByRole("link", { name: /download free for macos/i })
+  const download = page.getByRole("link", { name: /download for macos/i })
   await expect(download.first()).toHaveAttribute("href", "/download")
 
-  const seeDay = page.getByRole("link", { name: /see a day in locus/i })
-  await expect(seeDay).toHaveAttribute("href", "#day-in-locus")
-
-  const demo = page.getByTestId("hero-widget")
-  await expect(demo).toBeVisible()
-  await expect(
-    demo.getByRole("tab", { name: /session tracking/i })
-  ).toBeVisible()
+  const readManifesto = page.getByRole("link", { name: /read the manifesto/i })
+  await expect(readManifesto).toHaveAttribute("href", "#manifesto")
 })
 
-test("'A day in Locus' placeholder renders the three value modes", async ({
+test("manifesto renders the statement, the three app parts, and the sign-off", async ({
   page,
 }) => {
   await page.goto("/")
 
-  const section = page.locator("#day-in-locus")
+  const section = page.locator("#manifesto")
   await expect(section).toBeVisible()
 
-  const labels = ["Session Tracking", "Day Visibility", "Review Loop"]
-  for (const label of labels) {
-    await expect(
-      section.getByRole("heading", { level: 3, name: label })
-    ).toBeVisible()
+  await expect(
+    section.getByRole("heading", {
+      level: 2,
+      name: /we are building a system you can trust with/i,
+    })
+  ).toBeVisible()
+
+  for (const part of ["Execution", "Inputs", "AI"]) {
+    await expect(section.getByText(part, { exact: true })).toBeVisible()
   }
+
+  await expect(section.getByText("Luis", { exact: true })).toBeVisible()
 })
 
-test("home page uses the OS narrative section inventory", async ({ page }) => {
+test("home page is hero → manifesto → pricing, nothing else", async ({
+  page,
+}) => {
   await page.goto("/")
 
-  await expect(page.locator("#day-in-locus")).toBeVisible()
+  await expect(page.locator("#manifesto")).toBeVisible()
   await expect(page.locator("#pricing")).toBeVisible()
-  await expect(page.locator("#faq")).toBeVisible()
 
-  await expect(page.locator("#personas")).toHaveCount(0)
-  await expect(page.locator("#review")).toHaveCount(0)
-  await expect(page.locator("#depth")).toHaveCount(0)
+  // Sections retired 2026-08-17 (and earlier) — anti-drift net.
+  for (const id of [
+    "#transformation",
+    "#app-demo",
+    "#flywheel",
+    "#day-in-locus",
+    "#armor-reactor",
+    "#faq",
+    "#personas",
+    "#review",
+    "#depth",
+  ]) {
+    await expect(page.locator(id)).toHaveCount(0)
+  }
+  await expect(page.getByTestId("hero-widget")).toHaveCount(0)
+
+  // Section order.
+  const ids = await page
+    .locator("main > section[id]")
+    .evaluateAll((els) => els.map((el) => el.id))
+  expect(ids).toEqual(["manifesto", "pricing"])
 })

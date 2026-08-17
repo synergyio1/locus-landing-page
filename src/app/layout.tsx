@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://getlocus.tech"),
   title: "Locus — the missing OS for modern work",
   description:
-    "Declare intent, see what happened when the day changed, and turn each day into a better tomorrow with the AI-native execution OS for macOS.",
+    "Declare intent, see what actually happened, and turn each day into a better tomorrow. The AI-native execution OS for macOS — local-first, running on the AI you already pay for.",
 };
 
 export default function RootLayout({

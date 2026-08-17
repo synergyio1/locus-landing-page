@@ -17,11 +17,11 @@ export const download: DownloadContent = {
   eyebrow: "Download",
   headline: "Download Locus for macOS.",
   body:
-    "The public Mac download is open. Grab the free DMG, install Locus, and sign in inside the app when you want your account, trial, or Pro features.",
+    "The Mac download is open. Install Locus, sign in, and your 30-day trial starts inside the app — every feature included, no card required.",
   requirement: "Requires macOS Tahoe for now.",
   support: "Support for older macOS versions will come later.",
   cta: {
-    label: "Download free for macOS",
+    label: "Download for macOS",
     href: MAC_DOWNLOAD_URL,
     note: "Direct DMG download. No web login required; Locus asks you to sign in after launch.",
   },

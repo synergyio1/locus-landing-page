@@ -48,3 +48,7 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Higgsfield source footage for the Transformation section (keyframes + clips)
+# Re-extract frames from clips/full.mp4; not deployed.
+transformation-source/

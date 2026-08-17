@@ -2,19 +2,23 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { AnimatePresence, LayoutGroup, motion } from "motion/react"
 
 import { PageShell } from "@/components/layout/page-shell"
 import { SpringReveal } from "@/components/motion"
 import { ProCta } from "@/components/sections/pro-cta"
-import { buttonVariants } from "@/components/ui/button"
-import { SpotlightBorder } from "@/components/ui/spotlight-border"
 import {
   pricing,
+  type AiChoiceCard,
   type PricingCadence,
-  type PricingPlan,
 } from "@/content/pricing"
 import { cn } from "@/lib/utils"
+
+const EASE = "cubic-bezier(0.22, 1, 0.36, 1)"
+
+/** "$3" stays "3"; the yearly per-month equivalent "$2.50" keeps its cents. */
+export function formatPerMonth(perMonth: number): string {
+  return Number.isInteger(perMonth) ? String(perMonth) : perMonth.toFixed(2)
+}
 
 export function Pricing({
   headingLevel = "h2",
@@ -23,10 +27,10 @@ export function Pricing({
   headingLevel?: "h1" | "h2"
   isAuthed?: boolean
 } = {}) {
+  const Heading = headingLevel
   const [cadence, setCadence] = React.useState<PricingCadence>(
     pricing.defaultCadence
   )
-  const Heading = headingLevel
 
   return (
     <section
@@ -34,228 +38,269 @@ export function Pricing({
       aria-labelledby="pricing-heading"
       className="border-t border-[var(--border)] bg-[var(--bg)]"
     >
-      <PageShell className="py-20 md:py-32">
-        <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between md:gap-16">
-          <SpringReveal className="flex max-w-2xl flex-col gap-4">
-            <span className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+      <PageShell className="py-24 md:py-36">
+        {/* Same two-column rhythm as the price row below: headline owns the
+            left, the subline sits small in the right rail above the CTA. */}
+        <SpringReveal
+          as="div"
+          className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(18rem,28rem)] md:items-end md:gap-8"
+        >
+          <div className="flex flex-col gap-4">
+            <span className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent-text)]">
               {pricing.eyebrow}
             </span>
             <Heading
               id="pricing-heading"
-              className="text-3xl font-semibold leading-[1.05] tracking-tighter text-[var(--fg)] md:text-5xl"
+              className="text-3xl font-semibold leading-[1.05] tracking-tighter text-[var(--fg)] md:text-4xl"
             >
               {pricing.headline}
             </Heading>
-            <p className="text-base leading-relaxed text-[var(--muted-foreground)] md:text-lg">
-              {pricing.body}
-            </p>
-          </SpringReveal>
+          </div>
+          <p className="max-w-[40ch] text-sm leading-relaxed text-[var(--muted-foreground)] md:pb-1 md:pl-8">
+            {pricing.subline}
+          </p>
+        </SpringReveal>
 
-          <SpringReveal delay={80}>
-            <CadenceToggle value={cadence} onChange={setCadence} />
-          </SpringReveal>
-        </div>
+        <SpringReveal delay={120} as="div" className="mt-12 md:mt-16">
+          <PriceRow
+            cadence={cadence}
+            onCadenceChange={setCadence}
+            isAuthed={isAuthed}
+          />
+        </SpringReveal>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] md:gap-8">
-          {pricing.plans.map((plan, i) => (
-            <SpringReveal key={plan.id} delay={120 + i * 90} as="div">
-              <PlanCard plan={plan} cadence={cadence} isAuthed={isAuthed} />
-            </SpringReveal>
-          ))}
-        </div>
+        <SpringReveal delay={220} as="div" className="mt-12 md:mt-16">
+          <AiChoiceStrip />
+        </SpringReveal>
 
-        <SpringReveal
-          delay={280}
-          className="mt-10 max-w-3xl text-sm leading-relaxed text-[var(--muted-foreground)] md:mt-12"
-        >
-          {pricing.unlockNote}
+        <SpringReveal delay={300} as="div" className="mt-8">
+          <PricingFooter />
         </SpringReveal>
       </PageShell>
     </section>
   )
 }
 
-function CadenceToggle({
-  value,
-  onChange,
-}: {
-  value: PricingCadence
-  onChange: (next: PricingCadence) => void
-}) {
-  const options: Array<{ value: PricingCadence; label: string }> = [
-    { value: "monthly", label: "Monthly" },
-    { value: "yearly", label: "Yearly" },
-  ]
-  return (
-    <LayoutGroup id="pricing-cadence">
-      <div
-        role="radiogroup"
-        aria-label="Billing cadence"
-        className="inline-flex rounded-full border border-[var(--border)] bg-[var(--surface)] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]"
-      >
-        {options.map((opt) => {
-          const active = opt.value === value
-          return (
-            <button
-              key={opt.value}
-              type="button"
-              role="radio"
-              aria-checked={active}
-              aria-label={opt.label}
-              onClick={() => onChange(opt.value)}
-              className={cn(
-                "relative rounded-full px-4 py-1.5 text-xs uppercase tracking-[0.18em] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",
-                active
-                  ? "text-[var(--accent-foreground)]"
-                  : "text-[var(--muted-foreground)] hover:text-[var(--fg)]"
-              )}
-            >
-              {active ? (
-                <motion.span
-                  layoutId="pricing-cadence-pill"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  className="absolute inset-0 rounded-full bg-[var(--accent)]"
-                />
-              ) : null}
-              <span className="relative">{opt.label}</span>
-            </button>
-          )
-        })}
-      </div>
-    </LayoutGroup>
-  )
-}
-
-function PlanCard({
-  plan,
+function PriceRow({
   cadence,
+  onCadenceChange,
   isAuthed,
 }: {
-  plan: PricingPlan
   cadence: PricingCadence
+  onCadenceChange: (cadence: PricingCadence) => void
   isAuthed: boolean
 }) {
-  const price = plan.price[cadence]
-  const isFree = plan.id === "free"
+  const option = pricing.billing[cadence]
 
-  const cardInner = (
-    <article
-      data-featured={plan.featured ? "true" : "false"}
-      className={cn(
-        "flex h-full flex-col gap-6 rounded-xl border p-6 md:p-8",
-        plan.featured
-          ? "border-[color-mix(in_oklab,var(--accent)_55%,transparent)] bg-[color-mix(in_oklab,var(--accent)_7%,var(--surface))] shadow-[inset_0_1px_0_color-mix(in_oklab,var(--accent)_45%,transparent)]"
-          : "border-[var(--border)] bg-[var(--surface)]"
-      )}
-    >
-      <header className="flex items-start justify-between gap-4">
-        <div className="flex flex-col gap-1">
-          <h3 className="text-xl font-medium tracking-tight text-[var(--fg)]">
-            {plan.name}
-          </h3>
-          <p className="text-sm text-[var(--muted-foreground)]">
-            {plan.tagline}
-          </p>
-        </div>
-        {plan.featured ? (
-          <span className="rounded-full border border-[color-mix(in_oklab,var(--accent)_50%,transparent)] bg-[color-mix(in_oklab,var(--accent)_16%,transparent)] px-2.5 py-0.5 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-[var(--accent-text)]">
-            Popular
+  return (
+    <div className="grid gap-8 border-y border-[var(--border)] py-8 md:grid-cols-[minmax(0,1fr)_minmax(18rem,28rem)] md:items-center md:py-10">
+      <div className="flex min-w-0 flex-col gap-7">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between md:justify-start md:gap-5">
+          <span className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
+            {pricing.plan.label}
           </span>
-        ) : null}
-      </header>
+          <BillingToggle cadence={cadence} onChange={onCadenceChange} />
+        </div>
 
-      <div className="flex flex-col gap-1">
-        <AnimatePresence initial={false}>
-          <motion.div
-            key={`${plan.id}-${cadence}`}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10, position: "absolute" }}
-            transition={{ duration: 0.24, ease: [0.22, 1, 0.36, 1] }}
-            className="flex items-baseline gap-2"
-          >
-            {isFree ? (
-              <span className="font-mono text-4xl text-[var(--fg)] md:text-5xl">
-                $0
+        <div aria-live="polite" className="flex flex-col gap-2">
+          <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
+            <span className="font-mono text-[clamp(3.75rem,11vw,6rem)] font-semibold leading-none tracking-tight text-[var(--fg)] tabular-nums">
+              $
+              <span
+                key={cadence}
+                className="inline-block"
+                style={{
+                  animation: `spring-reveal 360ms ${EASE} both`,
+                }}
+              >
+                {formatPerMonth(option.perMonth)}
               </span>
-            ) : (
-              <>
-                <span className="font-mono text-4xl text-[var(--fg)] md:text-5xl">
-                  ${price.amount}
-                </span>
-                <span className="text-sm text-[var(--muted-foreground)]">
-                  {price.unit}
-                </span>
-              </>
-            )}
-          </motion.div>
-        </AnimatePresence>
-        {price.note || price.savings ? (
-          <p className="text-sm text-[var(--accent-text)]">
-            {price.savings ?? price.note}
-          </p>
-        ) : null}
-      </div>
-
-      <ul className="flex flex-col gap-2.5 text-sm leading-relaxed text-[var(--fg)]">
-        {plan.features.map((feature, i) => (
-          <li
-            key={feature}
-            className="flex gap-3"
+            </span>
+            <span className="pb-3 text-sm text-[var(--muted-foreground)] md:pb-4">
+              /month
+            </span>
+          </div>
+          <p
+            key={`${cadence}-note`}
+            className="text-sm text-[var(--muted-foreground)]"
             style={{
-              animation: `spring-reveal 420ms cubic-bezier(0.22,1,0.36,1) both`,
-              animationDelay: `${160 + i * 60}ms`,
+              animation: `spring-reveal 360ms ${EASE} 40ms both`,
             }}
           >
-            <span
-              aria-hidden
-              className="mt-1.5 inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_oklab,var(--accent)_18%,transparent)]"
-            >
-              <svg
-                viewBox="0 0 12 12"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="size-2.5 text-[var(--accent-text)]"
-              >
-                <path d="M2 6.5L5 9l5-6" />
-              </svg>
-            </span>
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
+            {option.billedNote}
+          </p>
+        </div>
+      </div>
 
-      <div className="mt-auto pt-2">
-        {plan.featured ? (
+      <div className="flex flex-col justify-center gap-4 border-t border-[var(--border)] pt-6 md:border-l md:border-t-0 md:pl-8 md:pt-0">
+        <span className="w-fit rounded-md border border-[color-mix(in_oklab,var(--alive)_45%,transparent)] bg-[color-mix(in_oklab,var(--alive)_14%,transparent)] px-2.5 py-1 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-[color-mix(in_oklab,var(--alive)_82%,var(--fg))]">
+          {pricing.plan.trialChip}
+        </span>
+        <div className="flex flex-col gap-3">
           <ProCta
             cadence={cadence}
             isAuthed={isAuthed}
-            label={plan.cta.label}
+            label={pricing.plan.ctaLabel}
           />
-        ) : (
-          <Link
-            href={plan.cta.href}
-            className={cn(
-              buttonVariants({ size: "lg", variant: "outline" }),
-              "w-full"
-            )}
-          >
-            {plan.cta.label}
-          </Link>
-        )}
+          <p className="text-xs leading-relaxed text-[var(--muted-foreground)]">
+            {pricing.plan.ctaNote}
+          </p>
+        </div>
       </div>
-    </article>
+    </div>
+  )
+}
+
+function BillingToggle({
+  cadence,
+  onChange,
+}: {
+  cadence: PricingCadence
+  onChange: (cadence: PricingCadence) => void
+}) {
+  const options = [pricing.billing.monthly, pricing.billing.yearly]
+  const refs = React.useRef<Partial<Record<PricingCadence, HTMLButtonElement>>>(
+    {}
   )
 
-  if (plan.featured) {
-    return (
-      <SpotlightBorder className="h-full rounded-xl" radius={320}>
-        {cardInner}
-      </SpotlightBorder>
-    )
+  function select(next: PricingCadence) {
+    onChange(next)
+    refs.current[next]?.focus()
   }
-  return cardInner
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLButtonElement>) {
+    if (["ArrowLeft", "ArrowUp"].includes(e.key)) {
+      e.preventDefault()
+      select("monthly")
+    } else if (["ArrowRight", "ArrowDown"].includes(e.key)) {
+      e.preventDefault()
+      select("yearly")
+    }
+  }
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Billing period"
+      className="relative grid shrink-0 grid-cols-2 rounded-full border border-[var(--border)] bg-[var(--bg)] p-1"
+    >
+      <span
+        aria-hidden
+        className="absolute inset-y-1 left-1 w-[calc(50%-0.25rem)] rounded-full border border-[color-mix(in_oklab,var(--accent)_45%,transparent)] bg-[color-mix(in_oklab,var(--accent)_24%,var(--surface-raised))] shadow-[inset_0_1px_0_rgb(255_255_255/0.12)] transition-transform duration-300"
+        style={{
+          transform:
+            cadence === "yearly" ? "translateX(100%)" : "translateX(0)",
+          transitionTimingFunction: EASE,
+        }}
+      />
+      {options.map((option) => {
+        const checked = cadence === option.cadence
+        return (
+          <button
+            key={option.cadence}
+            ref={(node) => {
+              if (node) refs.current[option.cadence] = node
+            }}
+            type="button"
+            role="radio"
+            aria-checked={checked}
+            tabIndex={checked ? 0 : -1}
+            onClick={() => select(option.cadence)}
+            onKeyDown={handleKeyDown}
+            className={cn(
+              "relative z-10 flex items-center justify-center gap-1.5 rounded-full px-3.5 py-1.5 font-mono text-[0.7rem] uppercase tracking-[0.14em] transition-colors duration-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--accent)]",
+              checked
+                ? "text-[var(--fg)]"
+                : "text-[var(--muted-foreground)] hover:text-[var(--fg)]"
+            )}
+          >
+            {option.toggleLabel}
+            {option.savings ? (
+              <span
+                className={cn(
+                  "rounded-full px-1.5 py-px text-[0.6rem] tracking-[0.08em] transition-colors duration-300",
+                  checked
+                    ? "bg-[color-mix(in_oklab,var(--accent)_40%,transparent)] text-[var(--accent-foreground)]"
+                    : "bg-[color-mix(in_oklab,var(--accent)_18%,transparent)] text-[var(--accent-text)]"
+                )}
+              >
+                {option.savings}
+              </span>
+            ) : null}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function AiChoiceStrip() {
+  return (
+    <div className="border-y border-[var(--border)] py-6 md:py-7">
+      <div className="grid gap-5 md:grid-cols-[0.36fr_1fr] md:items-start">
+        <span className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent-text)]">
+          {pricing.aiChoice.eyebrow}
+        </span>
+        <div className="grid gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <AiChoiceOption card={pricing.aiChoice.byo} tone="alive" />
+            <AiChoiceOption card={pricing.aiChoice.remote} tone="accent" />
+          </div>
+          <p className="max-w-3xl text-xs leading-relaxed text-[var(--muted-foreground)]">
+            {pricing.aiChoice.note}
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function AiChoiceOption({
+  card,
+  tone,
+}: {
+  card: AiChoiceCard
+  tone: "alive" | "accent"
+}) {
+  return (
+    <article className="border-t border-[var(--border)] pt-4">
+      <span
+        className={cn(
+          "w-fit rounded-md border px-2 py-0.5 font-mono text-[0.68rem] uppercase tracking-[0.14em]",
+          tone === "alive"
+            ? "border-[color-mix(in_oklab,var(--alive)_45%,transparent)] bg-[color-mix(in_oklab,var(--alive)_12%,transparent)] text-[color-mix(in_oklab,var(--alive)_82%,var(--fg))]"
+            : "border-[color-mix(in_oklab,var(--accent)_50%,transparent)] bg-[color-mix(in_oklab,var(--accent)_16%,transparent)] text-[var(--accent-text)]"
+        )}
+      >
+        {card.badge}
+      </span>
+      <h3 className="mt-3 text-base font-semibold tracking-tight text-[var(--fg)]">
+        {card.title}
+      </h3>
+      <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)]">
+        {card.body}
+      </p>
+    </article>
+  )
+}
+
+function PricingFooter() {
+  return (
+    <div className="flex flex-col justify-between gap-4 border-b border-[var(--border)] pb-6 md:flex-row md:items-center">
+      <ul className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+        {pricing.assurances.map((assurance, i) => (
+          <React.Fragment key={assurance}>
+            {i > 0 ? <li aria-hidden>·</li> : null}
+            <li>{assurance}</li>
+          </React.Fragment>
+        ))}
+      </ul>
+      <Link
+        href={pricing.download.href}
+        className="inline-flex w-fit items-center gap-1 text-xs text-[var(--muted-foreground)] underline decoration-[var(--border)] underline-offset-4 transition-colors hover:text-[var(--fg)] hover:decoration-[var(--accent-text)]"
+      >
+        {pricing.download.label}
+      </Link>
+    </div>
+  )
 }
