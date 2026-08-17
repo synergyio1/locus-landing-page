@@ -1,9 +1,12 @@
+import * as React from "react"
 import Link from "next/link"
 
 import { PageShell } from "@/components/layout/page-shell"
 import { SpringReveal } from "@/components/motion"
+import { InkUnderline } from "@/components/ui/ink-underline"
 import { RotatingWord } from "@/components/ui/rotating-word"
 import { manifesto, type ManifestoBlock } from "@/content/manifesto"
+import { splitInlineMarks } from "@/lib/inline-marks"
 import { cn } from "@/lib/utils"
 
 // Manifesto body ink: the site's muted tone nudged a step toward the ink
@@ -126,7 +129,7 @@ function Block({ block }: { block: ManifestoBlock }) {
     case "p":
       return (
         <p className={block.emphasis ? PARAGRAPH_EMPHASIS : PARAGRAPH}>
-          {block.text}
+          <InlineMarks text={block.text} />
         </p>
       )
     case "quote":
@@ -168,4 +171,15 @@ function Block({ block }: { block: ManifestoBlock }) {
         </div>
       )
   }
+}
+
+/** Copy with ==marks== → text runs, the marked ones drawn as ink underlines. */
+function InlineMarks({ text }: { text: string }) {
+  return splitInlineMarks(text).map((run, i) =>
+    run.marked ? (
+      <InkUnderline key={i}>{run.text}</InkUnderline>
+    ) : (
+      <React.Fragment key={i}>{run.text}</React.Fragment>
+    )
+  )
 }
