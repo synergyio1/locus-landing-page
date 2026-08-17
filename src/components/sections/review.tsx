@@ -13,7 +13,7 @@ export function Review() {
       aria-labelledby="review-heading"
       className="border-t border-[var(--border)] bg-[var(--bg)]"
     >
-      <PageShell className="py-20 md:py-32">
+      <PageShell className="py-24 md:py-36">
         <div className="grid gap-10 md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] md:items-center md:gap-16">
           <SpringReveal className="flex flex-col gap-4 md:order-1">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">

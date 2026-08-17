@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 export const metadata: Metadata = {
   title: "Download — Locus",
   description:
-    "Download Locus free for macOS Tahoe. The public DMG is available now.",
+    "Download Locus for macOS Tahoe. Install, sign in, and your 14-day trial starts inside the app.",
 }
 
 export default function DownloadPage() {
@@ -49,7 +49,7 @@ export default function DownloadPage() {
           <a
             href={download.cta.href}
             download
-            aria-label="Download free for macOS DMG"
+            aria-label="Download the macOS DMG"
             className={cn(buttonVariants({ size: "lg" }), "self-start")}
           >
             <Icon name="download" />

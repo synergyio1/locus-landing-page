@@ -31,33 +31,27 @@ export function Logo({
       {...props}
     >
       {labelled ? <title>{title}</title> : null}
-      <circle
-        cx="512"
-        cy="512"
-        r="401"
-        stroke={color}
-        strokeWidth="34"
-        fill="none"
-        opacity="0.22"
-      />
-      <circle
-        cx="512"
-        cy="512"
-        r="290"
-        stroke={color}
-        strokeWidth="60"
-        fill="none"
-        opacity="0.55"
-      />
-      <circle
-        cx="512"
-        cy="512"
-        r="170"
-        stroke={color}
-        strokeWidth="85"
-        fill="none"
-      />
-      <circle cx="512" cy="512" r="60" fill={color} />
+      {/* Nested-arch "portal" mark — distilled from the app icon; the core dot is the locus. */}
+      <g stroke={color} strokeLinecap="round" fill="none">
+        <path
+          d="M182 800 L182 480 A330 330 0 0 1 842 480 L842 800"
+          strokeWidth="42"
+          opacity="0.22"
+          fill="none"
+        />
+        <path
+          d="M297 800 L297 480 A215 215 0 0 1 727 480 L727 800"
+          strokeWidth="52"
+          opacity="0.55"
+          fill="none"
+        />
+        <path
+          d="M412 800 L412 480 A100 100 0 0 1 612 480 L612 800"
+          strokeWidth="64"
+          fill="none"
+        />
+      </g>
+      <circle cx="512" cy="646" r="50" fill={color} />
     </svg>
   )
 }

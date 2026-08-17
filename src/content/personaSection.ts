@@ -64,7 +64,7 @@ export const personaSection: PersonaSectionContent = {
       body: "Sara's 25-minute Spanish block is live. The timer is honest about where she is; the right column shows the rest of her day; the activity ledger reads Anki, Notion, Duolingo — each classified the moment a window opens.",
       screenshot: {
         src: "/screenshots/screens/CommandView_running_dark.png",
-        alt: "Locus running a focus session on Sara's 'Reach B2 Spanish' project. Activity ledger shows Anki, Slack, and Duolingo windows with classification dots; the right column shows Sara's planned day from morning run to activation deep-dive.",
+        alt: "Locus running a focus session on Sara's 'Reach B2 Spanish' project. Activity ledger shows Anki, Slack, and Duolingo windows with classification dots; the right column shows Sara's planned day from morning run to the billing launch.",
         width: 2880,
         height: 1800,
       },
@@ -85,7 +85,7 @@ export const personaSection: PersonaSectionContent = {
       id: "commitments",
       tag: "Commitments",
       headline: "Outcomes to finish. Habits to keep.",
-      body: "Outcome projects with finish lines (the billing launch, Q3 OKRs, the activation deep-dive, year-end Spanish) and rhythm habits that return on cadence (daily Spanish, morning runs). One inventory; no fighting about which list a thing belongs in.",
+      body: "Outcome projects with finish lines (the billing launch, Q3 OKRs, year-end Spanish) and rhythm habits that return on cadence (daily Spanish, morning runs). One inventory; no fighting about which list a thing belongs in.",
       screenshot: {
         src: "/screenshots/screens/CommitmentsView_dark.png",
         alt: "Sara's commitments grid: four outcome projects with progress strips and focus-day dots, plus rhythm habits with weekly schedule strips.",

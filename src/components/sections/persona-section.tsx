@@ -18,7 +18,7 @@ export function PersonaSection() {
       aria-labelledby="persona-heading"
       className="border-t border-[var(--border)] bg-[var(--bg)]"
     >
-      <PageShell className="py-20 md:py-32">
+      <PageShell className="py-24 md:py-36">
         <SpringReveal className="flex max-w-2xl flex-col gap-4">
           <span className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">
             {personaSection.eyebrow}

@@ -21,7 +21,10 @@ import { useReducedMotion } from "@/components/motion"
  *                            (left edge on desktop; top + bottom always).
  *   5. Chroma grid (left)  — 88px hairline lattice, masked into the text
  *                            rail only; keeps that side from going inert.
- *   6. Bottom hairline     — accent-tinted seam to the widget stage below.
+ *
+ * The bottom edge dissolves into the page navy (no hairline): the next
+ * section (Transformation) fades in from the same navy, so the two scenes
+ * hand off through a shared dark band instead of a hard cut.
  */
 export function HeroBackground() {
   const reduced = useReducedMotion()
@@ -46,15 +49,17 @@ export function HeroBackground() {
       className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[var(--bg)]"
     >
       {/* Video / poster — the asset. Top edge runs full-bleed so the snow
-          spreads up under the navbar with no dark seam; only the bottom
-          fades into the widget stage. */}
+          spreads up under the navbar with no dark seam; the bottom takes a
+          long eased dissolve into the navy. The fade stays gentle through
+          ~88% so the penguin (walking near the bottom of frame) keeps its
+          presence, then commits to full transparency at the edge. */}
       <div
         className="absolute inset-0 md:left-auto md:right-0 md:w-[72%] lg:w-[68%] xl:w-[62%]"
         style={{
           WebkitMaskImage:
-            "linear-gradient(180deg, black 0%, black 86%, transparent 100%)",
+            "linear-gradient(180deg, black 0%, black 76%, rgba(0,0,0,0.92) 84%, rgba(0,0,0,0.7) 90%, rgba(0,0,0,0.35) 95%, transparent 100%)",
           maskImage:
-            "linear-gradient(180deg, black 0%, black 86%, transparent 100%)",
+            "linear-gradient(180deg, black 0%, black 76%, rgba(0,0,0,0.92) 84%, rgba(0,0,0,0.7) 90%, rgba(0,0,0,0.35) 95%, transparent 100%)",
         }}
       >
         {reduced ? (
@@ -77,6 +82,13 @@ export function HeroBackground() {
             className="absolute inset-0 size-full object-cover object-center"
           />
         )}
+        {/* Dim grade — pulls the bright snow down toward the page's register.
+            Lives inside the masked container so it follows the video's own
+            alpha and never tints the navy dissolve below. */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "rgb(0 0 0 / 0.18)" }}
+        />
       </div>
 
       {/* Cobalt grade — sits over the video footprint only. Restrained
@@ -146,15 +158,6 @@ export function HeroBackground() {
           Scoped tighter and lower opacity now that the white halo bleeds in. */}
       <div
         className="chroma-grid absolute inset-y-0 left-0 hidden md:block md:w-[42%] lg:w-[40%] xl:w-[38%] opacity-[0.32]"
-      />
-
-      {/* Bottom hairline — accent-tinted seam against the widget stage. */}
-      <div
-        className="absolute inset-x-0 bottom-0 h-px"
-        style={{
-          background:
-            "linear-gradient(90deg, transparent 0%, color-mix(in oklab, var(--accent-text) 30%, transparent) 50%, transparent 100%)",
-        }}
       />
     </div>
   )

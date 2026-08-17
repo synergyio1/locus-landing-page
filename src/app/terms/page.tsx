@@ -6,7 +6,7 @@ import { terms } from "@/content/terms"
 export const metadata: Metadata = {
   title: "Terms — Locus",
   description:
-    "The terms that govern your use of the Locus app, the website, and Pro subscriptions.",
+    "The terms that govern your use of the Locus app, the website, and your subscription.",
 }
 
 export default function TermsPage() {

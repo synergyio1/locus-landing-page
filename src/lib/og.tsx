@@ -3,10 +3,10 @@ import { ImageResponse } from "next/og"
 export const OG_SIZE = { width: 1200, height: 630 } as const
 export const OG_CONTENT_TYPE = "image/png" as const
 
-const BG = "#0A1620"
+const BG = "#08152A"
 const FG = "#E6EDF3"
 const ACCENT_TEXT = "#6BA6F2"
-const MUTED = "#8A9BAE"
+const MUTED = "#8A9BB8"
 
 function LogoMark({ size = 56 }: { size?: number }) {
   const vb = 1024
@@ -17,33 +17,26 @@ function LogoMark({ size = 56 }: { size?: number }) {
       viewBox={`0 0 ${vb} ${vb}`}
       xmlns="http://www.w3.org/2000/svg"
     >
-      <circle
-        cx="512"
-        cy="512"
-        r="401"
-        stroke={ACCENT_TEXT}
-        strokeWidth="34"
-        fill="none"
-        opacity="0.22"
-      />
-      <circle
-        cx="512"
-        cy="512"
-        r="290"
-        stroke={ACCENT_TEXT}
-        strokeWidth="60"
-        fill="none"
-        opacity="0.55"
-      />
-      <circle
-        cx="512"
-        cy="512"
-        r="170"
-        stroke={ACCENT_TEXT}
-        strokeWidth="85"
-        fill="none"
-      />
-      <circle cx="512" cy="512" r="60" fill={ACCENT_TEXT} />
+      <g stroke={ACCENT_TEXT} strokeLinecap="round" fill="none">
+        <path
+          d="M182 800 L182 480 A330 330 0 0 1 842 480 L842 800"
+          strokeWidth="42"
+          opacity="0.22"
+          fill="none"
+        />
+        <path
+          d="M297 800 L297 480 A215 215 0 0 1 727 480 L727 800"
+          strokeWidth="52"
+          opacity="0.55"
+          fill="none"
+        />
+        <path
+          d="M412 800 L412 480 A100 100 0 0 1 612 480 L612 800"
+          strokeWidth="64"
+          fill="none"
+        />
+      </g>
+      <circle cx="512" cy="646" r="50" fill={ACCENT_TEXT} />
     </svg>
   )
 }

@@ -1,4 +1,6 @@
 export { BreathingDot } from "./breathing-dot"
+export { PinnedStage } from "./pinned-stage"
 export { SpringReveal } from "./spring-reveal"
 export { StaggerGroup } from "./stagger-group"
+export { useFrameScrubber } from "./use-frame-scrubber"
 export { useReducedMotion } from "./use-reduced-motion"

@@ -9,6 +9,6 @@ export default function Image() {
     eyebrow: "AI-native execution OS — for macOS",
     title: "The missing OS for modern work.",
     subtitle:
-      "Declare intent, see what happened, and turn each day into a better tomorrow.",
+      "An AI agent that sees your day, coaches your focus, and learns you — on your Mac.",
   })
 }

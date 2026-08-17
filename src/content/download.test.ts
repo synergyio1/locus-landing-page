@@ -13,8 +13,14 @@ describe("download content", () => {
     expect(download.cta.href.startsWith("mailto:")).toBe(false)
   })
 
-  it("primary CTA says the macOS download is free", () => {
-    expect(download.cta.label).toMatch(/download free for macos/i)
+  it("primary CTA does not call the product free — only the trial is", () => {
+    expect(download.cta.label).toMatch(/download for macos/i)
+    expect(download.cta.label).not.toMatch(/free/i)
+  })
+
+  it("body routes the visitor into the 14-day in-app trial", () => {
+    expect(download.body).toMatch(/14-day/i)
+    expect(download.body).toMatch(/no card/i)
   })
 
   it("has non-empty headline and body strings", () => {

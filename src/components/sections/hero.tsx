@@ -1,6 +1,5 @@
 import Link from "next/link"
 
-import { HeroWidget } from "@/components/hero-widget"
 import { PageShell } from "@/components/layout/page-shell"
 import { BreathingDot, SpringReveal } from "@/components/motion"
 import { buttonVariants } from "@/components/ui/button"
@@ -72,15 +71,9 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Stage two — the interactive widget. Sits below the fold so the
-          headline reads as the lead, and scrolling rewards with the demo. */}
-      <div className="relative bg-[var(--bg)]">
-        <PageShell className="pt-16 pb-24 md:pt-24 md:pb-32">
-          <SpringReveal delay={80}>
-            <HeroWidget />
-          </SpringReveal>
-        </PageShell>
-      </div>
+      {/* Interlude — a beat of pure navy between the glacier and the storm,
+          so the two scenes breathe instead of trading places at the fold. */}
+      <div aria-hidden className="h-[12svh] bg-[var(--bg)]" />
     </section>
   )
 }

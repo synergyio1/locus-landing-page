@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(design-taste-frontend)",
+      "Skill(design-taste-frontend:*)",
+      "Bash(rtk git *)"
+    ]
+  }
+}

@@ -32,12 +32,14 @@
 }
 
 :root {
-  --bg: #0A1620;
+  /* Base tones track the app icon's dark navy (body ≈ #02142B–#0D1C30):
+     bluer and a touch deeper than the old teal-leaning set. */
+  --bg: #08152A;
   --fg: #E6EDF3;
-  --surface: #0E1C28;
-  --surface-raised: #132534;
-  --muted: #132534;
-  --muted-foreground: #8A9BAE;
+  --surface: #0D1B33;
+  --surface-raised: #12233F;
+  --muted: #12233F;
+  --muted-foreground: #8A9BB8;
   --accent: #0047AB;
   --accent-hover: #00347D;
   --accent-subtle: rgb(0 71 171 / 0.12);

@@ -249,7 +249,7 @@ function MobileSheet({
             onClick={onClose}
             className={cn(buttonVariants({ size: "lg" }), "mt-3 w-full")}
           >
-            Download free for macOS
+            Download for macOS
           </Link>
         ) : null}
       </div>

@@ -1,80 +1,125 @@
 export type PricingCadence = "monthly" | "yearly"
 
-export type PlanPrice = {
-  amount: number
-  unit: string
-  note?: string
+export type BillingOption = {
+  cadence: PricingCadence
+  toggleLabel: string
+  perMonth: number
+  billedNote: string
   savings?: string
 }
 
-export type PricingPlan = {
-  id: "free" | "pro"
-  name: string
+export type AiChoiceCard = {
+  badge: string
+  title: string
+  body: string
+}
+
+export type FeatureTab = {
+  tab: string
   tagline: string
-  price: {
-    monthly: PlanPrice
-    yearly: PlanPrice
-  }
-  features: string[]
-  cta: { label: string; href: string }
-  featured?: boolean
+  items: string[]
 }
 
 export type PricingContent = {
   id: string
   eyebrow: string
   headline: string
-  body: string
+  subline: string
   defaultCadence: PricingCadence
-  plans: [PricingPlan, PricingPlan]
-  unlockNote: string
+  billing: { monthly: BillingOption; yearly: BillingOption }
+  plan: {
+    label: string
+    trialChip: string
+    ctaLabel: string
+    ctaNote: string
+  }
+  featuresEyebrow: string
+  featureTabs: FeatureTab[]
+  aiChoice: {
+    eyebrow: string
+    byo: AiChoiceCard
+    managed: AiChoiceCard
+    note: string
+  }
+  assurances: string[]
+  download: { label: string; href: string }
 }
 
 export const pricing: PricingContent = {
   id: "pricing",
   eyebrow: "Pricing",
-  headline: "One app. One subscription. No games.",
-  body: "Free keeps the loop — sessions, projects, habits, tasks — forever. Pro adds the AI brain: the planner that shapes your day around your goal, the AI that catches you the moment you drift, and the Friday review that walks you through what actually moved.",
-  defaultCadence: "monthly",
-  unlockNote:
-    "Want to try Pro without paying first? A 7-day Try Pro unlock is available from inside the Mac app — once, per account.",
-  plans: [
+  headline: "One plan. All of Locus.",
+  subline:
+    "Every feature included, nothing gated. 14 days free, no card — then $4 a month if you commit to a year, or $6 month to month.",
+  defaultCadence: "yearly",
+  billing: {
+    monthly: {
+      cadence: "monthly",
+      toggleLabel: "Monthly",
+      perMonth: 6,
+      billedNote: "Billed month to month. Cancel anytime.",
+    },
+    yearly: {
+      cadence: "yearly",
+      toggleLabel: "Yearly",
+      perMonth: 4,
+      billedNote: "$48 billed once a year. Cancel anytime.",
+      savings: "Save 33%",
+    },
+  },
+  plan: {
+    label: "Locus — everything included",
+    trialChip: "14 days free",
+    ctaLabel: "Start 14 days free",
+    ctaNote: "The trial starts inside the app — no card required.",
+  },
+  featuresEyebrow: "Everything, on day one",
+  featureTabs: [
     {
-      id: "free",
-      name: "Free",
-      tagline: "The loop, forever.",
-      price: {
-        monthly: { amount: 0, unit: "forever", note: "Free forever" },
-        yearly: { amount: 0, unit: "forever", note: "Free forever" },
-      },
-      features: [
-        "Sessions, projects, habits, tasks",
-        "Menu bar timer with breathing indicator",
-        "Weekly review view",
-        "Local-only data, no account needed",
+      tab: "Focus",
+      tagline: "Declare intent. Work it.",
+      items: [
+        "Timed sessions with a live focus score",
+        "Execution strategies — pomodoro, sprints, deep work",
+        "Plan the day around your calendar",
       ],
-      cta: { label: "Download free for macOS", href: "/download" },
     },
     {
-      id: "pro",
-      name: "Pro",
-      tagline: "The parts that do the thinking.",
-      price: {
-        monthly: { amount: 6, unit: "/mo" },
-        yearly: {
-          amount: 58,
-          unit: "/yr",
-          savings: "Save $14 vs monthly",
-        },
-      },
-      features: [
-        "Google Calendar sync — pulls meetings to plan around, pushes completed sessions back as events",
-        "AI drift catch — flags when the active window doesn't match your session goal",
-        "AI Friday review — walked through, not just charted",
-        "Priority email support",
+      tab: "Sentinel",
+      tagline: "See where the day really goes.",
+      items: [
+        "Quiet activity logging between sessions",
+        "Budgets for the apps that eat your time",
+        "A digest that makes the day legible",
       ],
-      cta: { label: "Get Pro", href: "/download" },
-      featured: true,
+    },
+    {
+      tab: "Review",
+      tagline: "Learn what actually moved.",
+      items: [
+        "Daily, weekly, and monthly digests",
+        "An AI chat that knows your data",
+        "Disagree — it remembers your corrections",
+      ],
     },
   ],
+  aiChoice: {
+    eyebrow: "Choose your AI",
+    byo: {
+      badge: "Included",
+      title: "Bring your own AI",
+      body: "Plug in the AI subscription you already pay for — Claude Code, Codex, or any compatible harness. Locus runs on it at no extra cost.",
+    },
+    managed: {
+      badge: "Optional · $8/mo",
+      title: "Locus managed AI",
+      body: "No harness, or saving your own tokens? Add $8 a month in credits on frontier models. Top up or drop it anytime from your account.",
+    },
+    note: "Both run the same features — the planning, the classification, the reviews. The only difference is whose AI does the thinking.",
+  },
+  assurances: ["14-day free trial", "Cancel anytime", "30-day refund"],
+  download: {
+    label: "Download for macOS — your trial starts in the app",
+    href: "/download",
+  },
 }

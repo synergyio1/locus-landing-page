@@ -23,7 +23,7 @@ export function Depth() {
       aria-labelledby="depth-heading"
       className="relative border-t border-[var(--border)] bg-[var(--bg)]"
     >
-      <PageShell className="py-20 md:py-32">
+      <PageShell className="py-24 md:py-36">
         <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between md:gap-16">
           <SpringReveal className="flex max-w-2xl flex-col gap-4">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">

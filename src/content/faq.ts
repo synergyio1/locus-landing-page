@@ -1,9 +1,12 @@
 export type FaqId =
   | "who-for"
   | "how-different"
+  | "which-ai"
+  | "routines"
+  | "memory"
   | "keystrokes"
-  | "missed-session"
   | "privacy"
+  | "missed-session"
   | "mac-only"
   | "macos-requirement"
   | "refund"
@@ -33,37 +36,55 @@ export const faq: FaqContent = {
       id: "who-for",
       question: "Who is Locus actually for?",
       answer:
-        "Anyone who relies heavily on personal productivity and works on a Mac. Founders, researchers, writers, engineers — anyone whose calendar is full but whose week doesn't always move. If you set ambitious goals and then lose the plot mid-week, Locus is trying to be your accountability partner, not your surveillance camera.",
+        "Anyone who relies heavily on personal productivity and works on a Mac. Founders, researchers, writers, engineers — anyone whose calendar is full but whose week doesn't always move. If you set ambitious goals and then lose the plot mid-week, Locus is built to be your accountability partner, not your surveillance camera.",
     },
     {
       id: "how-different",
       question: "How is this different from the trackers and timers I've already tried?",
       answer:
-        "Most tools do one thing. Locus is the execution layer — an AI plans the day around your goal, catches you when you drift, and on Friday walks you through what actually moved. Three things tied together, all anchored to a single goal you can see across the whole day. The point isn't the timer; it's closing the gap between what you said you'd do and what you did.",
+        "Most tools do one thing: timers measure, trackers report, planners schedule. Locus runs the whole loop — it watches how the day actually goes, coaches you through focused sessions, and turns what it learns into tomorrow's structure. And unlike the chatbot bolted onto other tools, this AI remembers you: it keeps a memory you can read, follows routines you can edit, and anything it does on its own can be undone.",
+    },
+    {
+      id: "which-ai",
+      question: "Which AI does Locus run on?",
+      answer:
+        "Yours, if you have one. Plug in the AI subscription you already pay for — Claude Code, Codex, or a compatible API key — and Locus drives it at no extra cost. Prefer zero setup? Add Locus managed AI for $8 a month in credits on frontier models. Same features either way; the only difference is whose AI does the thinking.",
+    },
+    {
+      id: "routines",
+      question: "What can the AI do on its own?",
+      answer:
+        "Exactly as much as you let it. Every behavior — the daily digest, the distraction coach, the notes analysis — is a routine: a plain file you can read, edit, or write yourself. You set the autonomy level, Locus only auto-runs actions that can be cleanly undone, and everything it did shows up with a one-click Undo.",
+    },
+    {
+      id: "memory",
+      question: "What does Locus remember about me?",
+      answer:
+        "Whatever it learns from working with you — your patterns, your projects, the insights you pushed back on — written to a wiki of plain files on your Mac. The Memory tab shows all of it, and it's yours to edit: correct something and the correction sticks. It's stored on your machine, not on our servers.",
     },
     {
       id: "keystrokes",
       question: "Does the AI read what I type or which sites I visit?",
       answer:
-        "No. Locus checks the title of the frontmost window against your session's goal — nothing else. It doesn't read what you type, screenshot your screen, or read URLs. The next answer covers what happens to those window titles themselves.",
+        "No. During a session, Locus checks the frontmost app and window title against what you said you were working on — nothing else. It doesn't read what you type, screenshot your screen, or read URLs. And what it sees is for you alone — never a boss, never a dashboard.",
+    },
+    {
+      id: "privacy",
+      question: "Where does my data live, and what does the AI see?",
+      answer:
+        "Your data lives on your Mac. Sessions, projects, habits, tasks, notes, chat history, and the AI's memory of you are a database and plain files on your machine — your account exists to hold your license, not your data. When the AI works, prompts go to the provider you chose: bring your own and they run under your account and your keys. Choose Locus managed AI and they pass through our relay, which doesn't store prompts or responses — only usage totals for billing.",
     },
     {
       id: "missed-session",
       question: "What happens if I miss a session, or lose a whole day?",
       answer:
-        "Nothing bad. Sessions that don't start just aren't counted, and days you skip don't break anything — the weekly review tells the truth about what happened without a scold. The habit calendar tracks the chain, but chains are meant to break sometimes; Locus doesn't shame you for it.",
-    },
-    {
-      id: "privacy",
-      question: "Does Locus send my activity to the cloud?",
-      answer:
-        "Yes — and we want to be specific about what and why. Window titles, project names and session metadata go through Locus's backend to leading AI models, where they're used to plan your day, classify whether you're on-track, and write your Friday review. We don't store logs, we don't train on the data, and it isn't tied to your account when it's sent. If you'd rather not share any of that, the free Loop tier (sessions, projects, habits, tasks) doesn't need it.",
+        "Nothing bad. Sessions that don't start just aren't counted, and a skipped day doesn't break anything — habits in Locus return on a rhythm instead of piling up debt, and the weekly review tells the truth about what happened without a scold.",
     },
     {
       id: "mac-only",
       question: "Is there a Windows, Linux, or mobile app?",
       answer:
-        "Not today. Locus is a native macOS app and depends on macOS APIs for window activity and the menu bar. An iOS companion is on the roadmap; Windows and Linux aren't planned.",
+        "Not today. Locus is a native macOS app and depends on macOS APIs for window activity and the menu bar. Windows and Linux aren't planned.",
     },
     {
       id: "macos-requirement",
@@ -75,19 +96,19 @@ export const faq: FaqContent = {
       id: "refund",
       question: "What's the refund policy?",
       answer:
-        "If Pro isn't for you, email support@getlocus.tech within 30 days of purchase and we'll refund the subscription, no questions asked. The 7-day Try Pro unlock lets you evaluate Pro features inside the app before you pay anything.",
+        "If Locus isn't for you, email support@getlocus.tech within 30 days of purchase and we'll refund the subscription, no questions asked. And the 14-day trial lets you evaluate everything inside the app before you pay anything.",
     },
     {
       id: "data-export",
-      question: "Can I export my sessions and projects?",
+      question: "Can I export my data?",
       answer:
-        "Yes. Settings → Data lets you export your sessions, projects, habits and tasks as JSON or CSV at any time. The same menu includes a full-delete option that wipes local and synced data.",
+        "It's already yours — Locus keeps your data as a database plus readable files sitting on your Mac, and it can reveal the folder in Finder whenever you ask. Even if your subscription lapses, everything stays viewable and exportable. Deleting the app's data folder removes it completely.",
     },
     {
       id: "offline",
       question: "Does Locus work offline?",
       answer:
-        "Mostly. The free Loop — sessions, projects, habits, tasks — works fully offline. The Pro AI features (Plan My Day, drift catch, Friday review) need a connection because they call leading AI models through Locus's backend.",
+        "The workspace — sessions, tasks, commitments, notes — works offline. The AI features need a connection to whichever AI you picked, your own or Locus managed. Day planning has a built-in offline fallback, so the morning still gets a draft.",
     },
     {
       id: "sign-in",

@@ -13,9 +13,9 @@ export type HeroContent = {
 export const hero: HeroContent = {
   headline: "The missing OS for modern work.",
   subheadline:
-    "Work got faster. Life got fuller. Locus helps you declare intent, see what actually happened, and turn each day into a better tomorrow.",
+    "Work got faster. Life got fuller. Locus helps you declare intent, see what actually happened, and turn each day into a better tomorrow — with an AI agent that lives on your Mac and runs on the AI you already pay for.",
   primaryCta: {
-    label: "Download free for macOS",
+    label: "Download for macOS",
     href: "/download",
   },
   secondaryCta: {

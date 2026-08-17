@@ -10,7 +10,7 @@ export function Faq() {
       aria-labelledby="faq-heading"
       className="border-t border-[var(--border)] bg-[var(--bg)]"
     >
-      <PageShell className="py-20 md:py-32">
+      <PageShell className="py-24 md:py-36">
         <div className="grid gap-10 md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] md:gap-16">
           <SpringReveal className="flex flex-col gap-4 md:border-l md:border-[color-mix(in_oklab,var(--accent)_35%,transparent)] md:pl-6">
             <span className="text-xs uppercase tracking-[0.18em] text-[var(--muted-foreground)]">

@@ -16,7 +16,16 @@ describe("hero content", () => {
     expect(hero.subheadline.length).toBeGreaterThan(0)
   })
 
-  it("leads with the modern-work OS positioning", () => {
+  it("leads with the missing-OS category positioning (user-locked 2026-07-06)", () => {
     expect(hero.headline).toMatch(/missing OS for modern work/i)
+  })
+
+  it("names the structural differentiators in the subheadline", () => {
+    expect(hero.subheadline).toMatch(/on your mac/i)
+    expect(hero.subheadline).toMatch(/AI you already pay for/i)
+  })
+
+  it("does not call the product free — only the trial is free", () => {
+    expect(hero.primaryCta.label).not.toMatch(/free/i)
   })
 })
