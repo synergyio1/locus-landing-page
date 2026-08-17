@@ -140,19 +140,21 @@ export const manifesto: ManifestoContent = {
     {
       kind: "parts",
       intro:
-        "Locus is that system: carefully, thoughtfully designed for the productivity side of your life. It lives on your Mac and runs on the AI you already pay for. The app has three parts:",
+        "Locus is that system, designed for the productivity side of your life. It lives on your Mac and has three parts:",
+      // Each item opens with a "Your ___." lead and stays within ~120–150
+      // characters of the others, so the three read as one balanced set.
       items: [
         {
           name: "Execution",
-          text: "The live loop: Focus, to plan and steer the day; Watch, to keep the dots connected the rest of the time.",
+          text: "Your time. What you planned to do with the day and what actually happened — intent and outcome, finally in the same place.",
         },
         {
           name: "Inputs",
-          text: "Structured capture: notes, tasks, and commitments — the projects you want to finish and the habits you want to keep.",
+          text: "Your context. Notes, tasks, projects, habits — everything you mean to do, achieve, or simply keep, structured so the rest of Locus can use it.",
         },
         {
           name: "AI",
-          text: "What Locus does on its own: Intelligence, routines you can read and edit; Memory, what it knows about you; and the Flywheel, which compounds today into tomorrow.",
+          text: "Your smart pal. Routines, the behaviors you want it to have; Memory, everything it learns about you. Together, a flywheel that compounds today into tomorrow.",
         },
       ],
     },
