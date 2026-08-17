@@ -12,19 +12,25 @@ import { useReducedMotion } from "@/components/motion"
  * `prefers-reduced-motion: reduce` it is replaced by its still poster.
  *
  * Layer stack (back to front):
- *   1. Base canvas         — page navy, always present.
+ *   1. Base canvas         — page canvas (`--bg`), always present.
  *   2. Video / poster      — the asset, masked into the right rail (md+)
- *                            or full-bleed (mobile), `object-cover`.
- *   3. Cobalt grade        — thin accent-tinted overlay over the video so
- *                            its cool greys read on-brand.
- *   4. Edge fades          — gradients that melt the video into the navy
- *                            (left edge on desktop; top + bottom always).
+ *                            or full-bleed (mobile), `object-cover`, with a
+ *                            light contrast lift so rock stays deep and snow
+ *                            stays bright.
+ *   3. Dim veil            — thin plain-black overlay (no tint) that seats
+ *                            the snow a step below canvas white.
+ *   4. Edge fades          — canvas gradients: a left-edge taper under the
+ *                            text rail on desktop; a text-block scrim on
+ *                            mobile that releases below the CTAs; a bottom
+ *                            dissolve always.
  *   5. Chroma grid (left)  — 88px hairline lattice, masked into the text
  *                            rail only; keeps that side from going inert.
  *
- * The bottom edge dissolves into the page navy (no hairline): the next
- * section (Transformation) fades in from the same navy, so the two scenes
- * hand off through a shared dark band instead of a hard cut.
+ * Legibility contract: on md+ the copy sits on canvas (the fade holds under
+ * its overhang); below md it sits on the footage, so the mobile scrim must
+ * reach ≥84% canvas across the text block — see the mobile-ink note in
+ * `hero.tsx`. Below md the footage is also 125% tall, top-anchored, so the
+ * penguin (66% of the frame) walks at ~82% of the viewport, under the copy.
  */
 export function HeroBackground() {
   const reduced = useReducedMotion()
@@ -66,7 +72,7 @@ export function HeroBackground() {
           <img
             src="/hero/glacier-walk-poster.jpg"
             alt=""
-            className="absolute inset-0 size-full object-cover object-center [filter:contrast(1.05)_saturate(0.9)]"
+            className="absolute inset-0 size-full max-md:h-[125%] object-cover object-center [filter:contrast(1.12)_saturate(0.94)]"
             decoding="async"
           />
         ) : (
@@ -79,37 +85,53 @@ export function HeroBackground() {
             loop
             playsInline
             preload="metadata"
-            className="absolute inset-0 size-full object-cover object-center [filter:contrast(1.05)_saturate(0.9)]"
+            className="absolute inset-0 size-full max-md:h-[125%] object-cover object-center [filter:contrast(1.12)_saturate(0.94)]"
           />
         )}
-        {/* Dark overlay (Luis, 2026-08-17): plain black at partial opacity so
-            the bright footage reads as a dimmed scene against the light
-            canvas — no tint. Lives inside the masked container so it follows
-            the video's own alpha and never darkens the canvas dissolve. */}
+        {/* Dim (Luis, 2026-08-17; retuned same day): a thin plain-black veil
+            so the snow sits a step below the canvas white instead of merging
+            with it — no tint. Kept light on purpose: at 0.45 the whole scene
+            collapsed into a mid-grey fog (snow ≈134, rock ≈112 on a 238
+            canvas) and lost its contrast; the tonal range now comes from the
+            footage itself via the contrast filter above. Lives inside the
+            masked container so it follows the video's own alpha and never
+            darkens the canvas dissolve. */}
         <div
           className="absolute inset-0"
-          style={{ background: "rgb(0 0 0 / 0.45)" }}
+          style={{ background: "rgb(0 0 0 / 0.16)" }}
         />
       </div>
 
-      {/* Desktop left-edge fade — a long, smooth taper so the snow spills
-          gracefully into the text rail rather than terminating in a wall. */}
+      {/* Desktop left-edge fade — a smooth taper so the snow spills into the
+          text rail rather than terminating in a wall. Holds near-opaque under
+          the headline's overhang (~first quarter of the footprint), then
+          clears by ~64% so the right third of the footage — peak, ridge,
+          penguin — reads unveiled. (Was 78%: the wash reached almost to the
+          right edge and, stacked on the dim, turned the mountain to haze.) */}
       <div
         className="absolute inset-y-0 right-0 hidden md:block md:w-[72%] lg:w-[68%] xl:w-[62%]"
         style={{
           background:
-            "linear-gradient(to right, var(--bg) 0%, color-mix(in oklab, var(--bg) 86%, transparent) 12%, color-mix(in oklab, var(--bg) 55%, transparent) 30%, color-mix(in oklab, var(--bg) 22%, transparent) 52%, transparent 78%)",
+            "linear-gradient(to right, var(--bg) 0%, color-mix(in oklab, var(--bg) 92%, transparent) 10%, color-mix(in oklab, var(--bg) 66%, transparent) 24%, color-mix(in oklab, var(--bg) 32%, transparent) 40%, color-mix(in oklab, var(--bg) 10%, transparent) 54%, transparent 64%)",
         }}
       />
 
-      {/* Mobile darkening — the full-bleed portrait sits behind the text on
-          small screens; this keeps the lower half (where the CTAs live)
-          on near-canvas so the headline reads cleanly. */}
+      {/* Mobile scrim — the full-bleed portrait sits behind the text on small
+          screens. The copy is top-aligned (eyebrow ≈112px → CTAs ≈466px on
+          every phone, see `hero.tsx`), so the stops are in px to track that
+          block rather than the viewport: a light hold behind the glass nav
+          (storm sky), ≥84% canvas from the headline through the CTAs so navy
+          ink lands on a light ground instead of storm cloud / dark rock,
+          then a release to near-clear so the penguin — walking at ~82% of
+          the viewport thanks to the 125% footage height — is unveiled on
+          the snow floor with its trail dissolving into the next section.
+          Over the uniform floor the release reads as snow-glare thinning,
+          not a band. */}
       <div
         className="absolute inset-0 md:hidden"
         style={{
           background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--bg) 30%, transparent) 0%, color-mix(in oklab, var(--bg) 55%, transparent) 45%, color-mix(in oklab, var(--bg) 88%, transparent) 100%)",
+            "linear-gradient(180deg, color-mix(in oklab, var(--bg) 55%, transparent) 0px, color-mix(in oklab, var(--bg) 70%, transparent) 96px, color-mix(in oklab, var(--bg) 84%, transparent) 140px, color-mix(in oklab, var(--bg) 88%, transparent) 300px, color-mix(in oklab, var(--bg) 86%, transparent) 470px, color-mix(in oklab, var(--bg) 34%, transparent) 545px, color-mix(in oklab, var(--bg) 14%, transparent) 620px, color-mix(in oklab, var(--bg) 10%, transparent) 100%)",
         }}
       />
 
