@@ -15,7 +15,7 @@ export const privacy: LegalContent = {
   title: "Privacy Policy",
   intro:
     "Locus is local-first: your data lives on your Mac, and your account exists to hold your license — not your data. This page explains what information the app or this website handles, how it's used, and the rights you have over it.",
-  lastUpdated: "2026-07-06",
+  lastUpdated: "2026-08-17",
   draft: true,
   sections: [
     {
@@ -24,7 +24,7 @@ export const privacy: LegalContent = {
     },
     {
       heading: "How we use it",
-      body: "Local data stays on your device and is used to render your own views and to feed the AI you chose. If you bring your own AI, prompts go directly to your provider under your account and keys — we're not in the path. If you use Locus managed AI, prompts pass through our relay, which does not store prompt or response content; it records only aggregate usage totals for billing. We don't train on your data.",
+      body: "Local data stays on your device and is used to render your own views and to feed the AI you chose. If you bring your own AI, prompts go directly to your provider under your account and keys — we're not in the path. If you use Locus Remote, prompts pass through our relay, which does not store prompt or response content; it records only aggregate usage totals to meter your Remote credits. We don't train on your data.",
     },
     {
       heading: "Your rights",

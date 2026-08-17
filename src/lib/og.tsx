@@ -1,5 +1,7 @@
 import { ImageResponse } from "next/og"
 
+import { LOCUS_MARK_PATH, LOCUS_MARK_VIEWBOX } from "@/lib/locus-mark"
+
 export const OG_SIZE = { width: 1200, height: 630 } as const
 export const OG_CONTENT_TYPE = "image/png" as const
 
@@ -9,34 +11,14 @@ const ACCENT_TEXT = "#6BA6F2"
 const MUTED = "#8A9BB8"
 
 function LogoMark({ size = 56 }: { size?: number }) {
-  const vb = 1024
   return (
     <svg
       width={size}
       height={size}
-      viewBox={`0 0 ${vb} ${vb}`}
+      viewBox={LOCUS_MARK_VIEWBOX}
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g stroke={ACCENT_TEXT} strokeLinecap="round" fill="none">
-        <path
-          d="M182 800 L182 480 A330 330 0 0 1 842 480 L842 800"
-          strokeWidth="42"
-          opacity="0.22"
-          fill="none"
-        />
-        <path
-          d="M297 800 L297 480 A215 215 0 0 1 727 480 L727 800"
-          strokeWidth="52"
-          opacity="0.55"
-          fill="none"
-        />
-        <path
-          d="M412 800 L412 480 A100 100 0 0 1 612 480 L612 800"
-          strokeWidth="64"
-          fill="none"
-        />
-      </g>
-      <circle cx="512" cy="646" r="50" fill={ACCENT_TEXT} />
+      <path d={LOCUS_MARK_PATH} fill={ACCENT_TEXT} />
     </svg>
   )
 }

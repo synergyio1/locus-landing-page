@@ -46,7 +46,7 @@ describe("POST /api/pro-trial/start", () => {
 
   it("inserts a row and returns started:true with expiresAt for a fresh user", async () => {
     authState.user = { id: "user_fresh", email: "fresh@example.com" }
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
     queryRaw.mockResolvedValueOnce([{ expires_at: expiresAt }])
 
     const response = await POST()
@@ -55,10 +55,18 @@ describe("POST /api/pro-trial/start", () => {
     expect(body.started).toBe(true)
     expect(typeof body.expiresAt).toBe("string")
     const returned = new Date(body.expiresAt).getTime()
-    const sevenDaysFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000
-    expect(Math.abs(returned - sevenDaysFromNow)).toBeLessThan(60_000)
+    const thirtyDaysFromNow = Date.now() + 30 * 24 * 60 * 60 * 1000
+    expect(Math.abs(returned - thirtyDaysFromNow)).toBeLessThan(60_000)
 
     expect(queryRaw).toHaveBeenCalledTimes(1)
+    // Pin the duration the route actually writes (tagged template args:
+    // [strings, userId, startedAt, expiresAt]) — the app + locus-api grant 30 days.
+    const insertArgs = queryRaw.mock.calls[0]
+    const startedAtArg = insertArgs[2] as Date
+    const expiresAtArg = insertArgs[3] as Date
+    expect(expiresAtArg.getTime() - startedAtArg.getTime()).toBe(
+      30 * 24 * 60 * 60 * 1000
+    )
   })
 
   it("returns started:false with reason 'already-used' when the user already has a row", async () => {
@@ -76,7 +84,7 @@ describe("POST /api/pro-trial/start", () => {
 
   it("only one of two parallel requests for the same user returns started:true", async () => {
     authState.user = { id: "user_concurrent", email: "race@example.com" }
-    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
     queryRaw
       .mockResolvedValueOnce([{ expires_at: expiresAt }])
       .mockResolvedValueOnce([])

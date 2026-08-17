@@ -32,22 +32,24 @@
 }
 
 :root {
-  /* Base tones track the app icon's dark navy (body ≈ #02142B–#0D1C30):
-     bluer and a touch deeper than the old teal-leaning set. */
-  --bg: #08152A;
-  --fg: #E6EDF3;
-  --surface: #0D1B33;
-  --surface-raised: #12233F;
-  --muted: #12233F;
-  --muted-foreground: #8A9BB8;
+  /* Light theme (2026-08-17, Luis): a soft blue a step below white (dimmed once
+     the same day — pure near-white was hard on the eyes), with
+     the app icon's navy as ink. Cobalt stays the single accent. `--accent-text`
+     is Cobalt itself here — on a light ground it clears AA at any size. */
+  --bg: #ECF1F8;
+  --fg: #0B1A33;
+  --surface: #F5F8FC;
+  --surface-raised: #E1E8F3;
+  --muted: #DDE5F1;
+  --muted-foreground: #4E5D79;
   --accent: #0047AB;
   --accent-hover: #00347D;
-  --accent-subtle: rgb(0 71 171 / 0.12);
-  --accent-text: #6BA6F2;
+  --accent-subtle: rgb(0 71 171 / 0.08);
+  --accent-text: #0047AB;
   --accent-foreground: #FFFFFF;
-  --alive: #3FCF7E;
-  --warn: #E8556F;
-  --border: rgb(255 255 255 / 0.08);
+  --alive: #1B8A50;
+  --warn: #C9364F;
+  --border: rgb(11 26 51 / 0.10);
   --radius: 0.625rem;
 }
 

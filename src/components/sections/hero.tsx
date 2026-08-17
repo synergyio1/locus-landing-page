@@ -28,11 +28,11 @@ export function Hero() {
               </span>
               <h1
                 id="hero-heading"
-                className="text-balance text-left text-[2.75rem] font-semibold leading-[0.98] tracking-[-0.035em] text-[var(--fg)] sm:text-[3.25rem] md:text-[4rem] lg:text-[4.5rem] xl:text-[4.75rem]"
+                className="text-balance text-left text-[2.5rem] font-semibold leading-[1] tracking-[-0.035em] text-[var(--fg)] sm:text-[3rem] md:text-[3.5rem] lg:text-[3.875rem] xl:text-[4.125rem]"
               >
                 {hero.headline}
               </h1>
-              <p className="max-w-xl text-pretty text-left text-[15px] leading-relaxed text-[var(--muted-foreground)] md:text-base lg:text-[17px]">
+              <p className="max-w-xl text-pretty text-left text-[15px] leading-relaxed text-[var(--muted-foreground)] md:text-base">
                 {hero.subheadline}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-3">
@@ -57,23 +57,15 @@ export function Hero() {
           </div>
         </PageShell>
 
-        {/* Bottom-left mono cue — anchors the asymmetric layout per the
-            DESIGN.md "01 / 03" pattern. Pure type, no fill. */}
+        {/* Bottom-right mono cue — pure type, no fill. */}
         <div className="pointer-events-none absolute inset-x-0 bottom-6 md:bottom-8">
-          <PageShell className="flex items-end justify-between">
-            <span className="font-mono text-[10.5px] uppercase tracking-[0.24em] text-[var(--muted-foreground)]/55">
-              01 &mdash; Stage
-            </span>
+          <PageShell className="flex items-end justify-end">
             <span className="hidden md:inline font-mono text-[10.5px] uppercase tracking-[0.24em] text-[var(--muted-foreground)]/55">
-              Scroll for the day &darr;
+              Scroll &darr;
             </span>
           </PageShell>
         </div>
       </div>
-
-      {/* Interlude — a beat of pure navy between the glacier and the storm,
-          so the two scenes breathe instead of trading places at the fold. */}
-      <div aria-hidden className="h-[12svh] bg-[var(--bg)]" />
     </section>
   )
 }

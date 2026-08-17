@@ -12,14 +12,16 @@ export type HeroContent = {
 
 export const hero: HeroContent = {
   headline: "The missing OS for modern work.",
+  // The manifesto's spine, and nothing else (Luis, 2026-08-17). Local-first
+  // and BYO AI live in the manifesto's decisions list and on the pricing rail.
   subheadline:
-    "Work got faster. Life got fuller. Locus helps you declare intent, see what actually happened, and turn each day into a better tomorrow — with an AI agent that lives on your Mac and runs on the AI you already pay for.",
+    "One system you can trust with your whole day. Stay present today, learn from every day, and let the small changes compound.",
   primaryCta: {
     label: "Download for macOS",
     href: "/download",
   },
   secondaryCta: {
-    label: "See a day in Locus",
-    href: "#day-in-locus",
+    label: "Read the manifesto",
+    href: "#manifesto",
   },
 }

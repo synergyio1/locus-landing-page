@@ -64,7 +64,7 @@ export default async function AccountPage({
           data-testid="welcome-banner"
           className="mb-8 rounded-md border border-[var(--accent)] bg-[var(--accent-subtle)] px-4 py-3 text-sm text-[var(--accent-text)]"
         >
-          {"You're on Pro for the next 7 days. Make it count."}
+          {"You're on Pro for the next 30 days. Make it count."}
         </div>
       ) : null}
 
@@ -141,6 +141,35 @@ export default async function AccountPage({
 
         <SignOutButton />
       </div>
+
+      {/* Remote credits sit on top of any license state, so this shows for
+          free, trial, and paid alike. Purchase flow lands later — the Mac
+          app's Settings → Account already sells them; this is a placeholder. */}
+      <section
+        aria-labelledby="remote-credits-heading"
+        data-testid="remote-credits-card"
+        className="mt-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-5 py-4"
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <h2
+            id="remote-credits-heading"
+            className="text-sm font-semibold text-[var(--fg)]"
+          >
+            Remote credits
+          </h2>
+          <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
+            Coming soon
+          </span>
+        </div>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)]">
+          Prepaid credits for Locus Remote — buy any amount, spend them as you
+          use the AI.
+        </p>
+        <p className="mt-1 text-sm leading-relaxed text-[var(--muted-foreground)]">
+          Bring your own AI (Claude Code, Codex, or an API key) and there&apos;s
+          nothing to buy.
+        </p>
+      </section>
 
       {view.displayPlan === "free" ? (
         <div className="mt-12 border-t border-[var(--border)] pt-6">

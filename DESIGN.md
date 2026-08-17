@@ -51,27 +51,28 @@ motion:
 
 ## Brand & Style
 
-Locus is a **local-first macOS workspace with an embedded AI agent** — it makes the day legible, coaches focused work, and turns today's mess into tomorrow's structure. The landing page is the product's quiet anteroom: a dim, instrument-grade workbench with a single point of light. Nothing is loud. A breathing dot, a faint grid behind the hero, and slow ambient drifts are the only things that move at rest.
+Locus is a **local-first macOS workspace with an embedded AI agent** — it makes the day legible, coaches focused work, and turns today's mess into tomorrow's structure. The landing page is the product's quiet anteroom (reset 2026-08-17 to a superlogical-style statement page): a near-white, blue-tinted sheet of paper with one Cobalt accent and one graded piece of footage. Nothing is loud. A breathing dot, a faint grid behind the hero, and a slowly rotating headline phrase are the only things that move at rest.
 
 The voice is **Coach** — warm, honest, accountability-partner — matching `.agents/product-marketing-context.md`. The surface personality that carries it is *engineered calm*: editorial headline setting (near-unity leading, tight negative tracking, balanced text) plus instrumented utility marks (uppercase mono eyebrows, step counters, version strings). The product is sold on trust and craft, not novelty. Registers to avoid in copy and UI microtext alike: Stoic-philosopher, clinical, surveillance-flavored.
 
 ## Colors
 
-The palette is deliberately narrow: one canvas, one accent system, two semantics.
+The palette is deliberately narrow: one canvas, one accent system, two semantics. **Light theme since 2026-08-17** (Luis: "white or a blue very close to white") — the previous navy sheet is retired.
 
-- **Canvas (`#0A1620`)** — every section shares this background; separation comes from hairline borders, not fills. Surfaces raise only incrementally (`#0E1C28`, `#132534`); the page reads as one continuous dark sheet.
-- **Cobalt accent (`#0047AB`)** — the brand color, aligned to the macOS app icon (`public/brand/AppIcon_Cobalt.iconset`). Because Cobalt is dark, the accent is a *system*, not a single value: `--accent` for fills (primary CTA, featured-card tints, focus rings) with white foreground; `--accent-text` (`#6BA6F2`) for links, accent text, and icon strokes on the navy canvas; `--accent-hover` (`#00347D`) darkens on hover. Never put raw `#0047AB` text on the canvas — it fails contrast; that's what `--accent-text` is for.
-- **Alive (`#3FCF7E`)** — reserved for *aliveness*: the breathing dot, timer progress, on-track states. Never decoration.
-- **Warn (`#E8556F`)** — off-track states and nothing else.
-- **Text** — `#E6EDF3` primary, `#8A9BAE` muted. **Borders** are always alpha-on-white (`rgba(255,255,255,0.08)`) so they read as lit glass edges, not drawn lines.
+- **Canvas (`#ECF1F8`)** — every section shares this background; separation comes from hairline borders, not fills. Surfaces raise only incrementally (`--surface: #F5F8FC`, `--surface-raised: #E1E8F3`); the page reads as one continuous pale-blue sheet.
+- **Cobalt accent (`#0047AB`)** — the brand color, aligned to the macOS app icon (`public/brand/AppIcon_Cobalt.iconset`). `--accent` for fills (primary CTA, toggle pill, focus rings) with white foreground; `--accent-hover` (`#00347D`) darkens on hover; on the light canvas `--accent-text` **is Cobalt itself** — it clears AA at every size, so links, eyebrows, mono indices, and the rotating headline phrase all use it. (The old rule "never raw Cobalt as text" belonged to the navy canvas.)
+- **Alive (`#1B8A50`)** — reserved for *aliveness*: the breathing dot, trial chips, on-track states. Never decoration.
+- **Warn (`#C9364F`)** — off-track states and nothing else.
+- **Ink** — `#0B1A33` primary (the app icon's navy, now used as text), `#4E5D79` muted (≈5.7:1 on the canvas). **Borders** are alpha-on-ink (`rgb(11 26 51 / 0.10)`) so they read as pencil hairlines.
+- **Hero footage** — the glacier clip is white-on-white against this canvas, so it sits under a plain **black overlay at 45%** inside the video mask (`hero-background.tsx`) — a dimmed neutral scene, no tint (a Cobalt duotone was tried and rejected 2026-08-17). It still dissolves into the canvas via `--bg` gradients.
 
-Color is applied in *ambient* doses: `color-mix(in oklab, var(--accent) X%, transparent)` at 4–50% produces halo glows, tints, soft fills, selection (`40%`), and outline color (`50%`) — see `globals.css`.
+Color is applied in *ambient* doses: `color-mix(in oklab, var(--accent) X%, transparent)` at 4–50% produces tints, soft fills, selection (`40%`), and outline color (`50%`) — see `globals.css`.
 
 ## Typography
 
 **Geist Sans** for headlines and body; **Geist Mono** for everything instrumented — timers, prices, technical eyebrows, step indices, version strings. Both load via `next/font` in `layout.tsx`.
 
-- Display and section headlines are semibold with negative tracking and near-unity leading — dense and editorial, never airy or poster-like. The hero is the only 84px moment.
+- Display and section headlines are semibold with negative tracking and near-unity leading — dense and editorial, never airy or poster-like. Sizes were taken down a notch on 2026-08-17 (hero h1 tops out at 66px; section h2 at 36px; the manifesto reads at 15/16px in a 64ch measure) — the page should feel like a letter, not a poster.
 - Body copy: generous leading (1.55–1.6), narrow measure, short scannable paragraphs.
 - Two eyebrow styles coexist deliberately: **sans eyebrow** marks section intent; **mono eyebrow** marks mechanism and metadata. The switch to mono is a quiet signal: "this is structural, not emotional."
 
@@ -96,22 +97,20 @@ Always quiet, always purposeful. One signature easing — `cubic-bezier(0.22, 1,
 - **Scroll choreography** — `PinnedStage` (`motion/pinned-stage.tsx`) pins a section while scroll drives progress; `useFrameScrubber` (`motion/use-frame-scrubber.ts`) maps that progress onto a preloaded image-frame sequence. These two power the Transformation section (121 webp frames in `public/transformation/frames/`). Framer Motion `useScroll`/`useTransform` only — **no GSAP**; the design-taste rule forbids mixing animation libraries in one tree.
 - **Pointer physics** — `MagneticButton` (90px radius attraction on CTAs), `TiltCard` (weighted ±4–6° tilt), `SpotlightBorder` (pointer-tracked accent rim on featured cards), `ParallaxImage`. The hero screenshot renders flat — no tilt/parallax — so product UI stays legible.
 - **Ambient loops** — breathing dot (2.4s), marquee rows (38–46s, pause-on-hover), conic drift (14s), hairline sweep (3.8s).
-- **Reduced motion is first-class** — `globals.css` collapses every keyframe/transition to 0.01ms; JS-driven effects short-circuit through `use-reduced-motion.ts`. The page must fully work with all motion off — the Transformation section swaps to a static poster + headline.
+- **Reduced motion is first-class** — `globals.css` collapses every keyframe/transition to 0.01ms; JS-driven effects short-circuit through `use-reduced-motion.ts`. The page must fully work with all motion off — the manifesto's rotating headline tail renders as its resting phrase, and the hero video swaps to its poster.
 
-## Component inventory (as shipped, 2026-07-06)
+## Component inventory (as shipped, 2026-08-17)
 
-**Rendered on `/` (`src/app/page.tsx`), in order:**
-1. **Hero** (`sections/hero.tsx` + `hero-background.tsx`) — headline/subhead from `content/hero.ts`, breathing-dot eyebrow badge, CTA pair, and below the fold the **HeroWidget** (`src/components/hero-widget/` — an interactive Raycast-style command window with a mode dock and preview panel, content from `content/heroWidget.ts`).
-2. **Transformation** (`sections/transformation.tsx`) — the scroll-scrubbed portal showpiece: PinnedStage + useFrameScrubber over 121 frames, three copy beats (Before / Threshold / After), static fallback under reduced motion.
-3. **System demonstration placeholder** (`sections/system-demonstration-placeholder.tsx`, `id="day-in-locus"`) — text-only stand-in for the future product-demonstration showpiece.
-4. **Pricing** (`sections/pricing.tsx`) — single PlanCard (one plan, everything included) + the **AI choice rail** ("Choose your AI": BYO included / managed AI add-on), cadence toggle defaulting to yearly, assurance row. Copy from `content/pricing.ts`.
-5. **FAQ** (`sections/faq.tsx`) — `<details>` rows, `faq-collapse` grid-rows spring, plus-toggle rotating 45°, 4%-accent open wash.
+**Rendered on `/` (`src/app/page.tsx`), in order — a superlogical-style statement page, ~5,200px at 1440w (was ~14,900px):**
+1. **Hero** (`sections/hero.tsx` + `hero-background.tsx`) — locked headline/subhead from `content/hero.ts`, breathing-dot eyebrow badge, CTA pair ("Download for macOS" / "Read the manifesto" → `#manifesto`), glacier video right rail, bottom-right mono "Scroll ↓" cue. No interlude, no stage numbering.
+2. **Manifesto** (`sections/manifesto.tsx`, `id="manifesto"`) — the founder statement, copy in `content/manifesto.ts`. FAQ-style two-column split: statement headline pinned left (`md:sticky`) with a `RotatingWord` tail (`ui/rotating-word.tsx` — width-reserved, reduced-motion → static, sr-only resting phrase); one 68ch reading column right: paragraphs → pull quote → the three app parts (Execution / Inputs / AI, mono `01/02/03`) → five design decisions in a 2-col hairline grid → blog pointer (links only once `manifesto.blog.href` is set) → sign-off.
+3. **Pricing** (`sections/pricing.tsx`) — headline + price row (one plan, cadence toggle defaulting to yearly) + "Choose your AI" rail (BYO / Locus Remote credits) + assurances. Copy from `content/pricing.ts`. Also rendered standalone at `/pricing`.
 
-**Built but currently unrendered:** `depth.tsx`, `review.tsx`, `persona-section.tsx` (single persona: Sara Mendes), `pro-cta.tsx` (name predates the no-Pro model). Keep-or-cut is decided in the landing-update pass (`PRD_landing_redesign.md`).
+**Built but currently unrendered:** `pro-cta.tsx` is a child of pricing (name predates the no-Pro model); `motion/stagger-group.tsx` and `ui/marquee-row.tsx` have no consumers.
 
-**Chrome & primitives:** `site-nav.tsx` / `site-nav-client.tsx` (pinned glass capsule, layoutId hover pill, auto-compacts on scroll) + `account-menu.tsx`; `ui/` — `button` (pill; primary = accent fill + white text + inset shine + magnetic), `device-frame` (the single container for app screenshots: rounded-xl, hairline, ink shadow), `logo` (concentric-rings brand mark; note `icon_master.svg` was removed — the mark is drawn in-component / sourced from the iconset PNGs), `icon` (stroke-based 1.5px line set), `marquee-row`, `noise-overlay`, `scroll-progress-path`, `spotlight-border`, `tilt-card`, `parallax-image`, `magnetic-button`.
+**Chrome & primitives:** `site-nav.tsx` / `site-nav-client.tsx` (2026-08-17, after three rounds with Luis: logo mark left (no wordmark), three text links centre, a small outlined **Log in** button right (no Download in the header — the hero owns that CTA); the bar is a **frosted band** — canvas colour fading 86%→58% downward with `backdrop-blur-md` — so it blends with the hero footage / page beneath yet stays legible; **no full-width rule**; the mobile sheet is an opaque panel with hairline rows. Rejected on the way: glass capsule + mark + hover pill ("super ugly"), transparent-at-top (unreadable over the video), fully opaque bar + full hairline ("remove the color background… I'd remove the line")) + `account-menu.tsx`; `ui/` — `button` (pill; primary = accent fill + white text + inset shine + magnetic), `logo` (concentric-rings brand mark; sourced from the `public/brand` iconset PNGs), `icon` (stroke-based 1.5px line set), `rotating-word`, `noise-overlay`, `scroll-progress-path`, `magnetic-button`; `motion/` — `spring-reveal`, `breathing-dot`, `use-reduced-motion`.
 
-**Removed eras — do not document or resurrect:** the Feature-tour tabs, Trust strip marquee, standalone AI/terminal "state pill" section, Loop/DailyRun sections, and any Free-vs-Pro plan-card pair. They belong to the pre-2026-05 page and the pre-pivot product.
+**Removed eras — do not document or resurrect:** the Feature-tour tabs, Trust strip marquee, standalone AI/terminal "state pill" section, Loop/DailyRun sections, any Free-vs-Pro plan-card pair (pre-2026-05 / pre-pivot); and, retired 2026-08-17 with the statement-page reset: the **Transformation** portal scrub, **AppDemo/HeroWidget**, **Flywheel** app tour, **"A day in Locus"** placeholder (`#day-in-locus`), **Armor/Reactor** exosuit scrub, **FAQ** section, plus the never-rendered `depth` / `review` / `persona-section` and their helpers (`pinned-stage`, `use-frame-scrubber`, `device-frame`, `tilt-card`, `spotlight-border`, `parallax-image`, `clip-frame`, `app-screenshot`) and their `public/` frame sequences. All recoverable from git history (`68a2dc7` and earlier).
 
 ## Voice of the surface
 

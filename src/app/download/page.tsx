@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 export const metadata: Metadata = {
   title: "Download — Locus",
   description:
-    "Download Locus for macOS Tahoe. Install, sign in, and your 14-day trial starts inside the app.",
+    "Download Locus for macOS Tahoe. Install, sign in, and your 30-day trial starts inside the app.",
 }
 
 export default function DownloadPage() {

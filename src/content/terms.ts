@@ -4,7 +4,7 @@ export const terms: LegalContent = {
   title: "Terms of Service",
   intro:
     "These terms describe what you can expect when you use Locus — the macOS app and the website — and what we expect in return. By using the app or buying a subscription, you agree to these terms.",
-  lastUpdated: "2026-07-06",
+  lastUpdated: "2026-08-17",
   draft: true,
   sections: [
     {
@@ -13,7 +13,7 @@ export const terms: LegalContent = {
     },
     {
       heading: "Subscriptions and refunds",
-      body: "Locus is one plan, billed monthly or yearly via our payment processor, with an optional managed-AI add-on billed alongside it. Subscriptions renew automatically until cancelled from your account area. If Locus isn't for you within the first 30 days of a new subscription, email us and we'll issue a refund — no questions asked.",
+      body: "Locus is one plan, billed monthly or yearly via our payment processor. Remote credits for Locus Remote are optional, prepaid, bought separately in any amount, and are never part of the subscription or the trial. Subscriptions renew automatically until cancelled from your account area. If Locus isn't for you within the first 30 days of a new subscription, email us and we'll issue a refund — no questions asked.",
     },
     {
       heading: "Termination",

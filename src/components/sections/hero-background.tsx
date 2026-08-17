@@ -49,8 +49,8 @@ export function HeroBackground() {
       className="pointer-events-none absolute inset-0 -z-10 overflow-hidden bg-[var(--bg)]"
     >
       {/* Video / poster — the asset. Top edge runs full-bleed so the snow
-          spreads up under the navbar with no dark seam; the bottom takes a
-          long eased dissolve into the navy. The fade stays gentle through
+          spreads up under the navbar with no seam; the bottom takes a
+          long eased dissolve into the canvas. The fade stays gentle through
           ~88% so the penguin (walking near the bottom of frame) keeps its
           presence, then commits to full transparency at the edge. */}
       <div
@@ -66,7 +66,7 @@ export function HeroBackground() {
           <img
             src="/hero/glacier-walk-poster.jpg"
             alt=""
-            className="absolute inset-0 size-full object-cover object-center"
+            className="absolute inset-0 size-full object-cover object-center [filter:contrast(1.05)_saturate(0.9)]"
             decoding="async"
           />
         ) : (
@@ -79,30 +79,18 @@ export function HeroBackground() {
             loop
             playsInline
             preload="metadata"
-            className="absolute inset-0 size-full object-cover object-center"
+            className="absolute inset-0 size-full object-cover object-center [filter:contrast(1.05)_saturate(0.9)]"
           />
         )}
-        {/* Dim grade — pulls the bright snow down toward the page's register.
-            Lives inside the masked container so it follows the video's own
-            alpha and never tints the navy dissolve below. */}
+        {/* Dark overlay (Luis, 2026-08-17): plain black at partial opacity so
+            the bright footage reads as a dimmed scene against the light
+            canvas — no tint. Lives inside the masked container so it follows
+            the video's own alpha and never darkens the canvas dissolve. */}
         <div
           className="absolute inset-0"
-          style={{ background: "rgb(0 0 0 / 0.18)" }}
+          style={{ background: "rgb(0 0 0 / 0.45)" }}
         />
       </div>
-
-      {/* Cobalt grade — sits over the video footprint only. Restrained
-          tint that pulls the cool greys toward the brand accent without
-          dimming the snow. Light touch so the 1080p source reads crisp. */}
-      <div
-        className="absolute inset-0 md:left-auto md:right-0 md:w-[72%] lg:w-[68%] xl:w-[62%]"
-        style={{
-          background:
-            "color-mix(in oklab, var(--accent) 8%, transparent)",
-          mixBlendMode: "overlay",
-          opacity: 0.2,
-        }}
-      />
 
       {/* Desktop left-edge fade — a long, smooth taper so the snow spills
           gracefully into the text rail rather than terminating in a wall. */}
@@ -111,34 +99,6 @@ export function HeroBackground() {
         style={{
           background:
             "linear-gradient(to right, var(--bg) 0%, color-mix(in oklab, var(--bg) 86%, transparent) 12%, color-mix(in oklab, var(--bg) 55%, transparent) 30%, color-mix(in oklab, var(--bg) 22%, transparent) 52%, transparent 78%)",
-        }}
-      />
-
-      {/* Scattered light — a soft warm-white halo that escapes the video
-          and bleeds left into the text rail. Sits in screen-blend so it
-          adds light without flattening the navy. The elegant move. */}
-      <div
-        className="absolute inset-y-0 right-0 hidden md:block md:w-[82%] lg:w-[80%] xl:w-[74%]"
-        style={{
-          background:
-            "radial-gradient(ellipse 55% 80% at 75% 45%, color-mix(in oklab, white 12%, transparent) 0%, color-mix(in oklab, white 5%, transparent) 35%, transparent 70%)",
-          mixBlendMode: "screen",
-          filter: "blur(20px)",
-          opacity: 0.55,
-        }}
-      />
-
-      {/* Top-right bloom — a soft upward spread of snow-light that melts
-          the upper edge of the video into the navy above the navbar.
-          Kills the hard dark corner without re-introducing a fade band. */}
-      <div
-        className="absolute inset-x-0 top-0 hidden md:block h-[55%] md:right-0 md:left-auto md:w-[78%] lg:w-[74%] xl:w-[68%]"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 100% at 70% 0%, color-mix(in oklab, white 18%, transparent) 0%, color-mix(in oklab, white 8%, transparent) 30%, transparent 65%)",
-          mixBlendMode: "screen",
-          filter: "blur(28px)",
-          opacity: 0.85,
         }}
       />
 
@@ -155,7 +115,7 @@ export function HeroBackground() {
 
       {/* Text-rail ambient grid — quiet hairline lattice in the LEFT half
           on desktop so the text side isn't visually inert next to the video.
-          Scoped tighter and lower opacity now that the white halo bleeds in. */}
+          Kept quiet so the graded video stays the single point of interest. */}
       <div
         className="chroma-grid absolute inset-y-0 left-0 hidden md:block md:w-[42%] lg:w-[40%] xl:w-[38%] opacity-[0.32]"
       />

@@ -1,11 +1,6 @@
-import { AppDemo } from "@/components/sections/app-demo"
-import { ArmorReactor } from "@/components/sections/armor-reactor"
-import { Faq } from "@/components/sections/faq"
-import { Flywheel } from "@/components/sections/flywheel"
 import { Hero } from "@/components/sections/hero"
+import { Manifesto } from "@/components/sections/manifesto"
 import { Pricing } from "@/components/sections/pricing"
-import { SystemDemonstrationPlaceholder } from "@/components/sections/system-demonstration-placeholder"
-import { Transformation } from "@/components/sections/transformation"
 import { createServerClient } from "@/lib/supabase/server"
 
 export default async function Home() {
@@ -18,13 +13,8 @@ export default async function Home() {
   return (
     <>
       <Hero />
-      <Transformation />
-      <AppDemo />
-      <Flywheel />
-      <SystemDemonstrationPlaceholder />
-      <ArmorReactor />
+      <Manifesto />
       <Pricing isAuthed={isAuthed} />
-      <Faq />
     </>
   )
 }

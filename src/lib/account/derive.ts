@@ -23,7 +23,7 @@ const PLAN_LABELS: Record<DisplayPlan, PlanLabel> = {
 }
 
 const TRIAL_AVAILABLE_LABEL =
-  "Start 7-day Pro trial — Free for 7 days, no card needed"
+  "Start 30-day Pro trial — Free for 30 days, no card needed"
 
 function formatDate(iso: string | null): string | null {
   if (!iso) return null

@@ -1,5 +1,5 @@
 import { afterEach, describe, it, expect, vi } from "vitest"
-import { cleanup, render, screen } from "@testing-library/react"
+import { cleanup, render, screen, within } from "@testing-library/react"
 
 import type { AccountSnapshot } from "@/lib/account/snapshot"
 
@@ -80,11 +80,11 @@ describe("AccountPage", () => {
     expect(yearly.disabled).toBe(false)
 
     const trialButton = screen.getByRole("button", {
-      name: /start 7-day pro trial/i,
+      name: /start 30-day pro trial/i,
     }) as HTMLButtonElement
     expect(trialButton.disabled).toBe(false)
     expect(trialButton.textContent).toMatch(
-      /Free for 7 days, no card needed/i
+      /Free for 30 days, no card needed/i
     )
   })
 
@@ -115,7 +115,7 @@ describe("AccountPage", () => {
     expect(trialButton.disabled).toBe(true)
     expect(trialButton.textContent).toContain("April 1, 2026")
     expect(
-      screen.queryByRole("button", { name: /start 7-day pro trial/i })
+      screen.queryByRole("button", { name: /start 30-day pro trial/i })
     ).toBeNull()
   })
 
@@ -147,7 +147,7 @@ describe("AccountPage", () => {
         screen.getByText(/3 days left · expires april 30, 2026/i)
       ).toBeTruthy()
       expect(
-        screen.queryByRole("button", { name: /start 7-day pro trial/i })
+        screen.queryByRole("button", { name: /start 30-day pro trial/i })
       ).toBeNull()
       expect(
         screen.queryByRole("button", { name: /trial used on/i })
@@ -297,7 +297,7 @@ describe("AccountPage", () => {
 
     const banner = screen.getByTestId("welcome-banner")
     expect(banner.textContent).toMatch(
-      /you're on pro for the next 7 days\. make it count\./i
+      /you're on pro for the next 30 days\. make it count\./i
     )
     expect(banner.textContent).not.toMatch(/welcome to pro/i)
     expect(banner.textContent).not.toMatch(/refresh in a moment/i)
@@ -341,5 +341,56 @@ describe("AccountPage", () => {
     expect(
       screen.getByRole("button", { name: /sign out everywhere/i })
     ).toBeTruthy()
+  })
+
+  describe("Remote credits placeholder", () => {
+    const freeSnapshot: AccountSnapshot = {
+      email: "cook@example.com",
+      entitlement: {
+        user_id: "u1",
+        plan: "free",
+        source: null,
+        active_until: null,
+      },
+      subscription: null,
+      proTrial: null,
+    }
+    const proSnapshot: AccountSnapshot = {
+      email: "cook@example.com",
+      entitlement: {
+        user_id: "u1",
+        plan: "pro",
+        source: "subscription",
+        active_until: "2026-05-25T12:00:00.000Z",
+      },
+      subscription: {
+        user_id: "u1",
+        status: "active",
+        current_period_end: "2026-05-25T12:00:00.000Z",
+        cancel_at: null,
+        price_id: "price_monthly",
+      },
+      proTrial: null,
+    }
+
+    for (const [label, snapshot] of [
+      ["free", freeSnapshot],
+      ["paid", proSnapshot],
+    ] as const) {
+      it(`renders a static 'Remote credits — coming soon' card for a ${label} user`, async () => {
+        setSnapshot(snapshot)
+
+        const jsx = await AccountPage()
+        render(jsx)
+
+        const card = screen.getByTestId("remote-credits-card")
+        expect(card.textContent).toMatch(/remote credits/i)
+        expect(card.textContent).toMatch(/coming soon/i)
+        expect(card.textContent).toMatch(/any amount/i)
+        // Placeholder only: no purchase flow is wired yet.
+        expect(within(card).queryAllByRole("button")).toHaveLength(0)
+        expect(within(card).queryAllByRole("link")).toHaveLength(0)
+      })
+    }
   })
 })

@@ -9,12 +9,16 @@ import { ProCta } from "@/components/sections/pro-cta"
 import {
   pricing,
   type AiChoiceCard,
-  type FeatureTab,
   type PricingCadence,
 } from "@/content/pricing"
 import { cn } from "@/lib/utils"
 
 const EASE = "cubic-bezier(0.22, 1, 0.36, 1)"
+
+/** "$3" stays "3"; the yearly per-month equivalent "$2.50" keeps its cents. */
+export function formatPerMonth(perMonth: number): string {
+  return Number.isInteger(perMonth) ? String(perMonth) : perMonth.toFixed(2)
+}
 
 export function Pricing({
   headingLevel = "h2",
@@ -35,17 +39,24 @@ export function Pricing({
       className="border-t border-[var(--border)] bg-[var(--bg)]"
     >
       <PageShell className="py-24 md:py-36">
-        <SpringReveal className="flex max-w-[52ch] flex-col gap-4">
-          <span className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent-text)]">
-            {pricing.eyebrow}
-          </span>
-          <Heading
-            id="pricing-heading"
-            className="text-4xl font-semibold leading-[1.05] tracking-tighter text-[var(--fg)] md:text-5xl"
-          >
-            {pricing.headline}
-          </Heading>
-          <p className="text-base leading-relaxed text-[var(--muted-foreground)] md:text-lg">
+        {/* Same two-column rhythm as the price row below: headline owns the
+            left, the subline sits small in the right rail above the CTA. */}
+        <SpringReveal
+          as="div"
+          className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(18rem,28rem)] md:items-end md:gap-8"
+        >
+          <div className="flex flex-col gap-4">
+            <span className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent-text)]">
+              {pricing.eyebrow}
+            </span>
+            <Heading
+              id="pricing-heading"
+              className="text-3xl font-semibold leading-[1.05] tracking-tighter text-[var(--fg)] md:text-4xl"
+            >
+              {pricing.headline}
+            </Heading>
+          </div>
+          <p className="max-w-[40ch] text-sm leading-relaxed text-[var(--muted-foreground)] md:pb-1 md:pl-8">
             {pricing.subline}
           </p>
         </SpringReveal>
@@ -58,15 +69,11 @@ export function Pricing({
           />
         </SpringReveal>
 
-        <SpringReveal delay={220} as="div" className="mt-14 md:mt-20">
-          <FeatureTriptych />
-        </SpringReveal>
-
-        <SpringReveal delay={320} as="div" className="mt-12 md:mt-16">
+        <SpringReveal delay={220} as="div" className="mt-12 md:mt-16">
           <AiChoiceStrip />
         </SpringReveal>
 
-        <SpringReveal delay={400} as="div" className="mt-8">
+        <SpringReveal delay={300} as="div" className="mt-8">
           <PricingFooter />
         </SpringReveal>
       </PageShell>
@@ -97,7 +104,7 @@ function PriceRow({
 
         <div aria-live="polite" className="flex flex-col gap-2">
           <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
-            <span className="font-mono text-[clamp(4.75rem,14vw,7.5rem)] font-semibold leading-none tracking-tight text-[var(--fg)] tabular-nums">
+            <span className="font-mono text-[clamp(3.75rem,11vw,6rem)] font-semibold leading-none tracking-tight text-[var(--fg)] tabular-nums">
               $
               <span
                 key={cadence}
@@ -106,7 +113,7 @@ function PriceRow({
                   animation: `spring-reveal 360ms ${EASE} both`,
                 }}
               >
-                {option.perMonth}
+                {formatPerMonth(option.perMonth)}
               </span>
             </span>
             <span className="pb-3 text-sm text-[var(--muted-foreground)] md:pb-4">
@@ -227,71 +234,6 @@ function BillingToggle({
   )
 }
 
-function FeatureTriptych() {
-  return (
-    <div>
-      <span className="font-mono text-xs uppercase tracking-[0.18em] text-[var(--accent-text)]">
-        {pricing.featuresEyebrow}
-      </span>
-
-      <div className="mt-6 grid border-t border-[var(--border)] md:grid-cols-3">
-        {pricing.featureTabs.map((featureTab, i) => (
-          <FeatureColumn
-            key={featureTab.tab}
-            featureTab={featureTab}
-            index={i}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-function FeatureColumn({
-  featureTab,
-  index,
-}: {
-  featureTab: FeatureTab
-  index: number
-}) {
-  const isLast = index === pricing.featureTabs.length - 1
-
-  return (
-    <article
-      className={cn(
-        "border-b border-[var(--border)] py-7 md:border-b-0",
-        index > 0 && "md:border-l md:pl-8 lg:pl-10",
-        !isLast && "md:pr-8 lg:pr-10",
-        isLast && "border-b-0"
-      )}
-    >
-      <h3 className="font-mono text-[0.72rem] uppercase tracking-[0.18em] text-[var(--accent-text)]">
-        {featureTab.tab}
-      </h3>
-      <p className="mt-4 max-w-[16ch] text-balance text-2xl font-semibold leading-tight tracking-tight text-[var(--fg)] md:text-[1.7rem]">
-        {featureTab.tagline}
-      </p>
-      <ul className="mt-6 divide-y divide-[var(--border)] border-y border-[var(--border)]">
-        {featureTab.items.map((item, i) => (
-          <li
-            key={item}
-            className="grid grid-cols-[2.25rem_minmax(0,1fr)] items-start py-3 text-sm leading-relaxed text-[var(--fg)]"
-            style={{
-              animation: `spring-reveal 420ms ${EASE} both`,
-              animationDelay: `${160 + index * 80 + i * 50}ms`,
-            }}
-          >
-            <span className="font-mono text-[0.68rem] text-[var(--muted-foreground)] tabular-nums">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <span>{item}</span>
-          </li>
-        ))}
-      </ul>
-    </article>
-  )
-}
-
 function AiChoiceStrip() {
   return (
     <div className="border-y border-[var(--border)] py-6 md:py-7">
@@ -302,7 +244,7 @@ function AiChoiceStrip() {
         <div className="grid gap-4">
           <div className="grid gap-4 sm:grid-cols-2">
             <AiChoiceOption card={pricing.aiChoice.byo} tone="alive" />
-            <AiChoiceOption card={pricing.aiChoice.managed} tone="accent" />
+            <AiChoiceOption card={pricing.aiChoice.remote} tone="accent" />
           </div>
           <p className="max-w-3xl text-xs leading-relaxed text-[var(--muted-foreground)]">
             {pricing.aiChoice.note}

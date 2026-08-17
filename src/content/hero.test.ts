@@ -7,8 +7,9 @@ describe("hero content", () => {
     expect(hero.primaryCta.href).toBe("/download")
   })
 
-  it("secondary CTA anchors to the system demonstration", () => {
-    expect(hero.secondaryCta.href).toBe("#day-in-locus")
+  it("secondary CTA anchors to the manifesto", () => {
+    expect(hero.secondaryCta.href).toBe("#manifesto")
+    expect(hero.secondaryCta.label).toMatch(/manifesto/i)
   })
 
   it("has non-empty headline and subheadline strings", () => {
@@ -20,9 +21,10 @@ describe("hero content", () => {
     expect(hero.headline).toMatch(/missing OS for modern work/i)
   })
 
-  it("names the structural differentiators in the subheadline", () => {
-    expect(hero.subheadline).toMatch(/on your mac/i)
-    expect(hero.subheadline).toMatch(/AI you already pay for/i)
+  it("subheadline is the manifesto's spine, unadorned (Luis, 2026-08-17)", () => {
+    expect(hero.subheadline).toBe(
+      "One system you can trust with your whole day. Stay present today, learn from every day, and let the small changes compound."
+    )
   })
 
   it("does not call the product free — only the trial is free", () => {

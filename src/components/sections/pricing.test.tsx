@@ -5,7 +5,14 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/",
 }))
 
-import { Pricing } from "./pricing"
+import { formatPerMonth, Pricing } from "./pricing"
+
+describe("formatPerMonth", () => {
+  it("keeps whole-dollar prices bare and shows cents for the yearly equivalent", () => {
+    expect(formatPerMonth(3)).toBe("3")
+    expect(formatPerMonth(2.5)).toBe("2.50")
+  })
+})
 
 describe("<Pricing />", () => {
   afterEach(() => cleanup())
@@ -15,7 +22,7 @@ describe("<Pricing />", () => {
     expect(
       screen.getByRole("heading", { name: /one plan\. all of locus\./i })
     ).toBeDefined()
-    expect(screen.getByText(/14 days free, no card/i)).toBeDefined()
+    expect(screen.getByText(/30 days free, no card/i)).toBeDefined()
   })
 
   it("supports h1 rendering for the standalone pricing page", () => {
@@ -47,20 +54,20 @@ describe("<Pricing />", () => {
 
     expect(monthly.getAttribute("aria-checked")).toBe("true")
     expect(yearly.getAttribute("aria-checked")).toBe("false")
-    expect(screen.getByText("6")).toBeDefined()
+    expect(screen.getByText("3")).toBeDefined()
   })
 
-  it("shows the yearly per-month price and billed note by default", () => {
+  it("shows the yearly per-month equivalent and billed note by default", () => {
     const { container } = render(<Pricing />)
     expect(container.querySelector('[aria-live="polite"]')).toBeDefined()
-    expect(screen.getByText("4")).toBeDefined()
-    expect(screen.getByText(/\$48 billed once a year/i)).toBeDefined()
+    expect(screen.getByText("2.50")).toBeDefined()
+    expect(screen.getByText(/\$30 billed once a year/i)).toBeDefined()
   })
 
   it("switches to the monthly price when the monthly radio is clicked", () => {
     render(<Pricing />)
     fireEvent.click(screen.getByRole("radio", { name: /monthly/i }))
-    expect(screen.getByText("6")).toBeDefined()
+    expect(screen.getByText("3")).toBeDefined()
     expect(screen.getByText(/billed month to month/i)).toBeDefined()
     expect(
       screen.getByRole("radio", { name: /monthly/i }).getAttribute(
@@ -69,20 +76,20 @@ describe("<Pricing />", () => {
     ).toBe("true")
   })
 
-  it("surfaces the Save 33% chip on the yearly option", () => {
+  it("surfaces the 2-months-free chip on the yearly option", () => {
     render(<Pricing />)
-    expect(screen.getByText(/save 33%/i)).toBeDefined()
+    expect(screen.getByText(/2 months free/i)).toBeDefined()
   })
 
-  it("surfaces the 14-days-free chip and no-card trial note", () => {
+  it("surfaces the 30-days-free chip and no-card trial note", () => {
     render(<Pricing />)
-    expect(screen.getByText(/^14 days free$/i)).toBeDefined()
+    expect(screen.getByText(/^30 days free$/i)).toBeDefined()
     expect(screen.getByText(/no card required/i)).toBeDefined()
   })
 
   it("renders the CTA as an anchor when isAuthed=false", () => {
     render(<Pricing isAuthed={false} />)
-    const cta = screen.getByRole("link", { name: /start 14 days free/i })
+    const cta = screen.getByRole("link", { name: /start 30 days free/i })
     expect(cta.tagName).toBe("A")
     expect(cta.getAttribute("href")).toMatch(/\/login\?next=.*notice=signin/)
   })
@@ -90,43 +97,26 @@ describe("<Pricing />", () => {
   it("renders the CTA as a button when isAuthed=true", () => {
     render(<Pricing isAuthed />)
     expect(
-      screen.getByRole("button", { name: /start 14 days free/i }).tagName
+      screen.getByRole("button", { name: /start 30 days free/i }).tagName
     ).toBe("BUTTON")
   })
 
-  it("renders the AI choice rail with BYO included and managed as an add-on", () => {
+  it("renders the AI choice rail with BYO included and Locus Remote as prepaid credits", () => {
     render(<Pricing />)
     expect(screen.getByText(/bring your own ai/i)).toBeDefined()
-    expect(screen.getByText(/locus managed ai/i)).toBeDefined()
-    expect(screen.getByText(/optional · \$8\/mo/i)).toBeDefined()
+    expect(screen.getByText(/^locus remote$/i)).toBeDefined()
+    expect(screen.getByText(/optional · prepaid credits/i)).toBeDefined()
     expect(screen.getByText(/^included$/i)).toBeDefined()
+    expect(screen.getByText(/any amount, one-off/i)).toBeDefined()
   })
 
-  it("renders the three feature tabs and their decided feature lines", () => {
-    render(<Pricing />)
-    expect(screen.getByText(/everything, on day one/i)).toBeDefined()
-    expect(screen.getByRole("heading", { name: /^focus$/i })).toBeDefined()
-    expect(screen.getByRole("heading", { name: /^sentinel$/i })).toBeDefined()
-    expect(screen.getByRole("heading", { name: /^review$/i })).toBeDefined()
-    expect(screen.getByText(/declare intent\. work it\./i)).toBeDefined()
-    expect(screen.getByText(/see where the day really goes\./i)).toBeDefined()
-    expect(screen.getByText(/learn what actually moved\./i)).toBeDefined()
-    expect(
-      screen.getByText(/timed sessions with a live focus score/i)
-    ).toBeDefined()
-    expect(screen.getByText(/plan the day around your calendar/i)).toBeDefined()
-    expect(
-      screen.getByText(/quiet activity logging between sessions/i)
-    ).toBeDefined()
-    expect(
-      screen.getByText(/budgets for the apps that eat your time/i)
-    ).toBeDefined()
-    expect(
-      screen.getByText(/daily, weekly, and monthly digests/i)
-    ).toBeDefined()
-    expect(
-      screen.getByText(/disagree — it remembers your corrections/i)
-    ).toBeDefined()
+  it("does not render a feature list between the price and the AI rail", () => {
+    const { container } = render(<Pricing />)
+    expect(container.textContent).not.toMatch(/everything, on day one/i)
+    expect(screen.queryByRole("heading", { name: /^focus$/i })).toBeNull()
+    expect(screen.queryByRole("heading", { name: /^sentinel$/i })).toBeNull()
+    expect(screen.queryByRole("heading", { name: /^review$/i })).toBeNull()
+    expect(container.textContent).not.toMatch(/timed sessions/i)
   })
 
   it("does not render removed pricing feature claims", () => {
@@ -140,6 +130,9 @@ describe("<Pricing />", () => {
     expect(container.textContent).not.toMatch(/google calendar sync/i)
     expect(container.textContent).not.toMatch(/drift catch/i)
     expect(container.textContent).not.toMatch(/by email/i)
+    expect(container.textContent).not.toMatch(/managed ai/i)
+    expect(container.textContent).not.toMatch(/\$8\b/)
+    expect(container.textContent).not.toMatch(/14 days/i)
   })
 
   it("renders the tertiary download link pointing to /download", () => {

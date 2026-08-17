@@ -1,6 +1,6 @@
 # Product Marketing Context
 
-*Last updated: 2026-07-06*
+*Last updated: 2026-08-17 (repricing + Locus Remote credits + 30-day trial; body otherwise 2026-07-06)*
 *Status: V2 — full rewrite against the product source of truth (`../pomodoro-preview`). Supersedes V1 (2026-04-25), which described a pre-pivot Locus: server-orchestrated AI, Free/Pro split, "remove on-device claims." All of that is gone. If a claim here conflicts with the product repo, the product repo wins — see "Source of truth" at the bottom.*
 
 ## Product Overview
@@ -22,17 +22,17 @@
 
 **Product type:** Native macOS app, **macOS 26 (Tahoe) or later** (verified: `MACOSX_DEPLOYMENT_TARGET = 26.0`). B2C single-seat subscription. Direct distribution with Sparkle auto-update — not the Mac App Store. Currently shipping v1.1.0. Optional Apple Watch companion. *(The old "iOS companion end of Q2 2026" claim has no basis in the product repo — treat as unverified; see Open items.)*
 
-## Business model (committed 2026-07-06)
+## Business model (repriced 2026-08-17 — supersedes the 2026-07-06 numbers)
 
 - **No free tier.** One plan, everything included — Locus charges for the software, not for AI usage.
-- **$6/mo month-to-month, or $4/mo billed yearly ($48/yr, save 33%).** Pricing UI defaults to yearly with the per-month price shown.
-- **14-day free trial, started from inside the app, no card required.**
-  - ⚠️ **GAP:** the shipped app + backend still implement a **7-day** auto-trial claimed on first sign-in (`pomodoro-preview/docs/design-docs/entitlements.md`, `src/lib/account/derive.ts` here). 14 days is the decision; app, API, and account-page copy must catch up before launch.
-- **Bring-your-own AI included:** users plug in the AI they already pay for — a Claude Code or Codex subscription, or an Anthropic/OpenAI/Fireworks/OpenRouter API key.
-- **Optional add-on: Locus managed AI — $8/mo in credits** on frontier models, top up from the account area. Presented as an add-on rail ("Choose your AI"), not a second plan tier. (Internally this is the "Remote" plan of ADR-0003; the only capability difference is managed compute.)
-- **30-day no-questions refund.** *(GAP: `src/content/terms.ts` still says 14 days.)*
+- **$3/mo month-to-month, or $30/yr** (shown as the **$2.50/mo** equivalent; savings chip **"2 months free"** — a year costs ten monthly payments). Pricing UI defaults to yearly with the per-month price shown. The old $6/$4 ($48/yr, "save 33%") numbers are retired.
+- **Framing (Coach voice, humble, not premium):** *"A small fee that keeps the basic infrastructure running and lets us keep maintaining the app and building new features."* Mirrors the app's own paywall line ("Locus is cheap — a low usage fee that maintains the app and keeps development going").
+- **30-day free trial, started from inside the app, no card required.** ✅ Aligned 2026-08-17 across app (`TrialConfiguration.lengthInDays = 30`), `locus-api` (`TRIAL_DURATION_MS` = 30 d), and this repo (`/api/pro-trial/start`, `derive.ts`, `/account` copy). The July "14 days" decision was overtaken by the app shipping 30.
+- **Bring-your-own AI included:** users plug in the AI they already pay for — a Claude Code or Codex subscription, or an API key. No extra cost, no per-token markup.
+- **Optional: Locus Remote, paid with prepaid Remote credits** (product ADR-0010, 2026-08-14). One-off purchases of **any amount**, metered as the AI is used ("the more you use, the more it draws"). **Never part of the plan or the trial; not a tier.** Presented as the second card of the "Choose your AI" rail. Naming adopted from the app: **"Locus Remote"**, **"Remote credits"**, verb **"Buy credits"**. The July "$8/mo Locus managed AI" add-on is retired. Purchase flow lives in the Mac app (Settings → Account) + `locus-api`; the site's `/account` shows a static "Remote credits — coming soon" card only.
+- **30-day no-questions refund.** (`terms.ts` matches.)
 - **Billing: Stripe** — checkout + webhooks live in this repo (getlocus.tech). Paddle is fully gone (zero references in product code).
-- **Trial expiry / lapse:** the whole app swaps to a read-only lock screen — no per-feature gates, no data hostage. Everything stays on the user's Mac and exportable ("Reveal my data in Finder" *is* the export).
+- **Trial expiry / lapse:** the whole app swaps to a read-only lock screen — no per-feature gates, no data hostage. Everything stays on the user's Mac and exportable ("Reveal my data in Finder" *is* the export). Running out of Remote credits only pauses Locus Remote — BYO AI and the rest of the app keep working.
 
 ## Target Audience
 
@@ -97,15 +97,15 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 
 **Naming rules:**
 - **User-side harnesses are named freely** in copy: Claude Code, Codex, Anthropic/OpenAI API keys — they're literally UI options and a selling point.
-- **Locus's own upstream vendor for managed AI stays unnamed** in public copy ("frontier models" — internally: Fireworks/GLM, OpenRouter fallback). This is the surviving half of the old providers-unnamed rule.
+- **Locus's own upstream vendor for Locus Remote stays unnamed** in public copy ("frontier models" — internally: Fireworks/GLM, OpenRouter fallback). This is the surviving half of the old providers-unnamed rule.
 
 ## Objections
 
 | Objection | Response |
 |-----------|----------|
 | "Another focus app — I've tried five." | It's not a timer with charts. Show the loop: the day gets observed, interpreted, and turned into tomorrow's structure — by an agent you can read, edit, and undo. Pomodoro is literally one option inside one tab. |
-| "Why pay when there are free timers?" | No free tier and no apology: 14 days free to feel the loop compound, then $4–6/mo — for the software. The AI runs on the subscription you already own, so there's no per-token markup hiding in the price. |
-| "What does the AI see / where does my data go?" | Your data lives on your Mac. With BYO, prompts go to your own AI account. With managed AI, our proxy stores nothing — it can't even replay what you said. Specific, checkable claims — not "fully private" hand-waving. |
+| "Why pay when there are free timers?" | No free tier and no apology: 30 days free to feel the loop compound, then $3/mo or $30/yr — a small fee for the software and its upkeep. The AI runs on the subscription you already own, so there's no per-token markup hiding in the price. |
+| "What does the AI see / where does my data go?" | Your data lives on your Mac. With BYO, prompts go to your own AI account. With Locus Remote, our relay stores nothing — it can't even replay what you said; it only meters your credits. Specific, checkable claims — not "fully private" hand-waving. |
 | "I don't want an app watching me." | Sentinel observes only off-session foreground app/window titles, on your machine, for you — no keystrokes, no screenshots, no URLs, nothing surfaced to anyone else. And the register is observation, not judgment: nothing scores you outside a session you declared. |
 | "macOS only?" | Yes — macOS 26 (Tahoe) or later, and unapologetically native. Windows/Linux not planned. (iOS companion: unverified, don't promise — see Open items.) |
 | "What if I miss a day or skip sessions?" | Nothing breaks, nothing scolds. Rhythm commitments don't roll over debt; the weekly digest tells the truth without shaming. |
@@ -143,7 +143,8 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 - shame, punish, lock, block — Cold Turkey vocabulary, wrong register.
 - "fully private" / "totally anonymous" — sweeping; use the specific checkable claims instead.
 - "AI-powered" as a badge — show what the agent does.
-- Upstream model-vendor names for managed AI (Fireworks, GLM, OpenRouter) — internal only.
+- Upstream model-vendor names for Locus Remote (Fireworks, GLM, OpenRouter) — internal only.
+- "Locus managed AI", "$8/mo", "$48/yr", "save 33%", "14-day trial" — retired 2026-08-17; guarded by `src/content/deadVocabulary.test.ts`.
 - Stoic / clinical / editorial flourishes — the previously flagged "amateur feel."
 - ~~"on-device," "locally," "never leaves your Mac"~~ — **un-banned 2026-07-06.** These are now true and encouraged where concrete. (Old ban retained here only so nobody "restores" it from stale docs.)
 
@@ -166,7 +167,7 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 | Presence | Nudge-loudness control: quiet / normal / frequent templates over five nudge families. "How Locus speaks." |
 | The breathing dot | Menu-bar liveness mark while a session runs; echoed in the concentric-rings brand mark. |
 | BYO / harness | Bring-your-own AI: Claude Code or Codex subscription, or an API key, driven by Locus as its engine. |
-| Managed AI / Remote | Locus-supplied compute through a no-prompt-storage proxy; the $8/mo credits add-on. |
+| Locus Remote / Remote credits | Locus-supplied compute through a no-prompt-storage relay, paid with prepaid one-off any-amount credits metered by use. Optional; never part of the plan or trial. |
 | Model lanes (fast/deep) | Internal routing: quick classifications on the fast lane, agentic work on the deep lane. |
 
 ## Brand Voice
@@ -186,38 +187,44 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 | Tomorrow gets structured from today | Smart Plan drafted from the objective + what the system learned; digest → suggested structure. |
 | The AI is yours | Routines as readable files; Memory as an editable wiki; Undo on every autonomous action. |
 | Your data stays yours | Files on disk you can reveal in Finder; lock-screen state still lets you export everything. |
-| Runs on the AI you already pay for | Provider picker: Claude Code, Codex, API keys — or managed credits. |
+| Runs on the AI you already pay for | Provider picker: Claude Code, Codex, API keys — or Locus Remote on prepaid credits. |
 | Native Mac craft | Menu-bar widget, voice input, Sparkle updates, Tahoe APIs, no Electron. |
 
 ## Goals
 
-**Business goal:** drive Mac downloads → in-app 14-day trial → paid conversions.
+**Business goal:** drive Mac downloads → in-app 30-day trial → paid conversions.
 **Funnel:** download-first (confirmed; no waitlist).
 **Conversion actions:** primary "Download for macOS" (hero + pricing); secondary: scroll to the demonstration section. Note: with no free tier, CTA copy must stop saying "free" about the product — the *trial* is free, the download is just the download.
 
 ---
 
+## Live page state (2026-08-17 — statement-page reset)
+
+`/` is now **Hero → Manifesto → Pricing** (+ footer), ~4,800px at 1440w — 32% of the previous ~14,900px. Same day the site flipped to a **light theme** (canvas `#ECF1F8`, navy ink, Cobalt accent; hero footage graded toward Cobalt so it doesn't vanish on white) and type sizes came down a notch (manifesto reads at 15/16px). Retired the same day (code + media deleted, git-recoverable): Transformation portal scrub, AppDemo/HeroWidget, Flywheel tour, "A day in Locus" placeholder, Armor/Reactor scrub, and the **FAQ** section (its trial/refund/privacy answers remain covered by the pricing assurances, `/download`, `/privacy`, `/terms`; `src/content/faq.ts` is gone). Nav is Manifesto · Pricing · Changelog; hero secondary CTA is "Read the manifesto" → `#manifesto`. Hero subhead is now the manifesto's spine and nothing else: *"One system you can trust with your whole day. Stay present today, learn from every day, and let the small changes compound."* — Luis dropped the local-first/BYO sentence from the hero (those live in the manifesto decisions and the pricing rail). "Work got faster. Life got fuller…" is retired.
+
+**Manifesto** (`src/content/manifesto.ts`, Luis's copy, superlogical.com as the model): "We are building a system you can trust with [your whole day.]" → born-of-necessity opening → GTD trusted-system idea → "Every day is a battle" (present to win the day, learn to win the war) + fragmentation of intent/plan/actual/rest → two ideas as pull-quotes (compound interest "eighth wonder" — attribution line reads *Credited to Albert Einstein (unconfirmed)*; James Clear "fall to the level of your systems" — *Atomic Habits*) → the app's three parts, in the app's own sidebar words (**Execution** = Focus + Watch; **Inputs** = Notes/Tasks/Commitments; **AI** = Intelligence/Memory/Flywheel) → six design decisions (local-first · BYO AI: "plug in a great harness — Claude Code or Codex — as the brain; Locus is the armor: sensors, tools, UI" · choose your model: subscription, API key via a provider like OpenRouter, or Locus Remote · day feedback loop · routines are files · memory you can correct) → pointer to the **design ideas blog** (Luis is building it; `manifesto.blog.href` is unset until then, so it renders as plain text) → "We hope you enjoy it. — Luis" (first name only, on request). Deliberately keeps his register ("battle/war", "gigantic noise") — a signed letter, not section copy. Deep-dive pages are **not** on this site.
+
 ## Page-copy gap analysis (the punch list for the landing-update pass)
 
 Verified against the live code 2026-07-06. **No page code changes in this doc pass — this is the blueprint.** Full detail in `PRD_landing_redesign.md`.
 
-1. **`src/content/faq.ts`** — "free Loop tier," "Pro AI features," free/Pro offline split: all dead concepts. "Friday review… in-app and by email": email digests are disabled — in-app only. Privacy answer describes the old backend-orchestrated architecture — rewrite around local-first + BYO. The macOS Tahoe requirement claim is **correct** — keep.
-2. **`src/content/download.ts`** — "free DMG… sign in when you want your account, trial, or Pro features" → no Pro; reframe as "download, 14-day trial starts in-app."
-3. **`src/content/privacy.ts` / `terms.ts`** — "Pro" subscription language throughout; terms says 14-day refund (decision: 30-day); privacy can now truthfully go much further on local-first.
-4. **`src/lib/account/derive.ts`** — "Free/Trial/Pro" labels, hardcoded "Start 7-day Pro trial" → new license model (`trialing / standard / remote / expired`; marketing shows it as one plan + AI add-on), 14 days. Backend + app must move together.
+1. ~~**`src/content/faq.ts`**~~ — ✅ moot 2026-08-17: FAQ section and content module deleted with the statement-page reset. (Was: "free Loop tier," "Pro AI features," free/Pro offline split: all dead concepts. "Friday review… in-app and by email": email digests are disabled — in-app only. Privacy answer describes the old backend-orchestrated architecture — rewrite around local-first + BYO. The macOS Tahoe requirement claim is **correct** — keep.)
+2. **`src/content/download.ts`** — "free DMG… sign in when you want your account, trial, or Pro features" → no Pro; reframe as "download, 30-day trial starts in-app." ✅ done 2026-08-17.
+3. **`src/content/privacy.ts` / `terms.ts`** — "Pro" subscription language throughout; refund is 30-day ✓; both name Locus Remote / Remote credits since 2026-08-17; privacy can now truthfully go much further on local-first.
+4. **`src/lib/account/derive.ts`** — "Free/Trial/Pro" labels, hardcoded "Start 7-day Pro trial" → new license model (`trialing / standard / remote / expired`; marketing shows it as one plan + optional Remote credits), 30 days. ✅ Trial length aligned 2026-08-17; "Pro" label cleanup still open.
 5. **`src/content/hero.ts` + `layout.tsx` + OG images** — ✅ RESOLVED 2026-07-06: hero stays "The missing OS for modern work" with the "AI-native execution OS" badge (user-locked); subhead extended to carry local-first + BYO; "free" removed from CTAs.
-6. **`src/content/pricing.ts`** — structurally already right (one plan, 14 days, $6/$4, $8 AI rail ✓). Fix: "Friday review… and by email" (email off); "Live AI classification" wording fine; consider surfacing Routines/Memory/Autonomy in the feature list.
+6. **`src/content/pricing.ts`** — repriced 2026-08-17 (one plan, 30 days, $3/$30, Locus Remote credits rail ✓). Same day, user cut the "Everything, on day one" Focus/Sentinel/Review feature triptych from the section ("doesn't belong there") and asked for the whole section to stay concise: headline → price row → Choose-your-AI rail → assurances. Feature storytelling lives in the other sections, not on the price. Fix: "Friday review… and by email" (email off); "Live AI classification" wording fine; consider surfacing Routines/Memory/Autonomy in the feature list.
 7. **Missing from the page entirely:** the July headline features — Routines, Memory, Autonomy+Undo, Presence — and any screenshots of them (current 8 screenshots predate July; no Routines/Memory/Presence captures exist yet in `pomodoro-preview/marketing/`).
-8. **Unrendered sections** — `persona-section.tsx` (Sara Mendes), `depth.tsx`, `review.tsx` exist but aren't on `page.tsx`; decide keep/cut during the rewrite.
+8. ~~**Unrendered sections**~~ — ✅ cut 2026-08-17: `persona-section.tsx`, `depth.tsx`, `review.tsx` deleted.
 
 ## Open items
 
 1. ~~Final public category label + hero~~ — ✅ decided 2026-07-06: "The missing OS for modern work." + "AI-native Execution OS" both stay (user call: the ambitious category claim wins the hero; descriptive truth lives in the subhead).
-2. **Trial 7→14 days** — app (`TrialActivator`), API, and `derive.ts` need the change; until then the account page contradicts the pricing page.
+2. ~~Trial 7→14 days~~ — ✅ RESOLVED 2026-08-17: everything is 30 days (app, locus-api, site API, `derive.ts`, `/account`).
 3. **iOS companion** — old claim, no evidence in product repo. Confirm with the user before it appears anywhere.
 4. **New screenshots** — Routines, Memory, Presence captures needed from `pomodoro-preview/marketing/` pipeline.
 5. **Real customer quotes** — capture during beta; unblocks social proof.
-6. **Stripe prices** — confirm live Stripe products match $6/$4/$8 before launch.
+6. **Stripe prices** — create/confirm the **$3 monthly** and **$30 yearly** Stripe prices and point `STRIPE_PRICE_MONTHLY` / `STRIPE_PRICE_YEARLY` at them (Vercel env, not in repo). No Stripe product for Remote credits on the site — that flow is app + `locus-api`.
 
 ---
 
