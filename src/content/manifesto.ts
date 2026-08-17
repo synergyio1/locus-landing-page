@@ -3,6 +3,11 @@
 // signed. Copy is Luis's — keep his phrasing ("battle / war", "gigantic noise")
 // even where it sits a notch outside "engineered calm".
 //
+// Inline emphasis: wrap a phrase in ==double equals== and the letter draws an
+// ink underline under it (lib/inline-marks.ts → ui/ink-underline.tsx). Reserve
+// it for the letter's thesis lines — a couple in the whole piece, never inside
+// a pull-quote — or the emphasis stops meaning anything.
+//
 // The three app parts mirror the app's own sidebar families
 // (LocusUI/SidebarTab.swift: Execution · Inputs · AI) — keep them in lockstep.
 
@@ -74,11 +79,11 @@ export const manifesto: ManifestoContent = {
   blocks: [
     {
       kind: "p",
-      text: "Locus was born out of necessity: a system to help us deal with the fast, noisy, high-stress times we increasingly live in.",
+      text: "Locus was born out of necessity: ==a system to help us deal with the fast, noisy, high-stress times we increasingly live in==.",
     },
     {
       kind: "p",
-      text: "The starting point was an old idea from David Allen's Getting Things Done: you need one system you can trust with everything — every to-do, every objective, every thing you already did — so your mind can stop running the meta-strategy in the background and be present in what is in front of you, as fully as possible.",
+      text: "The starting point was an old idea from David Allen's Getting Things Done: you need one system you can trust with everything — every to-do, every objective, every thing you already did — ==so your mind can stop running the meta-strategy in the background and be present== in what is in front of you, as fully as possible.",
     },
     { kind: "h", text: "Every day is a battle" },
     {
@@ -87,7 +92,7 @@ export const manifesto: ManifestoContent = {
     },
     {
       kind: "p",
-      text: "What made it harder, in our own days, was fragmentation. There is what you want to achieve: tasks, projects, goals. There is what you plan in order to get there. There is what you actually do. And there is the rest of the day.",
+      text: "What makes it harder still is that the bridge between the two has to be built in the middle of the daily battleground — from your goals for the months and years ahead to how you are actually performing. There is what you want to achieve: tasks, projects, goals. There is what you plan in order to get there. There is what you actually do.",
     },
     {
       kind: "p",
@@ -95,7 +100,7 @@ export const manifesto: ManifestoContent = {
     },
     {
       kind: "p",
-      text: "We did not think there was a good way, or a good app, that used all of this rich context to help us win the day and, day after day, the war. So we built one.",
+      text: "We never found what we thought a great solution would look like: one that used all of this rich context to help us win the day and, day after day, the war. So we built one.",
     },
     { kind: "h", text: "Two ideas behind the design" },
     {
@@ -110,7 +115,7 @@ export const manifesto: ManifestoContent = {
     {
       kind: "quote",
       text: "Compound interest is the eighth wonder of the world. He who understands it, earns it; he who doesn't, pays it.",
-      attribution: "Credited to Albert Einstein (unconfirmed)",
+      attribution: "Credited to Albert Einstein",
     },
     {
       kind: "p",

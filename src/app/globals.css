@@ -141,6 +141,33 @@ details[open] > .faq-collapse {
   grid-template-rows: 1fr;
 }
 
+/* Ink underline (ui/ink-underline.tsx): a Cobalt pen stroke under a phrase.
+   The stroke is one background gradient sized against the *unbroken* inline
+   box (box-decoration-break: slice, the default), so a wrapped phrase draws
+   line one first, then line two — and only its width animates. Faint alpha
+   ramps at both ends soften the tips like a pen lifting off. It sits at the
+   bottom of the content area, clear of descenders (a low, modern underline). */
+.ink-underline {
+  --ink-underline-thickness: 0.11em;
+  --ink-underline-tip: 0.35em;
+  background-image: linear-gradient(
+    to right,
+    transparent,
+    var(--accent) var(--ink-underline-tip),
+    var(--accent) calc(100% - var(--ink-underline-tip)),
+    transparent
+  );
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% var(--ink-underline-thickness);
+  padding-bottom: 0.06em;
+  transition: background-size 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ink-underline[data-drawn="true"] {
+  background-size: 100% var(--ink-underline-thickness);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
