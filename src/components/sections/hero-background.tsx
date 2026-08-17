@@ -131,7 +131,7 @@ export function HeroBackground() {
         className="absolute inset-0 md:hidden"
         style={{
           background:
-            "linear-gradient(180deg, color-mix(in oklab, var(--bg) 55%, transparent) 0px, color-mix(in oklab, var(--bg) 70%, transparent) 96px, color-mix(in oklab, var(--bg) 84%, transparent) 140px, color-mix(in oklab, var(--bg) 88%, transparent) 300px, color-mix(in oklab, var(--bg) 86%, transparent) 470px, color-mix(in oklab, var(--bg) 34%, transparent) 545px, color-mix(in oklab, var(--bg) 14%, transparent) 620px, color-mix(in oklab, var(--bg) 10%, transparent) 100%)",
+            "linear-gradient(180deg, color-mix(in oklab, var(--bg) 55%, transparent) 0px, color-mix(in oklab, var(--bg) 70%, transparent) 96px, color-mix(in oklab, var(--bg) 84%, transparent) 140px, color-mix(in oklab, var(--bg) 88%, transparent) 300px, color-mix(in oklab, var(--bg) 86%, transparent) 470px, color-mix(in oklab, var(--bg) 30%, transparent) 530px, color-mix(in oklab, var(--bg) 12%, transparent) 600px, color-mix(in oklab, var(--bg) 10%, transparent) 100%)",
         }}
       />
 
