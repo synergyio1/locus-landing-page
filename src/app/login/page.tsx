@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation"
 
+import { authCopy } from "@/content/auth"
 import { createServerClient } from "@/lib/supabase/server"
 
+import { AuthLayout } from "./auth-layout"
 import { LoginForm } from "./login-form"
 
 type PageProps = {
@@ -40,18 +42,13 @@ export default async function LoginPage({ searchParams }: PageProps) {
   }
 
   return (
-    <section className="mx-auto max-w-md px-6 py-16">
-      <h1 className="text-3xl font-semibold tracking-tight">Sign in to Locus</h1>
-      <p className="mt-2 text-sm text-[var(--fg)]/60">
-        Welcome back — pick up where you left off.
-      </p>
-      <div className="mt-8">
-        <LoginForm
-          next={safeNext}
-          errorMessage={errorMessageFor(error)}
-          noticeMessage={noticeMessageFor(notice)}
-        />
-      </div>
-    </section>
+    <AuthLayout copy={authCopy.login}>
+      <LoginForm
+        next={safeNext}
+        errorMessage={errorMessageFor(error)}
+        noticeMessage={noticeMessageFor(notice)}
+        submitLabel={authCopy.login.submitLabel}
+      />
+    </AuthLayout>
   )
 }

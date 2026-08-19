@@ -48,7 +48,7 @@ export default async function AccountPage({
         : null
 
   return (
-    <section className="mx-auto max-w-2xl px-6 py-16">
+    <section className="mx-auto max-w-2xl px-6 pt-32 pb-24 md:pt-40 md:pb-32">
       {welcomeKind === "paid" ? (
         <div
           role="status"

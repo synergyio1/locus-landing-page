@@ -63,14 +63,25 @@ describe("LoginPage", () => {
     expect(emailInput.getAttribute("type")).toBe("email")
   })
 
-  it("renders Google and Apple sign-in buttons", async () => {
+  it("renders the Google sign-in button", async () => {
     authState.user = null
 
     const jsx = await LoginPage({ searchParams: Promise.resolve({}) })
     render(jsx)
 
     expect(screen.getByRole("button", { name: /google/i })).toBeTruthy()
-    expect(screen.getByRole("button", { name: /apple/i })).toBeTruthy()
+  })
+
+  // Apple sign-in was never configured (Supabase has the provider disabled and no
+  // Services ID / .p8 exists), and the macOS app dropped it in 2026-05. The button
+  // errored on click, so it is gone; this asserts it stays gone.
+  it("renders no Apple sign-in button", async () => {
+    authState.user = null
+
+    const jsx = await LoginPage({ searchParams: Promise.resolve({}) })
+    render(jsx)
+
+    expect(screen.queryByRole("button", { name: /apple/i })).toBeNull()
   })
 
   it("renders a magic-link submit button", async () => {

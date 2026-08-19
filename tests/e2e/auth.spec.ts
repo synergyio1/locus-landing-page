@@ -25,7 +25,7 @@ test("unauthenticated /billing redirects to /login?next=/billing", async ({
   )
 })
 
-test("login page renders OAuth buttons and magic-link form", async ({
+test("login page renders the Google button and magic-link form", async ({
   page,
 }) => {
   await page.goto("/login")
@@ -33,9 +33,11 @@ test("login page renders OAuth buttons and magic-link form", async ({
   await expect(
     page.getByRole("button", { name: /continue with google/i })
   ).toBeVisible()
+  // Apple sign-in is not configured on the Supabase project and the button used to
+  // error on click, so it must not come back.
   await expect(
-    page.getByRole("button", { name: /continue with apple/i })
-  ).toBeVisible()
+    page.getByRole("button", { name: /apple/i })
+  ).toHaveCount(0)
   await expect(page.getByLabel(/email/i)).toBeVisible()
   await expect(
     page.getByRole("button", { name: /send magic link/i })
@@ -47,9 +49,6 @@ test("signup page renders the same form as login", async ({ page }) => {
 
   await expect(
     page.getByRole("button", { name: /continue with google/i })
-  ).toBeVisible()
-  await expect(
-    page.getByRole("button", { name: /continue with apple/i })
   ).toBeVisible()
 })
 
