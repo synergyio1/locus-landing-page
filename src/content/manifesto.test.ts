@@ -47,13 +47,16 @@ describe("manifesto content", () => {
       expect(hasBalancedInlineMarks(text), text).toBe(true)
     }
     // Marks are reserved for the letter's thesis lines; Luis picked this set
-    // with the "struggle" rewrite (2026-08-19).
+    // with the "struggle" rewrite (2026-08-19), then trimmed it the same day:
+    // clause-length marks only (no whole-paragraph underlines, no restatements),
+    // plus the one line the tools section hangs on.
     expect(paragraphs.flatMap(listInlineMarks)).toEqual([
       "a system to help us deal with the fast, noisy, high-stress times we increasingly live in",
       "so your mind can stop running the meta-strategy in the background and be present",
-      "To win the day, you have to be present — head down, in the work. A soldier. To win the decade, you have to lift your head — set the strategy, learn from the day, connect it to the ones before it. A general.",
-      "Both have to be there, and both have to be good.",
-      "It's a delicate equilibrium. Willpower alone rarely holds it.",
+      "To win the day, you have to be present",
+      "To win the decade, you have to lift your head",
+      "Willpower alone rarely holds it.",
+      "Nothing holds all of it at once — so nothing can learn from it.",
       "Small improvements, repeated, are the whole game.",
       "For anything that matters, the system decides — not the ambition.",
     ])
@@ -166,7 +169,7 @@ describe("manifesto content", () => {
     expect(tools.text).toMatch(/context/)
     expect(tools.text).toMatch(/insight/)
     expect(tools.text).toMatch(/It is all one day, yet today's tools split it into separate apps\./)
-    expect(tools.text).toMatch(/so nothing can learn from it\.$/)
+    expect(tools.text).toMatch(/so nothing can learn from it\.==$/)
     expect(built.text).toMatch(/^We never found what we thought a great solution would look like/)
     expect(built.text).toMatch(/So we built one\.$/)
   })

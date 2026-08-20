@@ -116,11 +116,11 @@ export const manifesto: ManifestoContent = {
     },
     {
       kind: "p",
-      text: "==To win the day, you have to be present — head down, in the work. A soldier. To win the decade, you have to lift your head — set the strategy, learn from the day, connect it to the ones before it. A general.==",
+      text: "==To win the day, you have to be present== — head down, in the work. A soldier. ==To win the decade, you have to lift your head== — set the strategy, learn from the day, connect it to the ones before it. A general.",
     },
     {
       kind: "p",
-      text: "You don't get to pick which one you are. You're both, at once, permanently — and neither one covers for the other. A bad plan loses no matter how well you fight it. A good plan loses to a day you never showed up for. ==Both have to be there, and both have to be good.==",
+      text: "You don't get to pick which one you are. You're both, at once, permanently — and neither one covers for the other. A bad plan loses no matter how well you fight it. A good plan loses to a day you never showed up for. Both have to be there, and both have to be good.",
     },
     {
       kind: "p",
@@ -128,7 +128,7 @@ export const manifesto: ManifestoContent = {
     },
     {
       kind: "p",
-      text: "==It's a delicate equilibrium. Willpower alone rarely holds it.==",
+      text: "It's a delicate equilibrium. ==Willpower alone rarely holds it.==",
     },
     {
       kind: "p",
@@ -137,7 +137,7 @@ export const manifesto: ManifestoContent = {
     { kind: "h", id: "the-problem-with-todays-tools", text: "The problem with today's tools" },
     {
       kind: "p",
-      text: "Most of the tools we rely on were built before AI, and they still barely use what it can now do: take in huge amounts of context and help you draw real insight from it. It is all one day, yet today's tools split it into separate apps. A to-do list holds the intent and never sees the outcome. A calendar holds the plan and never learns what happened. A timer counts minutes without knowing what they were for. Nothing holds all of it at once — so nothing can learn from it.",
+      text: "Most of the tools we rely on were built before AI, and they still barely use what it can now do: take in huge amounts of context and help you draw real insight from it. It is all one day, yet today's tools split it into separate apps. A to-do list holds the intent and never sees the outcome. A calendar holds the plan and never learns what happened. A timer counts minutes without knowing what they were for. ==Nothing holds all of it at once — so nothing can learn from it.==",
     },
     {
       kind: "p",
