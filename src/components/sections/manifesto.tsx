@@ -107,6 +107,11 @@ export function Manifesto() {
                     <div className="flex flex-col gap-1">
                       <span className="text-[15px] font-medium text-[var(--fg)] md:text-base">
                         {decision.title}
+                        {decision.note ? (
+                          <span className="ml-2 whitespace-nowrap rounded-full border border-[color-mix(in_oklab,var(--accent)_35%,transparent)] px-2 py-0.5 align-[0.1em] font-mono text-[10px] font-normal uppercase tracking-[0.14em] text-[var(--accent-text)]">
+                            {decision.note}
+                          </span>
+                        ) : null}
                       </span>
                       <span className={PARAGRAPH}>{decision.summary}</span>
                     </div>
@@ -114,20 +119,13 @@ export function Manifesto() {
                 ))}
               </ol>
               <p className={cn(PARAGRAPH, "pt-2")}>
-                {manifesto.blog.text}{" "}
-                {manifesto.blog.href ? (
-                  <Link
-                    href={manifesto.blog.href}
-                    className="text-[var(--accent-text)] underline decoration-[color-mix(in_oklab,var(--accent)_45%,transparent)] underline-offset-4 transition-colors hover:decoration-[var(--accent-text)]"
-                  >
-                    {manifesto.blog.linkLabel}
-                  </Link>
-                ) : (
-                  <>
-                    <span className="text-[var(--fg)]">{manifesto.blog.linkLabel}</span>
-                    {manifesto.blog.pendingNote ? ` ${manifesto.blog.pendingNote}` : null}
-                  </>
-                )}
+                {manifesto.deepDive.text}{" "}
+                <Link
+                  href={manifesto.deepDive.href}
+                  className="text-[var(--accent-text)] underline decoration-[color-mix(in_oklab,var(--accent)_45%,transparent)] underline-offset-4 transition-colors hover:decoration-[var(--accent-text)]"
+                >
+                  {manifesto.deepDive.linkLabel}
+                </Link>
                 .
               </p>
             </SpringReveal>

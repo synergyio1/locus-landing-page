@@ -11,6 +11,9 @@ test("home page responds 200 and renders the sticky nav", async ({ page }) => {
     nav.getByRole("link", { name: "Manifesto", exact: true })
   ).toHaveAttribute("href", "/#manifesto")
   await expect(
+    nav.getByRole("link", { name: "Architecture", exact: true })
+  ).toHaveAttribute("href", "/architecture")
+  await expect(
     page.getByRole("link", { name: "Log in", exact: true })
   ).toHaveAttribute("href", "/login")
   // The header carries no Download — the hero owns that CTA.
@@ -56,6 +59,59 @@ test("manifesto renders the statement, the three app parts, and the sign-off", a
   }
 
   await expect(section.getByText("Luis", { exact: true })).toBeVisible()
+})
+
+test("the letter's six decisions hand off to the architecture tab", async ({
+  page,
+}) => {
+  await page.goto("/")
+
+  const section = page.locator("#manifesto")
+  await expect(
+    section.getByRole("heading", { level: 3, name: "Six decisions" })
+  ).toBeVisible()
+  await expect(section.locator("#design-decisions")).toBeVisible()
+
+  // The sixth — added 2026-08-20, marked as not yet shipped.
+  const sixth = section.locator("#decision-external-tools")
+  await expect(sixth).toBeVisible()
+  await expect(sixth.getByText("Shipping next")).toBeVisible()
+
+  await expect(
+    section.getByRole("link", { name: /architecture decisions/i })
+  ).toHaveAttribute("href", "/architecture")
+})
+
+test("the architecture tab argues all six out, in the letter's order", async ({
+  page,
+}) => {
+  await page.goto("/architecture")
+
+  const ids = await page
+    .locator("main li[id]")
+    .evaluateAll((els) => els.map((el) => el.id))
+  expect(ids).toEqual([
+    "build-the-armor",
+    "choose-your-model",
+    "routines-are-files",
+    "external-tools",
+    "gets-to-know-you",
+    "local-first",
+  ])
+
+  const tools = page.locator("#external-tools")
+  await expect(
+    tools.getByRole("heading", { level: 2, name: "Plug in your own tools." })
+  ).toBeVisible()
+  await expect(tools.getByText(/shipping next/i)).toBeVisible()
+  for (const label of [
+    "The question",
+    "What we chose",
+    "Why",
+    "What it costs",
+  ]) {
+    await expect(tools.getByRole("heading", { name: label })).toBeVisible()
+  }
 })
 
 test("home page is hero → manifesto → pricing, nothing else", async ({

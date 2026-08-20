@@ -35,6 +35,13 @@ export type ManifestoDecision = {
   id: string
   title: string
   summary: string
+  /**
+   * Small chip after the title for a decision that is settled but not yet
+   * shipped. Pinned against `architecture.ts` in architecture.test.ts: a
+   * decision whose deep dive says `status: "next"` must carry one, and a
+   * shipped decision must not — so the chip disappears by editing one word.
+   */
+  note?: string
 }
 
 export type ManifestoContent = {
@@ -56,20 +63,29 @@ export type ManifestoContent = {
   decisionsIntro: string
   /**
    * Exactly the core design decisions Luis wants named — five as of 2026-08-17,
-   * reframed the same day around build / borrow / leave-open. The day feedback
-   * loop was cut from this list on purpose, and "Bring your own AI" was folded
-   * into "Choose your model" (they were redundant); don't re-add either.
+   * reframed the same day around build / borrow / leave-open; six as of
+   * 2026-08-20, when "Plug in your own tools" joined the leave-open group
+   * (product ADR-0015). The day feedback loop was cut from this list on
+   * purpose, and "Bring your own AI" was folded into "Choose your model"
+   * (they were redundant); don't re-add either.
    * Every summary must fit two lines in the letter column at >=1280w (~165
    * chars max, verified in-browser) — Luis's cap.
+   *
+   * This is the short form. The reasoning for each one — what was on the
+   * table, what it costs — lives on /architecture, keyed by these same ids
+   * (src/content/architecture.ts); adding a decision here without a deep
+   * dive there throws at import.
    */
   decisions: ManifestoDecision[]
-  blog: {
+  /**
+   * The line under the list that hands the reader off to the long form.
+   * Was a "design ideas blog (coming soon)" pointer until 2026-08-20, when
+   * the /architecture tab made it real.
+   */
+  deepDive: {
     text: string
     linkLabel: string
-    /** Set once the design-ideas blog exists; until then the text renders plain. */
-    href?: string
-    /** Shown after the label only while `href` is unset. */
-    pendingNote?: string
+    href: string
   }
   signature: {
     closing: string
@@ -93,9 +109,10 @@ export const manifesto: ManifestoContent = {
     "what happened.",
     "the rest of it.",
   ],
-  // ~940 words across the letter column at ~220 wpm → 4 (recount pinned in
-  // manifesto.test.ts, so a longer letter fails loudly instead of lying).
-  letterNote: "A letter from Luis · 4 min read",
+  // ~990 words across the letter column at ~220 wpm → 5, up from 4 when the
+  // sixth decision landed (recount pinned in manifesto.test.ts, so a longer
+  // letter fails loudly instead of lying).
+  letterNote: "A letter from Luis · 5 min read",
   blocks: [
     {
       kind: "p",
@@ -211,8 +228,10 @@ export const manifesto: ManifestoContent = {
       text: "Locus will be there day after day, helping you see a little through the gigantic noise of real life, nudging one tiny change once in a while, and letting the changes compound. If the result is not life-changing, it will at least be much better. That is the bet.",
     },
   ],
-  decisionsId: "five-decisions",
-  decisionsHeading: "Five decisions",
+  // Anchor deliberately doesn't count (it was "five-decisions" until the
+  // sixth arrived on 2026-08-20) — the next one shouldn't break links again.
+  decisionsId: "design-decisions",
+  decisionsHeading: "Six decisions",
   decisionsIntro:
     "Early on we split the system in three: the parts we should build ourselves, the parts we should borrow, and the parts we should leave open for the community to evolve. Most of what follows comes from that split:",
   decisions: [
@@ -235,6 +254,13 @@ export const manifesto: ManifestoContent = {
         "Different personalities want different approaches. So we left this part deliberately open: every AI behavior is a Markdown file — read, edit, share, or add your own.",
     },
     {
+      id: "external-tools",
+      title: "Plug in your own tools.",
+      note: "Shipping next",
+      summary:
+        "The MCP servers you already connected to your harness — Notion, Linear, your own — can be switched on for Locus too. An OS is what you plug your own parts into.",
+    },
+    {
       id: "gets-to-know-you",
       title: "It gets to know you.",
       summary:
@@ -247,11 +273,10 @@ export const manifesto: ManifestoContent = {
         "Local-first and private by design: your data, your routines, and everything Locus knows about you stay on your device. You only log in for the subscription.",
     },
   ],
-  blog: {
-    text: "For the reasoning behind each of these, be sure to check our",
-    linkLabel: "design ideas blog",
-    // href: "/blog", — set once the blog exists; the pending note drops out by itself.
-    pendingNote: "(coming soon)",
+  deepDive: {
+    text: "The reasoning behind each one — what was on the table, and what it costs you — is written out in full under",
+    linkLabel: "architecture decisions",
+    href: "/architecture",
   },
   signature: {
     closing: "We hope you enjoy it.",

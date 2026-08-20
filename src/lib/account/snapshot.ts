@@ -47,6 +47,9 @@ export type AccountSnapshot = {
   entitlement: Entitlement | null
   subscription: Subscription | null
   proTrial: ProTrial | null
+  // Prepaid Locus Remote balance. Sits on top of any license state, so it is
+  // a peer of the entitlement rather than part of it.
+  creditBalanceCents: number
 }
 
 type EntitlementRow = {
@@ -54,6 +57,7 @@ type EntitlementRow = {
   plan: Plan
   source: EntitlementSource | null
   active_until: Date | null
+  credit_balance_cents: number
 }
 
 type ProfileEmailRow = {
@@ -73,7 +77,12 @@ export async function loadAccountSnapshot(
   const [entitlementRows, subscriptionRow, profileRows, proTrialRow] =
     await Promise.all([
       prisma.$queryRaw<EntitlementRow[]>`
-        select user_id, plan, source, active_until
+        select
+          user_id,
+          plan,
+          source,
+          active_until,
+          coalesce(credit_balance_cents, 0)::int as credit_balance_cents
         from app.entitlements_v
         where user_id = ${userId}::uuid
       `,
@@ -136,5 +145,6 @@ export async function loadAccountSnapshot(
     entitlement,
     subscription,
     proTrial,
+    creditBalanceCents: entitlementRow?.credit_balance_cents ?? 0,
   }
 }

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 
+import { architecture } from "./architecture"
 import { authCopy } from "./auth"
 import { changelog } from "./changelog"
 import { download } from "./download"
@@ -32,6 +33,7 @@ const BANNED: Array<[name: string, pattern: RegExp]> = [
 // Registration is manual — a content module that isn't listed here is
 // silently unlinted. Add every new src/content module.
 const MODULES: Record<string, unknown> = {
+  architecture,
   authCopy,
   hero,
   manifesto,

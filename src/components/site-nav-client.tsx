@@ -13,6 +13,8 @@ type NavItem = { href: string; label: string }
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/#manifesto", label: "Manifesto" },
+  // The manifesto's decisions list, argued out in full (added 2026-08-20).
+  { href: "/architecture", label: "Architecture" },
   { href: "/pricing", label: "Pricing" },
   { href: "/changelog", label: "Changelog" },
 ]
@@ -24,7 +26,7 @@ type SiteNavClientProps = {
 /**
  * Site header (2026-08-17, redesign).
  *
- * Structure is the settled one — mark left, three links dead-centre, a
+ * Structure is the settled one — mark left, the primary links dead-centre, a
  * single "Log in" right (the hero owns Download) — but the chrome is new:
  *
  *  · Progressive glass. Stacked backdrop layers, taller than the bar,

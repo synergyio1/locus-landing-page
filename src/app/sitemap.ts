@@ -4,6 +4,7 @@ const SITE_URL = "https://getlocus.tech"
 
 const ROUTES = [
   { path: "/", changeFrequency: "weekly", priority: 1 },
+  { path: "/architecture", changeFrequency: "monthly", priority: 0.8 },
   { path: "/pricing", changeFrequency: "monthly", priority: 0.9 },
   { path: "/changelog", changeFrequency: "weekly", priority: 0.7 },
   { path: "/download", changeFrequency: "weekly", priority: 0.9 },

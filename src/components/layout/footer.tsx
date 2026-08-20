@@ -53,6 +53,12 @@ export function Footer() {
               Pricing
             </Link>
             <Link
+              href="/architecture"
+              className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
+            >
+              Architecture
+            </Link>
+            <Link
               href="/changelog"
               className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
             >

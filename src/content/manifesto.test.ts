@@ -87,8 +87,8 @@ describe("manifesto content", () => {
       manifesto.decisionsHeading,
       manifesto.decisionsIntro,
       ...manifesto.decisions.flatMap((d) => [d.title, d.summary]),
-      manifesto.blog.text,
-      manifesto.blog.linkLabel,
+      manifesto.deepDive.text,
+      manifesto.deepDive.linkLabel,
       manifesto.signature.closing,
     ]
     const words = strings
@@ -109,14 +109,17 @@ describe("manifesto content", () => {
     expect(new Set(ids).size).toBe(ids.length)
     // The rail walks the letter in order and ends on the decisions. Last two
     // renamed 2026-08-19 (Luis): "What we're building" → "Locus, in three
-    // parts", "How we made it" → "Five decisions".
+    // parts", "How we made it" → "Five decisions" (now "Six decisions", on a
+    // count-free anchor since 2026-08-20 so the next one breaks no links).
     expect(ids).toEqual([
       "the-struggle-never-stops",
       "the-problem-with-todays-tools",
       "two-ideas-behind-the-design",
       "locus-in-three-parts",
-      "five-decisions",
+      "design-decisions",
     ])
+    expect(manifesto.decisionsHeading).toBe("Six decisions")
+    expect(manifesto.decisionsId).not.toMatch(/five|six/)
   })
 
   it("frames the soldier/general struggle, its bridge, and the two ways to hold it", () => {
@@ -174,15 +177,19 @@ describe("manifesto content", () => {
     expect(built.text).toMatch(/So we built one\.$/)
   })
 
-  it("lists exactly the five core design decisions", () => {
-    expect(manifesto.decisions).toHaveLength(5)
-    // Build → borrow → leave-open, then the two things that are yours.
-    // The day feedback loop was cut from this list on purpose (2026-08-17),
-    // and "Bring your own AI" was folded into "Choose your model" the same day.
+  it("lists exactly the six core design decisions", () => {
+    expect(manifesto.decisions).toHaveLength(6)
+    // Build → borrow → leave-open (routines, then external tools), then the
+    // two things that are yours. The day feedback loop was cut from this list
+    // on purpose (2026-08-17), and "Bring your own AI" was folded into
+    // "Choose your model" the same day. "Plug in your own tools" joined the
+    // leave-open pair on 2026-08-20 (product ADR-0015) — it sits beside
+    // "Routines are files" because both are the part left open for you.
     expect(manifesto.decisions.map((d) => d.id)).toEqual([
       "build-the-armor",
       "choose-your-model",
       "routines-are-files",
+      "external-tools",
       "gets-to-know-you",
       "local-first",
     ])
@@ -196,13 +203,12 @@ describe("manifesto content", () => {
     }
   })
 
-  it("points at the design-ideas blog, linking only once an href exists", () => {
-    expect(manifesto.blog.linkLabel).toMatch(/design ideas blog/i)
-    if (manifesto.blog.href !== undefined) {
-      expect(manifesto.blog.href).toMatch(/^(\/|https?:\/\/)/)
-    } else {
-      expect(manifesto.blog.pendingNote).toBe("(coming soon)")
-    }
+  it("hands the reader off to the architecture tab for the long form", () => {
+    // Was a "design ideas blog (coming soon)" pointer until 2026-08-20; the
+    // tab exists now, so the line links rather than promises.
+    expect(manifesto.deepDive.href).toBe("/architecture")
+    expect(manifesto.deepDive.linkLabel).toMatch(/architecture decisions/i)
+    expect(JSON.stringify(manifesto.deepDive)).not.toMatch(/coming soon/i)
   })
 
   it("signs off with the founder's name only", () => {
