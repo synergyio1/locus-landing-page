@@ -3,6 +3,7 @@ import Link from "next/link"
 
 import { PageShell } from "@/components/layout/page-shell"
 import { SpringReveal } from "@/components/motion"
+import { ManifestoToc } from "@/components/sections/manifesto-toc"
 import { InkUnderline } from "@/components/ui/ink-underline"
 import { RotatingWord } from "@/components/ui/rotating-word"
 import { manifesto, type ManifestoBlock } from "@/content/manifesto"
@@ -19,13 +20,29 @@ const PARAGRAPH_EMPHASIS =
 const SUBHEAD =
   "pt-4 text-lg font-semibold tracking-tight text-[var(--fg)] md:text-xl"
 
+/** Clearance for anchor jumps: the fixed header is h-14/h-16, plus breath. */
+const HEADING_ANCHOR = "scroll-mt-24"
+
 /**
  * The founder statement. Superlogical-style: one reading column, plain
  * sentences, signed. Same section rhythm as pricing (hairline top border,
  * py-24/36) and the FAQ's two-column split — the statement headline stays
  * pinned on the left while the letter scrolls on the right.
+ *
+ * The pinned rail also carries the length layer (2026-08-19): a "4 min read"
+ * note and a scroll-spy mini-TOC (md+ only) so the letter's shape and end
+ * are visible before anyone commits to it. The letter itself stays whole —
+ * no pagination, no read-more. (A "skim the underlines" note lived here for
+ * a few hours; Luis cut it.)
  */
 export function Manifesto() {
+  const tocItems = [
+    ...manifesto.blocks.flatMap((b) =>
+      b.kind === "h" ? [{ id: b.id, label: b.text }] : []
+    ),
+    { id: manifesto.decisionsId, label: manifesto.decisionsHeading },
+  ]
+
   return (
     <section
       id={manifesto.id}
@@ -50,6 +67,10 @@ export function Manifesto() {
                   className="text-[var(--accent-text)]"
                 />
               </h2>
+              <p className="text-[13px] leading-relaxed text-[var(--muted-foreground)]">
+                {manifesto.letterNote}
+              </p>
+              <ManifestoToc items={tocItems} className="mt-4 hidden md:flex" />
             </SpringReveal>
           </div>
 
@@ -62,7 +83,12 @@ export function Manifesto() {
             </SpringReveal>
 
             <SpringReveal delay={140} as="div" className="mt-12 flex flex-col gap-4">
-              <h3 className={SUBHEAD}>{manifesto.decisionsHeading}</h3>
+              <h3
+                id={manifesto.decisionsId}
+                className={cn(SUBHEAD, HEADING_ANCHOR)}
+              >
+                {manifesto.decisionsHeading}
+              </h3>
               <p className={PARAGRAPH}>{manifesto.decisionsIntro}</p>
               {/* One numbered column — same numeral treatment as the app parts above. */}
               <ol className="mt-1 flex flex-col divide-y divide-[var(--border)] border-y border-[var(--border)]">
@@ -125,7 +151,11 @@ export function Manifesto() {
 function Block({ block }: { block: ManifestoBlock }) {
   switch (block.kind) {
     case "h":
-      return <h3 className={SUBHEAD}>{block.text}</h3>
+      return (
+        <h3 id={block.id} className={cn(SUBHEAD, HEADING_ANCHOR)}>
+          {block.text}
+        </h3>
+      )
     case "p":
       return (
         <p className={block.emphasis ? PARAGRAPH_EMPHASIS : PARAGRAPH}>

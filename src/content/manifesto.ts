@@ -1,12 +1,16 @@
 // The founder statement that replaces the old scroll narrative on the home
-// page (2026-08-17). Superlogical-style: one reading column, plain sentences,
-// signed. Copy is Luis's — keep his phrasing ("battle / war", "gigantic noise")
-// even where it sits a notch outside "engineered calm".
+// page (2026-08-17; "struggle" section rewritten 2026-08-19). Superlogical-
+// style: one reading column, plain sentences, signed. Copy is Luis's — keep
+// his phrasing ("the struggle never stops", "gigantic noise") even where it
+// sits a notch outside "engineered calm". ("specially in current times" was
+// his too, until he cut it himself later on 2026-08-19.)
 //
 // Inline emphasis: wrap a phrase in ==double equals== and the letter draws an
-// ink underline under it (lib/inline-marks.ts → ui/ink-underline.tsx). Reserve
-// it for the letter's thesis lines — a couple in the whole piece, never inside
-// a pull-quote — or the emphasis stops meaning anything.
+// ink underline under it (lib/inline-marks.ts → ui/ink-underline.tsx). Luis
+// picks the marked lines — the exact set is pinned in manifesto.test.ts;
+// never inside a pull-quote, never outside the letter body. (A rail-side
+// "skim the underlines" note existed for a few hours on 2026-08-19; Luis
+// cut it — the underlines speak for themselves.)
 //
 // The three app parts mirror the app's own sidebar families
 // (LocusUI/SidebarTab.swift: Execution · Inputs · AI) — keep them in lockstep.
@@ -22,7 +26,8 @@ export type ManifestoPart = {
 
 export type ManifestoBlock =
   | { kind: "p"; text: string; emphasis?: boolean }
-  | { kind: "h"; text: string }
+  /** `id` is the anchor the left rail's mini-TOC jumps to — keep it stable. */
+  | { kind: "h"; id: string; text: string }
   | { kind: "quote"; text: string; attribution: string }
   | { kind: "parts"; intro: string; items: ManifestoPart[] }
 
@@ -38,7 +43,15 @@ export type ManifestoContent = {
   headline: string
   /** Rotating tail phrases for the headline; the first is the resting state. */
   rotating: string[]
+  /**
+   * Small print under the sticky headline: what this is and what reading it
+   * costs. The minute figure is pinned by a recount in manifesto.test.ts —
+   * update it there and here together when the letter changes length.
+   */
+  letterNote: string
   blocks: ManifestoBlock[]
+  /** Anchor for the decisions heading — the mini-TOC's last stop. */
+  decisionsId: string
   decisionsHeading: string
   decisionsIntro: string
   /**
@@ -80,6 +93,9 @@ export const manifesto: ManifestoContent = {
     "what happened.",
     "the rest of it.",
   ],
+  // ~940 words across the letter column at ~220 wpm → 4 (recount pinned in
+  // manifesto.test.ts, so a longer letter fails loudly instead of lying).
+  letterNote: "A letter from Luis · 4 min read",
   blocks: [
     {
       kind: "p",
@@ -89,20 +105,36 @@ export const manifesto: ManifestoContent = {
       kind: "p",
       text: "The starting point was an old idea from David Allen's Getting Things Done: you need one system you can trust with everything — every to-do, every objective, every thing you already did — ==so your mind can stop running the meta-strategy in the background and be present== in what is in front of you, as fully as possible.",
     },
-    { kind: "h", text: "Every day is a battle" },
+    { kind: "h", id: "the-struggle-never-stops", text: "The struggle never stops" },
     {
       kind: "p",
-      text: "The tricky part is fighting the battle with the war in mind. To win the day, you have to be as present as possible — head down, in the work. To win the war — the months, the years, the decades — you have to lift your head: learn as much as possible from each day, connect the days, and improve continuously.",
+      text: "Runner friends of mine say it half as a joke, but it's true: the struggle never stops. The pace only gets faster.",
     },
     {
       kind: "p",
-      text: "Doing one is hard enough. The bridge between the two is harder still. It runs through the weeks and months in between — the tasks, the projects, the goals you set for them. Follow the plan, and keep checking that the plan still leads where you want to go. It is a delicate equilibrium — one that willpower alone rarely holds.",
+      text: "That's running. It's also life. If you're working at the level you're capable of, you are always in a fight.",
     },
     {
       kind: "p",
-      text: "But both are achievable. The people who pull it off do it in one of two ways: brute-force self-discipline, or a great system. One is in your hands. The other is in ours.",
+      text: "==To win the day, you have to be present — head down, in the work. A soldier. To win the decade, you have to lift your head — set the strategy, learn from the day, connect it to the ones before it. A general.==",
     },
-    { kind: "h", text: "The problem with today's tools" },
+    {
+      kind: "p",
+      text: "You don't get to pick which one you are. You're both, at once, permanently — and neither one covers for the other. A bad plan loses no matter how well you fight it. A good plan loses to a day you never showed up for. ==Both have to be there, and both have to be good.==",
+    },
+    {
+      kind: "p",
+      text: "So everything rests on the bridge between them: the weeks and months in between, the projects, the goals you set for them. Follow the plan — and keep checking the plan still leads where you want to go.",
+    },
+    {
+      kind: "p",
+      text: "==It's a delicate equilibrium. Willpower alone rarely holds it.==",
+    },
+    {
+      kind: "p",
+      text: "It's usually done one of two ways, or some mix: brute-force discipline, or having a great operational system in place. The first, we count on you for. The second, you can count on us.",
+    },
+    { kind: "h", id: "the-problem-with-todays-tools", text: "The problem with today's tools" },
     {
       kind: "p",
       text: "Most of the tools we rely on were built before AI, and they still barely use what it can now do: take in huge amounts of context and help you draw real insight from it. It is all one day, yet today's tools split it into separate apps. A to-do list holds the intent and never sees the outcome. A calendar holds the plan and never learns what happened. A timer counts minutes without knowing what they were for. Nothing holds all of it at once — so nothing can learn from it.",
@@ -111,7 +143,7 @@ export const manifesto: ManifestoContent = {
       kind: "p",
       text: "We never found what we thought a great solution would look like: one that used all of this rich context to help us win the day and, day after day, the war. So we built one.",
     },
-    { kind: "h", text: "Two ideas behind the design" },
+    { kind: "h", id: "two-ideas-behind-the-design", text: "Two ideas behind the design" },
     {
       kind: "p",
       text: "Most of the decisions in Locus come down to two ideas.",
@@ -129,7 +161,7 @@ export const manifesto: ManifestoContent = {
     {
       kind: "p",
       emphasis: true,
-      text: "Small improvements, repeated, are the whole game.",
+      text: "==Small improvements, repeated, are the whole game.==",
     },
     {
       kind: "p",
@@ -144,13 +176,15 @@ export const manifesto: ManifestoContent = {
     {
       kind: "p",
       emphasis: true,
-      text: "For anything that matters, the system decides — not the ambition.",
+      text: "==For anything that matters, the system decides — not the ambition.==",
     },
     {
       kind: "p",
       text: "Put together: the most useful thing we could give you is not a better goal. It is a better system — one you can trust with the whole day, that learns from the day you actually had, and that compounds.",
     },
-    { kind: "h", text: "What we're building" },
+    // Renamed from "What we're building" / "How we made it" (Luis, 2026-08-19):
+    // the last two titles now carry content like the first three do.
+    { kind: "h", id: "locus-in-three-parts", text: "Locus, in three parts" },
     {
       kind: "parts",
       intro:
@@ -177,7 +211,8 @@ export const manifesto: ManifestoContent = {
       text: "Locus will be there day after day, helping you see a little through the gigantic noise of real life, nudging one tiny change once in a while, and letting the changes compound. If the result is not life-changing, it will at least be much better. That is the bet.",
     },
   ],
-  decisionsHeading: "How we made it",
+  decisionsId: "five-decisions",
+  decisionsHeading: "Five decisions",
   decisionsIntro:
     "Early on we split the system in three: the parts we should build ourselves, the parts we should borrow, and the parts we should leave open for the community to evolve. Most of what follows comes from that split:",
   decisions: [

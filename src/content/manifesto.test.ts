@@ -41,52 +41,122 @@ describe("manifesto content", () => {
     expect(JSON.stringify(manifesto.blocks)).toMatch(/James Clear/)
   })
 
-  it("underlines exactly the two thesis lines, with balanced marks", () => {
+  it("underlines exactly the thesis lines Luis picked, with balanced marks", () => {
     const paragraphs = manifesto.blocks.flatMap((b) => (b.kind === "p" ? [b.text] : []))
     for (const text of paragraphs) {
       expect(hasBalancedInlineMarks(text), text).toBe(true)
     }
-    // Marks are reserved for the letter's thesis lines (Luis, 2026-08-17).
+    // Marks are reserved for the letter's thesis lines; Luis picked this set
+    // with the "struggle" rewrite (2026-08-19).
     expect(paragraphs.flatMap(listInlineMarks)).toEqual([
       "a system to help us deal with the fast, noisy, high-stress times we increasingly live in",
       "so your mind can stop running the meta-strategy in the background and be present",
+      "To win the day, you have to be present — head down, in the work. A soldier. To win the decade, you have to lift your head — set the strategy, learn from the day, connect it to the ones before it. A general.",
+      "Both have to be there, and both have to be good.",
+      "It's a delicate equilibrium. Willpower alone rarely holds it.",
+      "Small improvements, repeated, are the whole game.",
+      "For anything that matters, the system decides — not the ambition.",
     ])
     // Nothing else carries the syntax — quotes, parts, decisions stay plain.
-    const rest = JSON.stringify({ ...manifesto, blocks: manifesto.blocks.filter((b) => b.kind !== "p") })
+    const rest = JSON.stringify({
+      ...manifesto,
+      blocks: manifesto.blocks.filter((b) => b.kind !== "p"),
+    })
     expect(rest).not.toContain("==")
   })
 
-  it("frames the day/war bridge as a delicate equilibrium, then the two ways to hold it", () => {
-    // Luis, 2026-08-17: fight the battle with the war in mind — be present on
-    // the day, don't lose grip of the months and years, follow the plan but
-    // keep checking it still leads to the goal. A delicate equilibrium, very
-    // hard on brute-force discipline alone; the alternative is a great system
-    // (ours). Not "fragmentation".
+  it("advertises an honest reading time in the letter note", () => {
+    // Recount everything the letter column renders; ~220 wpm, minimum 1.
+    // If the letter grows or shrinks past a minute boundary, this fails and
+    // the note in manifesto.ts gets updated by hand — it never silently lies.
+    const strings = [
+      ...manifesto.blocks.flatMap((b) => {
+        switch (b.kind) {
+          case "p":
+          case "h":
+            return [b.text]
+          case "quote":
+            return [b.text, b.attribution]
+          case "parts":
+            return [b.intro, ...b.items.flatMap((p) => [p.name, p.text])]
+        }
+      }),
+      manifesto.decisionsHeading,
+      manifesto.decisionsIntro,
+      ...manifesto.decisions.flatMap((d) => [d.title, d.summary]),
+      manifesto.blog.text,
+      manifesto.blog.linkLabel,
+      manifesto.signature.closing,
+    ]
+    const words = strings
+      .join(" ")
+      .replace(/==/g, " ")
+      .split(/\s+/)
+      .filter(Boolean).length
+    const minutes = Math.max(1, Math.round(words / 220))
+    expect(manifesto.letterNote).toBe(`A letter from Luis · ${minutes} min read`)
+  })
+
+  it("gives every subheading a stable anchor for the mini-TOC", () => {
+    const ids = manifesto.blocks.flatMap((b) => (b.kind === "h" ? [b.id] : []))
+    ids.push(manifesto.decisionsId)
+    for (const id of ids) {
+      expect(id).toMatch(/^[a-z0-9]+(-[a-z0-9]+)*$/)
+    }
+    expect(new Set(ids).size).toBe(ids.length)
+    // The rail walks the letter in order and ends on the decisions. Last two
+    // renamed 2026-08-19 (Luis): "What we're building" → "Locus, in three
+    // parts", "How we made it" → "Five decisions".
+    expect(ids).toEqual([
+      "the-struggle-never-stops",
+      "the-problem-with-todays-tools",
+      "two-ideas-behind-the-design",
+      "locus-in-three-parts",
+      "five-decisions",
+    ])
+  })
+
+  it("frames the soldier/general struggle, its bridge, and the two ways to hold it", () => {
+    // Luis, 2026-08-19 ("the struggle never stops" rewrite): present on the
+    // day (a soldier), strategy across the decade (a general) — both at once,
+    // both good; the bridge is the weeks and months in between; a delicate
+    // equilibrium willpower alone rarely holds (he cut "specially in current
+    // times" later that day — don't restore it). Discipline we count on you
+    // for; the operational system you can count on us for. Not "fragmentation".
     const paragraphs = manifesto.blocks.flatMap((b) => (b.kind === "p" ? [b.text] : []))
-    const bridgeIndex = paragraphs.findIndex((t) => /bridge between the two/.test(t))
-    expect(bridgeIndex).toBeGreaterThan(-1)
-    const bridge = paragraphs[bridgeIndex]
+    const rolesIndex = paragraphs.findIndex((t) => /A soldier\./.test(t))
+    expect(rolesIndex).toBeGreaterThan(-1)
+    expect(paragraphs[rolesIndex]).toMatch(/A general\./)
+    expect(paragraphs[rolesIndex + 1]).toMatch(/Both have to be there, and both have to be good\./)
+    const bridge = paragraphs[rolesIndex + 2]
     expect(bridge).not.toMatch(/fragmentation/i)
-    expect(bridge).toMatch(/keep checking that the plan/)
-    expect(bridge).toMatch(/delicate equilibrium/)
-    // The two ways — discipline (yours) or a great system (ours) — come next.
-    const ways = paragraphs[bridgeIndex + 1]
-    expect(ways).toMatch(/brute-force self-discipline, or a great system/)
-    expect(ways).toMatch(/One is in your hands\. The other is in ours\.$/)
+    expect(bridge).toMatch(/bridge between them/)
+    expect(bridge).toMatch(/keep checking the plan still leads/)
+    const equilibrium = paragraphs[rolesIndex + 3]
+    expect(equilibrium).toMatch(/delicate equilibrium/)
+    expect(equilibrium).toMatch(/Willpower alone rarely holds it\.==$/)
+    expect(equilibrium).not.toMatch(/specially in current times/)
+    // The two ways — discipline (yours) or the operational system (ours).
+    const ways = paragraphs[rolesIndex + 4]
+    expect(ways).toMatch(
+      /brute-force discipline, or having a great operational system in place/
+    )
+    expect(ways).toMatch(/The second, you can count on us\.$/)
     // …and the letter still lands on "So we built one."
     expect(JSON.stringify(manifesto.blocks)).toMatch(/So we built one\./)
   })
 
-  it("names the problem with today's tools right below the battle, in two paragraphs", () => {
-    // Luis, 2026-08-17: a subheading (not a page section) after "Every day is
-    // a battle" — the tools predate AI and don't use its power to take in huge
-    // context and hand back insight; one day split into separate apps; then
-    // "We never found… So we built one."
+  it("names the problem with today's tools right below the struggle, in two paragraphs", () => {
+    // Luis, 2026-08-17: a subheading (not a page section) after the struggle
+    // section ("Every day is a battle", renamed "The struggle never stops" on
+    // 2026-08-19) — the tools predate AI and don't use its power to take in
+    // huge context and hand back insight; one day split into separate apps;
+    // then "We never found… So we built one."
     const blocks = manifesto.blocks
-    const battle = blocks.findIndex((b) => b.kind === "h" && b.text === "Every day is a battle")
+    const struggle = blocks.findIndex((b) => b.kind === "h" && b.text === "The struggle never stops")
     const problem = blocks.findIndex((b) => b.kind === "h" && /today's tools/.test(b.text))
-    expect(battle).toBeGreaterThan(-1)
-    expect(problem).toBeGreaterThan(battle)
+    expect(struggle).toBeGreaterThan(-1)
+    expect(problem).toBeGreaterThan(struggle)
     const next = blocks.slice(problem + 1)
     const nextHeading = next.findIndex((b) => b.kind !== "p")
     expect(next.slice(0, nextHeading)).toHaveLength(2)
