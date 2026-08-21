@@ -12,6 +12,7 @@ describe("deriveAccountView", () => {
       entitlement: { user_id: "u1", plan: "free", source: null, active_until: null },
       subscription: null,
       proTrial: null,
+      creditBalanceCents: 0,
     }
 
     const view = deriveAccountView(snapshot)
@@ -32,6 +33,7 @@ describe("deriveAccountView", () => {
         started_at: "2026-04-01T12:00:00.000Z",
         expires_at: "2026-04-08T12:00:00.000Z",
       },
+      creditBalanceCents: 0,
     }
 
     const view = deriveAccountView(snapshot)
@@ -56,6 +58,7 @@ describe("deriveAccountView", () => {
         started_at: "2026-04-23T12:00:00.000Z",
         expires_at: "2026-04-30T12:00:00.000Z",
       },
+      creditBalanceCents: 0,
     }
 
     const view = deriveAccountView(snapshot, new Date("2026-04-27T12:00:00.000Z"))
@@ -83,6 +86,7 @@ describe("deriveAccountView", () => {
         price_id: "price_monthly",
       },
       proTrial: null,
+      creditBalanceCents: 0,
     }
 
     const view = deriveAccountView(snapshot)
@@ -110,6 +114,7 @@ describe("deriveAccountView", () => {
         price_id: "price_monthly",
       },
       proTrial: null,
+      creditBalanceCents: 0,
     }
 
     const view = deriveAccountView(snapshot)
@@ -139,6 +144,7 @@ describe("deriveAccountView", () => {
         started_at: "2026-04-23T12:00:00.000Z",
         expires_at: "2026-04-30T12:00:00.000Z",
       },
+      creditBalanceCents: 0,
     }
 
     const view = deriveAccountView(snapshot)
@@ -168,6 +174,7 @@ describe("deriveAccountView", () => {
         started_at: "2026-04-23T12:00:00.000Z",
         expires_at: "2026-04-30T12:00:00.000Z",
       },
+      creditBalanceCents: 0,
     }
 
     const view = deriveAccountView(snapshot)

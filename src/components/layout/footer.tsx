@@ -53,16 +53,16 @@ export function Footer() {
               Pricing
             </Link>
             <Link
-              href="/architecture"
+              href="/app"
               className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
             >
-              Architecture
+              App
             </Link>
             <Link
-              href="/changelog"
+              href="/packs"
               className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
             >
-              Changelog
+              Packs
             </Link>
             <Link
               href={`mailto:${SUPPORT_EMAIL}`}

@@ -25,7 +25,16 @@ vi.mock("next/navigation", () => ({
   redirect: (url: string) => {
     throw new Error(`NEXT_REDIRECT: ${url}`)
   },
-  useRouter: () => ({ push: vi.fn(), refresh: vi.fn() }),
+  useRouter: () => ({ push: vi.fn(), refresh: vi.fn(), replace: vi.fn() }),
+}))
+
+// Also keeps @/lib/db/prisma out of the import graph — the real credits
+// module reaches it through getOrCreateCustomer.
+const packsState: { packs: Array<{ priceId: string; unitAmountCents: number }> } =
+  { packs: [] }
+
+vi.mock("@/lib/stripe/credits", () => ({
+  listCreditPacks: async () => packsState.packs,
 }))
 
 import AccountPage from "./page"
@@ -42,6 +51,7 @@ describe("AccountPage", () => {
     cleanup()
     authState.user = null
     snapshotState.snapshot = null
+    packsState.packs = []
   })
 
   it("redirects unauthenticated users to /login?next=/account", async () => {
@@ -62,6 +72,7 @@ describe("AccountPage", () => {
       },
       subscription: null,
       proTrial: null,
+      creditBalanceCents: 0,
     })
 
     const jsx = await AccountPage()
@@ -103,6 +114,7 @@ describe("AccountPage", () => {
         started_at: "2026-04-01T12:00:00.000Z",
         expires_at: "2026-04-08T12:00:00.000Z",
       },
+      creditBalanceCents: 0,
     })
 
     const jsx = await AccountPage()
@@ -134,6 +146,7 @@ describe("AccountPage", () => {
         started_at: "2026-04-23T12:00:00.000Z",
         expires_at: "2026-04-30T12:00:00.000Z",
       },
+      creditBalanceCents: 0,
     })
 
     vi.useFakeTimers()
@@ -183,6 +196,7 @@ describe("AccountPage", () => {
         price_id: "price_monthly",
       },
       proTrial: null,
+      creditBalanceCents: 0,
     })
 
     const jsx = await AccountPage()
@@ -217,6 +231,7 @@ describe("AccountPage", () => {
         price_id: "price_monthly",
       },
       proTrial: null,
+      creditBalanceCents: 0,
     })
 
     const jsx = await AccountPage()
@@ -239,6 +254,7 @@ describe("AccountPage", () => {
       },
       subscription: null,
       proTrial: null,
+      creditBalanceCents: 0,
     })
 
     const jsx = await AccountPage()
@@ -259,6 +275,7 @@ describe("AccountPage", () => {
       },
       subscription: null,
       proTrial: null,
+      creditBalanceCents: 0,
     })
 
     const jsx = await AccountPage({
@@ -288,6 +305,7 @@ describe("AccountPage", () => {
         started_at: "2026-04-27T12:00:00.000Z",
         expires_at: "2026-05-04T12:00:00.000Z",
       },
+      creditBalanceCents: 0,
     })
 
     const jsx = await AccountPage({
@@ -314,6 +332,7 @@ describe("AccountPage", () => {
       },
       subscription: null,
       proTrial: null,
+      creditBalanceCents: 0,
     })
 
     const jsx = await AccountPage()
@@ -333,6 +352,7 @@ describe("AccountPage", () => {
       },
       subscription: null,
       proTrial: null,
+      creditBalanceCents: 0,
     })
 
     const jsx = await AccountPage()
@@ -343,7 +363,7 @@ describe("AccountPage", () => {
     ).toBeTruthy()
   })
 
-  describe("Remote credits placeholder", () => {
+  describe("Remote credits", () => {
     const freeSnapshot: AccountSnapshot = {
       email: "cook@example.com",
       entitlement: {
@@ -354,6 +374,7 @@ describe("AccountPage", () => {
       },
       subscription: null,
       proTrial: null,
+      creditBalanceCents: 0,
     }
     const proSnapshot: AccountSnapshot = {
       email: "cook@example.com",
@@ -371,26 +392,95 @@ describe("AccountPage", () => {
         price_id: "price_monthly",
       },
       proTrial: null,
+      creditBalanceCents: 0,
     }
 
+    const packs = [
+      { priceId: "price_5", unitAmountCents: 500 },
+      { priceId: "price_10", unitAmountCents: 1000 },
+      { priceId: "price_20", unitAmountCents: 2000 },
+    ]
+
+    // Credits sit on top of any license state (ADR-0010) — every plan can buy.
     for (const [label, snapshot] of [
       ["free", freeSnapshot],
       ["paid", proSnapshot],
     ] as const) {
-      it(`renders a static 'Remote credits — coming soon' card for a ${label} user`, async () => {
+      it(`renders the pack ladder for a ${label} user`, async () => {
         setSnapshot(snapshot)
+        packsState.packs = packs
 
         const jsx = await AccountPage()
         render(jsx)
 
         const card = screen.getByTestId("remote-credits-card")
         expect(card.textContent).toMatch(/remote credits/i)
-        expect(card.textContent).toMatch(/coming soon/i)
-        expect(card.textContent).toMatch(/any amount/i)
-        // Placeholder only: no purchase flow is wired yet.
-        expect(within(card).queryAllByRole("button")).toHaveLength(0)
-        expect(within(card).queryAllByRole("link")).toHaveLength(0)
+        expect(
+          within(card).getByRole("button", { name: "Add $5" })
+        ).toBeTruthy()
+        expect(
+          within(card).getByRole("button", { name: "Add $10" })
+        ).toBeTruthy()
+        expect(
+          within(card).getByRole("button", { name: "Add $20" })
+        ).toBeTruthy()
       })
     }
+
+    it("shows an existing balance and drops the empty-state copy", async () => {
+      setSnapshot({ ...proSnapshot, creditBalanceCents: 1234 })
+      packsState.packs = packs
+
+      const jsx = await AccountPage()
+      render(jsx)
+
+      const card = screen.getByTestId("remote-credits-card")
+      expect(screen.getByTestId("remote-credits-balance").textContent).toBe(
+        "$12.34"
+      )
+      expect(card.textContent).toMatch(/prepaid balance/i)
+      expect(card.textContent).not.toMatch(/add a pack/i)
+    })
+
+    it("renders $0.00 for a user who has never bought credits", async () => {
+      setSnapshot(freeSnapshot)
+      packsState.packs = packs
+
+      const jsx = await AccountPage()
+      render(jsx)
+
+      expect(screen.getByTestId("remote-credits-balance").textContent).toBe(
+        "$0.00"
+      )
+    })
+
+    // A missing STRIPE_CREDIT_PRICE_IDS (or three unusable prices) must
+    // degrade to the Mac app, not break the account page.
+    it("points at the Mac app when no packs are configured", async () => {
+      setSnapshot(freeSnapshot)
+      packsState.packs = []
+
+      const jsx = await AccountPage()
+      render(jsx)
+
+      const card = screen.getByTestId("remote-credits-card")
+      expect(card.textContent).toMatch(/add credits from the mac app/i)
+      expect(within(card).queryAllByRole("button")).toHaveLength(0)
+    })
+
+    it("acknowledges a checkout return while the grant is still in flight", async () => {
+      setSnapshot(freeSnapshot)
+      packsState.packs = packs
+
+      const jsx = await AccountPage({
+        searchParams: Promise.resolve({ credits: "pending" }),
+      })
+      render(jsx)
+
+      const card = screen.getByTestId("remote-credits-card")
+      expect(within(card).getByRole("status").textContent).toMatch(
+        /adding your credits/i
+      )
+    })
   })
 })

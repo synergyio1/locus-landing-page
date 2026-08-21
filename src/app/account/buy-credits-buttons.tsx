@@ -23,7 +23,9 @@ export function BuyCreditsButtons({ packs }: { packs: CreditPackOption[] }) {
     const result = await startCreditCheckout(priceId, crypto.randomUUID())
     switch (result.kind) {
       case "ok":
-        window.location.href = result.url
+        // assign() rather than `location.href =` so the React Compiler's
+        // immutability rule doesn't flag the write inside the map closure.
+        window.location.assign(result.url)
         return
       case "credit_price_not_allowed":
         setState({

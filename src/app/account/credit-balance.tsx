@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 
 import { formatUsdCents } from "@/lib/billing/format-money"
@@ -34,8 +34,14 @@ export function CreditBalance({
     setBalance(balanceCents)
   }
 
+  // One poll per checkout return. Without this, a prop change while the poll
+  // is still running (the refreshed server balance arriving before the URL
+  // drops ?credits=pending) would restart it against the new baseline and
+  // land on the timeout message after a grant that actually succeeded.
+  const finishedRef = useRef(false)
+
   useEffect(() => {
-    if (!checkoutPending) return
+    if (!checkoutPending || finishedRef.current) return
 
     const startedAt = Date.now()
     const balanceOnReturn = balanceCents
@@ -45,6 +51,7 @@ export function CreditBalance({
     async function poll() {
       if (cancelled) return
       if (Date.now() - startedAt >= POLL_TIMEOUT_MS) {
+        finishedRef.current = true
         setPollState("timeout")
         return
       }
@@ -59,6 +66,7 @@ export function CreditBalance({
           const next = body?.creditBalanceCents
           if (typeof next === "number" && next !== balanceOnReturn) {
             if (cancelled) return
+            finishedRef.current = true
             setBalance(next)
             setPollState("settled")
             // Drop ?credits=pending and re-read the server snapshot so the

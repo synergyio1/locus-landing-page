@@ -2,9 +2,10 @@ import { test, expect } from "@playwright/test"
 
 const ROUTES = [
   { path: "/", h1: /the missing os for modern work\./i },
-  { path: "/architecture", h1: /architecture decisions/i },
   { path: "/pricing", h1: /one plan\. all of locus\./i },
-  { path: "/changelog", h1: /what.s new in locus/i },
+  { path: "/app", h1: /locus, on screen\./i },
+  { path: "/packs", h1: /choose how locus coaches you\./i },
+  { path: "/packs/relentless", h1: /^relentless$/i },
   { path: "/download", h1: /download locus for macos/i },
   { path: "/privacy", h1: /privacy policy/i },
   { path: "/terms", h1: /terms of service/i },
@@ -21,7 +22,7 @@ for (const { path, h1 } of ROUTES) {
   })
 }
 
-test("/sitemap.xml serves a valid sitemap listing every route", async ({
+test("/sitemap.xml serves a valid sitemap listing every public route", async ({
   request,
 }) => {
   const response = await request.get("/sitemap.xml")

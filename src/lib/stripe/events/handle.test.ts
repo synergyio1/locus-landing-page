@@ -10,6 +10,7 @@ import invoicePaymentFailedFixture from "./__fixtures__/invoice.payment_failed.j
 import unknownEventFixture from "./__fixtures__/unknown.event.json"
 
 const {
+  grantPurchase,
   promoteOrInsertFromSubscription,
   updateBySubscriptionId,
   markCanceledBySubscriptionId,
@@ -19,6 +20,7 @@ const {
   sendCancellationMock,
   sendPaymentFailedMock,
 } = vi.hoisted(() => ({
+  grantPurchase: vi.fn(),
   promoteOrInsertFromSubscription: vi.fn(),
   updateBySubscriptionId: vi.fn(),
   markCanceledBySubscriptionId: vi.fn(),
@@ -36,6 +38,17 @@ vi.mock("@/lib/db/subscriptionsRepo", () => ({
     markCanceledBySubscriptionId,
   },
 }))
+
+// isForeignKeyViolation stays real — classifying the error correctly is the
+// behaviour under test, not a fixture.
+vi.mock("@/lib/db/creditLedgerRepo", async (importOriginal) => {
+  const actual =
+    await importOriginal<typeof import("@/lib/db/creditLedgerRepo")>()
+  return {
+    ...actual,
+    CreditLedgerRepo: { grantPurchase, balanceCents: vi.fn() },
+  }
+})
 
 vi.mock("@/lib/db/prisma", () => ({
   prisma: {
@@ -445,5 +458,167 @@ describe("handleStripeEvent", () => {
       expect(markCanceledBySubscriptionId).not.toHaveBeenCalled()
       expect(subscriptionsRetrieve).not.toHaveBeenCalled()
     })
+  })
+})
+
+describe("handleStripeEvent — credit purchases", () => {
+  const USER_ID = "3f1b0c1e-0000-4000-8000-000000000001"
+
+  beforeEach(() => {
+    grantPurchase.mockReset()
+    promoteOrInsertFromSubscription.mockReset()
+    grantPurchase.mockResolvedValue({ granted: true })
+  })
+
+  // The metadata contract locus-api's credits webhook defined. Both consumers
+  // may receive the same event; the ledger's unique stripe_event_id decides.
+  function creditEvent({
+    id = "evt_credit_1",
+    type = "checkout.session.completed",
+    paymentStatus = "paid",
+    metadata = {
+      locus_credit_purchase: "true",
+      user_id: USER_ID,
+      credit_price_id: "price_5",
+      credit_amount_cents: "500",
+    } as Record<string, string> | null,
+    clientReferenceId = USER_ID as string | null,
+  } = {}): Stripe.Event {
+    return {
+      id,
+      type,
+      data: {
+        object: {
+          id: "cs_test_credit",
+          object: "checkout.session",
+          mode: "payment",
+          payment_status: paymentStatus,
+          client_reference_id: clientReferenceId,
+          metadata,
+        },
+      },
+    } as unknown as Stripe.Event
+  }
+
+  it("grants the metadata amount in microcents on a paid session", async () => {
+    const result = await handleStripeEvent(creditEvent())
+
+    expect(result).toMatchObject({ handled: true, creditsGranted: true })
+    expect(grantPurchase).toHaveBeenCalledWith({
+      userId: USER_ID,
+      amountMicrocents: 5_000_000,
+      currency: "usd",
+      stripeEventId: "evt_credit_1",
+    })
+    // A credit session must never reach the subscription path.
+    expect(promoteOrInsertFromSubscription).not.toHaveBeenCalled()
+  })
+
+  it("grants on a delayed async payment", async () => {
+    const result = await handleStripeEvent(
+      creditEvent({
+        id: "evt_credit_async",
+        type: "checkout.session.async_payment_succeeded",
+        paymentStatus: "unpaid",
+      })
+    )
+
+    expect(result).toMatchObject({ handled: true, creditsGranted: true })
+    expect(grantPurchase).toHaveBeenCalledOnce()
+  })
+
+  it("waits for settlement when a completed session is not yet paid", async () => {
+    const result = await handleStripeEvent(
+      creditEvent({ paymentStatus: "unpaid" })
+    )
+
+    expect(result).toMatchObject({
+      handled: false,
+      reason: "credit_session_unpaid",
+    })
+    expect(grantPurchase).not.toHaveBeenCalled()
+  })
+
+  it("acknowledges a failed async payment without granting", async () => {
+    const result = await handleStripeEvent(
+      creditEvent({ type: "checkout.session.async_payment_failed" })
+    )
+
+    expect(result).toMatchObject({ handled: true })
+    expect(grantPurchase).not.toHaveBeenCalled()
+  })
+
+  it("leaves a non-credit checkout session to the subscription path", async () => {
+    subscriptionsRetrieve.mockResolvedValue(subscriptionRetrieveFixture)
+    promoteOrInsertFromSubscription.mockResolvedValue({ promoted: true })
+    queryRaw.mockResolvedValue([{ email: "cook@example.com" }])
+
+    await handleStripeEvent(checkoutCompletedFixture as unknown as Stripe.Event)
+
+    expect(grantPurchase).not.toHaveBeenCalled()
+    expect(promoteOrInsertFromSubscription).toHaveBeenCalledOnce()
+  })
+
+  it("refuses a session whose client_reference_id disagrees with its metadata", async () => {
+    const result = await handleStripeEvent(
+      creditEvent({ clientReferenceId: "3f1b0c1e-0000-4000-8000-000000000002" })
+    )
+
+    expect(result).toMatchObject({
+      handled: false,
+      reason: "credit_metadata_malformed",
+    })
+    expect(grantPurchase).not.toHaveBeenCalled()
+  })
+
+  for (const [label, amount] of [
+    ["non-numeric", "many"],
+    ["zero", "0"],
+    ["negative", "-500"],
+    ["fractional", "12.5"],
+  ] as const) {
+    it(`refuses a ${label} credit amount`, async () => {
+      const result = await handleStripeEvent(
+        creditEvent({
+          metadata: {
+            locus_credit_purchase: "true",
+            user_id: USER_ID,
+            credit_price_id: "price_5",
+            credit_amount_cents: amount,
+          },
+        })
+      )
+
+      expect(result).toMatchObject({ reason: "credit_metadata_malformed" })
+      expect(grantPurchase).not.toHaveBeenCalled()
+    })
+  }
+
+  it("treats a redelivered event as already granted rather than an error", async () => {
+    grantPurchase.mockResolvedValue({ granted: false })
+
+    const result = await handleStripeEvent(creditEvent())
+
+    expect(result).toMatchObject({ handled: true, creditsGranted: false })
+  })
+
+  it("acknowledges a purchase that outlived its user account", async () => {
+    grantPurchase.mockRejectedValue(
+      Object.assign(new Error("insert or update violates foreign key"), {
+        code: "23503",
+      })
+    )
+
+    const result = await handleStripeEvent(creditEvent())
+
+    expect(result).toMatchObject({ handled: true, creditsGranted: false })
+  })
+
+  it("rethrows an unexpected database failure so Stripe retries", async () => {
+    grantPurchase.mockRejectedValue(new Error("connection reset"))
+
+    await expect(handleStripeEvent(creditEvent())).rejects.toThrow(
+      "connection reset"
+    )
   })
 })

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest"
 
-import { architecture } from "./architecture"
+import { appTour } from "./app-tour"
 import { authCopy } from "./auth"
-import { changelog } from "./changelog"
 import { download } from "./download"
 import { hero } from "./hero"
 import { manifesto } from "./manifesto"
+import { packs } from "./packs"
 import { pricing } from "./pricing"
 import { privacy } from "./privacy"
 import { terms } from "./terms"
@@ -33,7 +33,6 @@ const BANNED: Array<[name: string, pattern: RegExp]> = [
 // Registration is manual — a content module that isn't listed here is
 // silently unlinted. Add every new src/content module.
 const MODULES: Record<string, unknown> = {
-  architecture,
   authCopy,
   hero,
   manifesto,
@@ -41,7 +40,8 @@ const MODULES: Record<string, unknown> = {
   download,
   privacy,
   terms,
-  changelog,
+  appTour,
+  packs,
 }
 
 describe("dead vocabulary", () => {

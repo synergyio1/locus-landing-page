@@ -4,7 +4,9 @@ import { test, expect } from "@playwright/test"
 const ROUTES = [
   "/",
   "/pricing",
-  "/changelog",
+  "/app",
+  "/packs",
+  "/packs/relentless",
   "/download",
   "/privacy",
   "/terms",

@@ -224,7 +224,7 @@ Verified against the live code 2026-07-06. **No page code changes in this doc pa
 3. **iOS companion** — old claim, no evidence in product repo. Confirm with the user before it appears anywhere.
 4. **New screenshots** — Routines, Memory, Presence captures needed from `pomodoro-preview/marketing/` pipeline.
 5. **Real customer quotes** — capture during beta; unblocks social proof.
-6. **Stripe prices** — create/confirm the **$3 monthly** and **$30 yearly** Stripe prices and point `STRIPE_PRICE_MONTHLY` / `STRIPE_PRICE_YEARLY` at them (Vercel env, not in repo). No Stripe product for Remote credits on the site — that flow is app + `locus-api`.
+6. **Stripe prices** — create/confirm the **$3 monthly** and **$30 yearly** Stripe prices and point `STRIPE_PRICE_MONTHLY` / `STRIPE_PRICE_YEARLY` at them (Vercel env, not in repo). Remote credit packs ($5/$10/$20 one-time) are sold from `/account` too as of 2026-08-20 — set `STRIPE_CREDIT_PRICE_IDS` to the live ladder in Vercel. The site creates the Checkout session and grants into the same `app.credit_ledger` the Mac app reads, so a balance bought either way is one balance.
 
 ---
 

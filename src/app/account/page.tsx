@@ -5,9 +5,12 @@ import { buttonVariants } from "@/components/ui/button"
 import { MAC_DOWNLOAD_URL } from "@/content/download"
 import { deriveAccountView, type PlanLabel } from "@/lib/account/derive"
 import { loadAccountSnapshot } from "@/lib/account/snapshot"
+import { listCreditPacks } from "@/lib/stripe/credits"
 import { createServerClient } from "@/lib/supabase/server"
 import { cn } from "@/lib/utils"
 
+import { BuyCreditsButtons } from "./buy-credits-buttons"
+import { CreditBalance } from "./credit-balance"
 import { ManageSubscriptionButton } from "./manage-subscription-button"
 import { SignOutButton } from "./sign-out-button"
 import { StartTrialButton } from "./start-trial-button"
@@ -35,7 +38,10 @@ export default async function AccountPage({
     redirect("/login?next=/account")
   }
 
-  const snapshot = await loadAccountSnapshot(user.id, user.email ?? "")
+  const [snapshot, creditPacks] = await Promise.all([
+    loadAccountSnapshot(user.id, user.email ?? ""),
+    listCreditPacks(),
+  ])
   const view = deriveAccountView(snapshot)
 
   const params = (await searchParams) ?? {}
@@ -46,6 +52,7 @@ export default async function AccountPage({
       : welcomeParam === "trial"
         ? "trial"
         : null
+  const creditsPending = params.credits === "pending"
 
   return (
     <section className="mx-auto max-w-2xl px-6 pt-32 pb-24 md:pt-40 md:pb-32">
@@ -142,30 +149,39 @@ export default async function AccountPage({
         <SignOutButton />
       </div>
 
-      {/* Remote credits sit on top of any license state, so this shows for
-          free, trial, and paid alike. Purchase flow lands later — the Mac
-          app's Settings → Account already sells them; this is a placeholder. */}
+      {/* Remote credits sit on top of any license state (ADR-0010), so this
+          shows for free, trial, and paid alike. The same ledger backs the Mac
+          app's Settings → Account, so a balance bought here shows up there. */}
       <section
         aria-labelledby="remote-credits-heading"
         data-testid="remote-credits-card"
         className="mt-10 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-5 py-4"
       >
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2
             id="remote-credits-heading"
             className="text-sm font-semibold text-[var(--fg)]"
           >
             Remote credits
           </h2>
-          <span className="rounded-full bg-[var(--surface-raised)] px-2 py-0.5 font-mono text-[0.65rem] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
-            Coming soon
-          </span>
+          <CreditBalance
+            balanceCents={snapshot.creditBalanceCents}
+            checkoutPending={creditsPending}
+          />
         </div>
         <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)]">
-          Prepaid credits for Locus Remote — buy any amount, spend them as you
-          use the AI.
+          {snapshot.creditBalanceCents > 0
+            ? "Prepaid balance for Locus Remote — spend it as you use the AI."
+            : "Prepaid credits for Locus Remote — add a pack, spend it as you use the AI."}
         </p>
-        <p className="mt-1 text-sm leading-relaxed text-[var(--muted-foreground)]">
+        {creditPacks.length > 0 ? (
+          <BuyCreditsButtons packs={creditPacks} />
+        ) : (
+          <p className="mt-2 text-sm leading-relaxed text-[var(--muted-foreground)]">
+            Add credits from the Mac app — Settings → Account.
+          </p>
+        )}
+        <p className="mt-3 text-sm leading-relaxed text-[var(--muted-foreground)]">
           Bring your own AI (Claude Code, Codex, or an API key) and there&apos;s
           nothing to buy.
         </p>

@@ -87,8 +87,8 @@ describe("manifesto content", () => {
       manifesto.decisionsHeading,
       manifesto.decisionsIntro,
       ...manifesto.decisions.flatMap((d) => [d.title, d.summary]),
-      manifesto.deepDive.text,
-      manifesto.deepDive.linkLabel,
+      manifesto.blog.text,
+      manifesto.blog.linkLabel,
       manifesto.signature.closing,
     ]
     const words = strings
@@ -185,6 +185,9 @@ describe("manifesto content", () => {
     // "Choose your model" the same day. "Plug in your own tools" joined the
     // leave-open pair on 2026-08-20 (product ADR-0015) — it sits beside
     // "Routines are files" because both are the part left open for you.
+    // Note it names a decision, not a shipped surface: ADR-0015 is accepted,
+    // the Settings allowance isn't built yet (Luis's call to state it plainly
+    // anyway; the "Shipping next" chip that hedged it was cut the same day).
     expect(manifesto.decisions.map((d) => d.id)).toEqual([
       "build-the-armor",
       "choose-your-model",
@@ -203,12 +206,13 @@ describe("manifesto content", () => {
     }
   })
 
-  it("hands the reader off to the architecture tab for the long form", () => {
-    // Was a "design ideas blog (coming soon)" pointer until 2026-08-20; the
-    // tab exists now, so the line links rather than promises.
-    expect(manifesto.deepDive.href).toBe("/architecture")
-    expect(manifesto.deepDive.linkLabel).toMatch(/architecture decisions/i)
-    expect(JSON.stringify(manifesto.deepDive)).not.toMatch(/coming soon/i)
+  it("points at the design-ideas blog, linking only once an href exists", () => {
+    expect(manifesto.blog.linkLabel).toMatch(/design ideas blog/i)
+    if (manifesto.blog.href !== undefined) {
+      expect(manifesto.blog.href).toMatch(/^(\/|https?:\/\/)/)
+    } else {
+      expect(manifesto.blog.pendingNote).toBe("(coming soon)")
+    }
   })
 
   it("signs off with the founder's name only", () => {

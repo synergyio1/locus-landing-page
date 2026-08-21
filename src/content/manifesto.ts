@@ -35,13 +35,6 @@ export type ManifestoDecision = {
   id: string
   title: string
   summary: string
-  /**
-   * Small chip after the title for a decision that is settled but not yet
-   * shipped. Pinned against `architecture.ts` in architecture.test.ts: a
-   * decision whose deep dive says `status: "next"` must carry one, and a
-   * shipped decision must not — so the chip disappears by editing one word.
-   */
-  note?: string
 }
 
 export type ManifestoContent = {
@@ -71,21 +64,19 @@ export type ManifestoContent = {
    * Every summary must fit two lines in the letter column at >=1280w (~165
    * chars max, verified in-browser) — Luis's cap.
    *
-   * This is the short form. The reasoning for each one — what was on the
-   * table, what it costs — lives on /architecture, keyed by these same ids
-   * (src/content/architecture.ts); adding a decision here without a deep
-   * dive there throws at import.
+   * A long-form "Architecture decisions" tab — each one argued out as
+   * question / choice / why / cost — was built and then pulled the same day
+   * (Luis: "it was just to record to do it later"). The draft page and
+   * content module are recoverable at commit bb307b6.
    */
   decisions: ManifestoDecision[]
-  /**
-   * The line under the list that hands the reader off to the long form.
-   * Was a "design ideas blog (coming soon)" pointer until 2026-08-20, when
-   * the /architecture tab made it real.
-   */
-  deepDive: {
+  blog: {
     text: string
     linkLabel: string
-    href: string
+    /** Set once the design-ideas blog exists; until then the text renders plain. */
+    href?: string
+    /** Shown after the label only while `href` is unset. */
+    pendingNote?: string
   }
   signature: {
     closing: string
@@ -256,9 +247,8 @@ export const manifesto: ManifestoContent = {
     {
       id: "external-tools",
       title: "Plug in your own tools.",
-      note: "Shipping next",
       summary:
-        "The MCP servers you already connected to your harness — Notion, Linear, your own — can be switched on for Locus too. An OS is what you plug your own parts into.",
+        "The MCP servers you already connected to your harness — Notion, Linear, your own — work in Locus too. You switch on the ones that make sense for your setup.",
     },
     {
       id: "gets-to-know-you",
@@ -273,10 +263,11 @@ export const manifesto: ManifestoContent = {
         "Local-first and private by design: your data, your routines, and everything Locus knows about you stay on your device. You only log in for the subscription.",
     },
   ],
-  deepDive: {
-    text: "The reasoning behind each one — what was on the table, and what it costs you — is written out in full under",
-    linkLabel: "architecture decisions",
-    href: "/architecture",
+  blog: {
+    text: "For the reasoning behind each of these, be sure to check our",
+    linkLabel: "design ideas blog",
+    // href: "/blog", — set once the blog exists; the pending note drops out by itself.
+    pendingNote: "(coming soon)",
   },
   signature: {
     closing: "We hope you enjoy it.",
