@@ -114,7 +114,10 @@ export async function loadAccountSnapshot(
 
   const subscription = subscriptionRow
     ? {
-        user_id: subscriptionRow.user_id,
+        // The column is nullable now that organizations can own a subscription
+        // (ADR-0016), but this row was fetched *by* user_id, so it is this
+        // user's personal subscription by construction.
+        user_id: subscriptionRow.user_id ?? userId,
         status: subscriptionRow.status,
         current_period_end: toIso(subscriptionRow.current_period_end),
         cancel_at: toIso(subscriptionRow.cancel_at),

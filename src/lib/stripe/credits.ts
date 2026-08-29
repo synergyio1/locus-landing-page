@@ -2,6 +2,7 @@ import "server-only"
 
 import { getStripeClient } from "./client"
 import { getOrCreateCustomer } from "./customer"
+import { APP } from "./events/app-guard"
 
 // Locus Remote credit packs are prepaid one-time purchases that sit on top of
 // any license state (ADR-0010) — free, trial, and paid users can all buy them.
@@ -133,10 +134,18 @@ export async function createCreditCheckoutSession({
       // stands at settlement time — a later Stripe price edit cannot
       // retroactively change what an already-signed session is worth.
       metadata: {
+        app: APP,
         locus_credit_purchase: "true",
         user_id: userId,
         credit_price_id: priceId,
         credit_amount_cents: String(pack.unitAmountCents),
+      },
+      // A one-time charge takes its statement descriptor from the PaymentIntent
+      // (subscription renewals take theirs from the Product instead). The
+      // account prefix "STL" is prepended by Stripe: "STL* LOCUS APP".
+      payment_intent_data: {
+        metadata: { app: APP, locus_credit_purchase: "true", user_id: userId },
+        statement_descriptor_suffix: "LOCUS APP",
       },
       success_url: `${origin}/account?credits=pending`,
       cancel_url: `${origin}/account`,

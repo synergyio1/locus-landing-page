@@ -13,6 +13,7 @@ import { sendPaymentFailed } from "@/lib/mail/sendPaymentFailed"
 import { sendWelcome } from "@/lib/mail/sendWelcome"
 
 import { getStripeClient } from "../client"
+import { isForeignEvent } from "./app-guard"
 
 export type HandleEventResult =
   | {
@@ -30,6 +31,8 @@ export type HandleEventResult =
         | "subscription_not_found"
         | "credit_session_unpaid"
         | "credit_metadata_malformed"
+        | "foreign_app"
+        | "not_our_customer"
     }
 
 // Credit purchases are payment-mode Checkout sessions carrying the metadata
@@ -43,6 +46,15 @@ function isCreditPurchase(session: Stripe.Checkout.Session): boolean {
 export async function handleStripeEvent(
   event: Stripe.Event
 ): Promise<HandleEventResult> {
+  // First gate, before any handler runs. Another app's event is not an error —
+  // it is simply not ours, so it is acknowledged (the route returns 200) rather
+  // than retried. Throwing or returning 5xx here would make Stripe retry for
+  // three days and eventually disable this endpoint, taking Locus billing down
+  // over a sale that belonged to a sibling product.
+  if (isForeignEvent(event)) {
+    return { handled: false, type: event.type, reason: "foreign_app" }
+  }
+
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object as Stripe.Checkout.Session
@@ -115,10 +127,31 @@ function currentPeriodEndOf(subscription: Stripe.Subscription): number | null {
 async function handleCheckoutSessionCompleted(
   session: Stripe.Checkout.Session
 ): Promise<HandleEventResult> {
-  const userId = session.client_reference_id
+  // `client_reference_id` is a single unnamespaced string: on a Stripe account
+  // shared by several products, every app's sessions carry one and nothing
+  // distinguishes them. So identity comes from `metadata.user_id` first — a
+  // namespaced key, and the same contract locus-api's webhook uses — with
+  // client_reference_id as the fallback for sessions created before the
+  // metadata existed. When both are present they must agree; a mismatch means
+  // the session was not built by us and is refused rather than guessed at.
+  const metadataUserId = session.metadata?.user_id
+  const referenceUserId = session.client_reference_id ?? undefined
+  if (metadataUserId && referenceUserId && metadataUserId !== referenceUserId) {
+    console.error(
+      `[stripe-webhook] checkout.session.completed has conflicting user ids (session ${session.id})`,
+      { metadataUserId, referenceUserId }
+    )
+    return {
+      handled: false,
+      type: "checkout.session.completed",
+      reason: "missing_client_reference_id",
+    }
+  }
+
+  const userId = metadataUserId ?? referenceUserId
   if (!userId) {
     console.error(
-      `[stripe-webhook] checkout.session.completed missing client_reference_id (session ${session.id})`
+      `[stripe-webhook] checkout.session.completed has no user id in metadata or client_reference_id (session ${session.id})`
     )
     return {
       handled: false,
@@ -342,6 +375,32 @@ function buildAccountUrl(): string {
 async function handleInvoicePaymentFailed(
   invoice: Stripe.Invoice
 ): Promise<HandleEventResult> {
+  // Ownership check, not just an app-tag check. `metadata.app` only exists on
+  // objects created after the tag was introduced, and this handler sends mail
+  // to a human — so it verifies against our own table instead of trusting an
+  // absent tag. Without this, a failed card on ANY product in the shared Stripe
+  // account produced a Locus-branded dunning email to someone who never bought
+  // Locus.
+  const customerId = customerIdOf(invoice.customer ?? null)
+  if (!customerId) {
+    console.warn(
+      `[stripe-webhook] payment_failed has no customer (invoice ${invoice.id})`
+    )
+    return { handled: true, type: "invoice.payment_failed" }
+  }
+
+  const owned = await SubscriptionsRepo.findByCustomerId(customerId)
+  if (!owned) {
+    console.log(
+      `[stripe-webhook] ignoring payment_failed for customer ${customerId} — not a Locus customer (invoice ${invoice.id})`
+    )
+    return {
+      handled: false,
+      type: "invoice.payment_failed",
+      reason: "not_our_customer",
+    }
+  }
+
   const recipientEmail = recipientEmailFromInvoice(invoice)
   if (!recipientEmail) {
     console.warn(

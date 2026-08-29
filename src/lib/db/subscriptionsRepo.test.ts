@@ -174,3 +174,50 @@ describe("SubscriptionsRepo.markCanceledBySubscriptionId", () => {
     expect(result).toBeNull()
   })
 })
+
+describe("SubscriptionsRepo.findByOrgId", () => {
+  it("finds the organization's row by organization, not by its admin", async () => {
+    findUnique.mockResolvedValue({ id: "s1", org_id: "org1", user_id: null })
+
+    const row = await SubscriptionsRepo.findByOrgId("org1")
+
+    expect(row).toMatchObject({ org_id: "org1", user_id: null })
+    expect(findUnique).toHaveBeenCalledWith({ where: { org_id: "org1" } })
+  })
+
+  it("returns null when the organization has no subscription row", async () => {
+    findUnique.mockResolvedValue(null)
+    expect(await SubscriptionsRepo.findByOrgId("org1")).toBeNull()
+  })
+})
+
+describe("SubscriptionsRepo.claimOrFetchForOrg", () => {
+  it("claims a fresh incomplete placeholder with the requested seat count", async () => {
+    queryRaw.mockResolvedValue([{ id: "s1", org_id: "org1", quantity: 3 }])
+
+    const { row, claimed } = await SubscriptionsRepo.claimOrFetchForOrg("org1", 3)
+
+    expect(claimed).toBe(true)
+    expect(row).toMatchObject({ org_id: "org1", quantity: 3 })
+    expect(findUnique).not.toHaveBeenCalled()
+  })
+
+  it("falls back to the existing row when another request claimed it first", async () => {
+    queryRaw.mockResolvedValue([])
+    findUnique.mockResolvedValue({ id: "s1", org_id: "org1", quantity: 5 })
+
+    const { row, claimed } = await SubscriptionsRepo.claimOrFetchForOrg("org1", 3)
+
+    expect(claimed).toBe(false)
+    expect(row).toMatchObject({ quantity: 5 })
+  })
+
+  it("throws when the row vanishes between claim and re-read", async () => {
+    queryRaw.mockResolvedValue([])
+    findUnique.mockResolvedValue(null)
+
+    await expect(
+      SubscriptionsRepo.claimOrFetchForOrg("org1", 3)
+    ).rejects.toThrow(/disappeared between claim and re-read/)
+  })
+})

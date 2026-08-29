@@ -3,6 +3,7 @@ import "server-only"
 import { SubscriptionsRepo } from "@/lib/db/subscriptionsRepo"
 
 import { getStripeClient } from "./client"
+import { APP } from "./events/app-guard"
 
 export type GetOrCreateCustomerParams = {
   userId: string
@@ -42,7 +43,9 @@ export async function getOrCreateCustomer({
   const stripe = getStripeClient()
   const customer = await stripe.customers.create({
     email,
-    metadata: { supabase_user_id: userId },
+    // `app` marks which Synergy IO product owns this customer on the shared
+    // Stripe account; handlers use it to recognise a stranger's customer id.
+    metadata: { app: APP, supabase_user_id: userId },
   })
 
   await SubscriptionsRepo.attachStripeCustomer(userId, customer.id)

@@ -3,6 +3,7 @@ import type Stripe from "stripe"
 
 import { StripeEventsRepo } from "@/lib/db/stripeEventsRepo"
 import { getStripeClient } from "@/lib/stripe/client"
+import { isForeignEvent } from "@/lib/stripe/events/app-guard"
 import { handleStripeEvent } from "@/lib/stripe/events/handle"
 
 export const runtime = "nodejs"
@@ -33,6 +34,13 @@ export async function POST(request: NextRequest) {
     return new NextResponse("Invalid signature", { status: 400 })
   }
 
+  // Another app's event on the shared Synergy IO account. Acknowledged without
+  // being recorded: storing it would copy a sibling product's customer name,
+  // email and billing address into the Locus database for no reason.
+  if (isForeignEvent(event)) {
+    return NextResponse.json({ received: true, ignored: "foreign_app" })
+  }
+
   const { claimed, processedAt } = await StripeEventsRepo.recordIfNew(
     event.id,
     event.type,
@@ -43,10 +51,15 @@ export async function POST(request: NextRequest) {
     if (processedAt) {
       return NextResponse.json({ received: true, duplicate: true })
     }
-    // A prior delivery claimed the row but hasn't finished processing (or
-    // failed). Return non-200 so Stripe retries; a future delivery will
-    // re-run the handler and stamp processed_at on success.
-    return new NextResponse("Webhook in flight", { status: 409 })
+    // The row exists but was never marked processed, so a prior delivery
+    // claimed it and then failed. Fall through and re-run the handler: the
+    // claim is not a lock, and refusing here would strand the event forever
+    // (every retry would take this branch and nothing would ever reprocess it).
+    // Handlers are individually idempotent, so a genuine concurrent delivery
+    // re-running is safe; a permanently unprocessed payment is not.
+    console.warn(
+      `[stripe-webhook] retrying previously-failed event ${event.id} (${event.type})`
+    )
   }
 
   try {

@@ -14,6 +14,7 @@ const {
   promoteOrInsertFromSubscription,
   updateBySubscriptionId,
   markCanceledBySubscriptionId,
+  findByCustomerId,
   queryRaw,
   subscriptionsRetrieve,
   sendWelcomeMock,
@@ -24,6 +25,7 @@ const {
   promoteOrInsertFromSubscription: vi.fn(),
   updateBySubscriptionId: vi.fn(),
   markCanceledBySubscriptionId: vi.fn(),
+  findByCustomerId: vi.fn(),
   queryRaw: vi.fn(),
   subscriptionsRetrieve: vi.fn(),
   sendWelcomeMock: vi.fn(),
@@ -36,6 +38,7 @@ vi.mock("@/lib/db/subscriptionsRepo", () => ({
     promoteOrInsertFromSubscription,
     updateBySubscriptionId,
     markCanceledBySubscriptionId,
+    findByCustomerId,
   },
 }))
 
@@ -81,6 +84,10 @@ describe("handleStripeEvent", () => {
     promoteOrInsertFromSubscription.mockReset()
     updateBySubscriptionId.mockReset()
     markCanceledBySubscriptionId.mockReset()
+    findByCustomerId.mockReset()
+    // Default: the invoice's customer IS ours. The tests that care about the
+    // shared-account case override this with null.
+    findByCustomerId.mockResolvedValue({ user_id: "user_ada" })
     queryRaw.mockReset()
     subscriptionsRetrieve.mockReset()
     sendWelcomeMock.mockReset()
@@ -619,6 +626,178 @@ describe("handleStripeEvent — credit purchases", () => {
 
     await expect(handleStripeEvent(creditEvent())).rejects.toThrow(
       "connection reset"
+    )
+  })
+})
+
+// ── Shared Stripe account: cross-app isolation ──────────────────────────────
+// The Synergy IO account carries Locus and Shoulders of Giants (and will carry
+// more). A webhook endpoint filters by event TYPE only, so this handler is
+// delivered every app's events and has to recognise which are its own.
+describe("handleStripeEvent on a shared Stripe account", () => {
+  beforeEach(() => {
+    promoteOrInsertFromSubscription.mockReset()
+    updateBySubscriptionId.mockReset()
+    markCanceledBySubscriptionId.mockReset()
+    findByCustomerId.mockReset()
+    sendPaymentFailedMock.mockReset()
+    sendPaymentFailedMock.mockResolvedValue(undefined)
+    sendWelcomeMock.mockReset()
+    sendWelcomeMock.mockResolvedValue(undefined)
+  })
+
+  it("ignores a subscription event tagged for another app without touching the DB", async () => {
+    const foreign = {
+      ...subscriptionPriceswapFixture,
+      data: {
+        ...subscriptionPriceswapFixture.data,
+        object: {
+          ...subscriptionPriceswapFixture.data.object,
+          metadata: { app: "sog" },
+        },
+      },
+    }
+
+    const result = await handleStripeEvent(foreign as unknown as Stripe.Event)
+
+    expect(result).toEqual({
+      handled: false,
+      type: "customer.subscription.updated",
+      reason: "foreign_app",
+    })
+    expect(updateBySubscriptionId).not.toHaveBeenCalled()
+  })
+
+  it("still handles our own subscription event when it carries our tag", async () => {
+    updateBySubscriptionId.mockResolvedValue({ user_id: "user_ada" })
+    const ours = {
+      ...subscriptionPriceswapFixture,
+      data: {
+        ...subscriptionPriceswapFixture.data,
+        object: {
+          ...subscriptionPriceswapFixture.data.object,
+          metadata: { app: "locus" },
+        },
+      },
+    }
+
+    const result = await handleStripeEvent(ours as unknown as Stripe.Event)
+
+    expect(result.handled).toBe(true)
+    expect(updateBySubscriptionId).toHaveBeenCalledTimes(1)
+  })
+
+  it("does not email a dunning notice to a customer that is not ours", async () => {
+    // The regression this locks down: `invoice.payment_failed` had no ownership
+    // check at all, so a declined card on ANY product in the shared account
+    // sent that buyer a Locus-branded payment-failed email.
+    findByCustomerId.mockResolvedValue(null)
+
+    const result = await handleStripeEvent(
+      invoicePaymentFailedFixture as unknown as Stripe.Event
+    )
+
+    expect(result).toEqual({
+      handled: false,
+      type: "invoice.payment_failed",
+      reason: "not_our_customer",
+    })
+    expect(sendPaymentFailedMock).not.toHaveBeenCalled()
+  })
+
+  it("emails the dunning notice when the customer IS ours", async () => {
+    findByCustomerId.mockResolvedValue({ user_id: "user_ada" })
+
+    const result = await handleStripeEvent(
+      invoicePaymentFailedFixture as unknown as Stripe.Event
+    )
+
+    expect(result).toEqual({ handled: true, type: "invoice.payment_failed" })
+    expect(findByCustomerId).toHaveBeenCalledWith("cus_RaBcDeFgH")
+    expect(sendPaymentFailedMock).toHaveBeenCalledTimes(1)
+  })
+})
+
+describe("checkout.session.completed identity resolution", () => {
+  beforeEach(() => {
+    promoteOrInsertFromSubscription.mockReset()
+    subscriptionsRetrieve.mockReset()
+    queryRaw.mockReset()
+    sendWelcomeMock.mockReset()
+    sendWelcomeMock.mockResolvedValue(undefined)
+  })
+
+  it("resolves identity from metadata.user_id when client_reference_id is absent", async () => {
+    // metadata is namespaced; client_reference_id is a bare string that every
+    // app on the shared account also sets. Metadata alone is sufficient.
+    subscriptionsRetrieve.mockResolvedValueOnce(subscriptionRetrieveFixture)
+    promoteOrInsertFromSubscription.mockResolvedValueOnce({ promoted: true })
+    const event = {
+      ...checkoutCompletedFixture,
+      data: {
+        object: {
+          ...checkoutCompletedFixture.data.object,
+          client_reference_id: null,
+          metadata: { app: "locus", user_id: "user-from-metadata" },
+        },
+      },
+    }
+
+    await handleStripeEvent(event as unknown as Stripe.Event)
+
+    expect(promoteOrInsertFromSubscription.mock.calls[0][0]).toBe(
+      "user-from-metadata"
+    )
+  })
+
+  it("accepts a session where metadata and client_reference_id agree", async () => {
+    subscriptionsRetrieve.mockResolvedValueOnce(subscriptionRetrieveFixture)
+    promoteOrInsertFromSubscription.mockResolvedValueOnce({ promoted: true })
+    const event = {
+      ...checkoutCompletedFixture,
+      data: {
+        object: {
+          ...checkoutCompletedFixture.data.object,
+          metadata: { app: "locus", user_id: "user-uuid-123" },
+        },
+      },
+    }
+
+    await handleStripeEvent(event as unknown as Stripe.Event)
+
+    expect(promoteOrInsertFromSubscription.mock.calls[0][0]).toBe("user-uuid-123")
+  })
+
+  it("refuses a session whose metadata and client_reference_id disagree", async () => {
+    const event = {
+      ...checkoutCompletedFixture,
+      data: {
+        object: {
+          ...checkoutCompletedFixture.data.object,
+          client_reference_id: "user-a",
+          metadata: { app: "locus", user_id: "user-b" },
+        },
+      },
+    }
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {})
+
+    const result = await handleStripeEvent(event as unknown as Stripe.Event)
+    errSpy.mockRestore()
+
+    expect(result.handled).toBe(false)
+    expect(promoteOrInsertFromSubscription).not.toHaveBeenCalled()
+  })
+
+  it("still accepts a legacy session that only has client_reference_id", async () => {
+    subscriptionsRetrieve.mockResolvedValueOnce(subscriptionRetrieveFixture)
+    promoteOrInsertFromSubscription.mockResolvedValueOnce({ promoted: true })
+
+    await handleStripeEvent(
+      checkoutCompletedFixture as unknown as Stripe.Event
+    )
+
+    expect(promoteOrInsertFromSubscription.mock.calls[0][0]).toBe(
+      "user-uuid-123"
     )
   })
 })

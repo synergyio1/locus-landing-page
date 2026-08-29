@@ -29,6 +29,59 @@ export const SubscriptionsRepo = {
     return prisma.subscriptions.findUnique({ where: { user_id: userId } })
   },
 
+  /**
+   * Organization-owned rows are found by organization, never by the admin's
+   * user id — admins come and go, and the subscription belongs to the company.
+   */
+  async findByOrgId(orgId: string): Promise<SubscriptionRow | null> {
+    return prisma.subscriptions.findUnique({ where: { org_id: orgId } })
+  },
+
+  /**
+   * Is this Stripe customer ours at all?
+   *
+   * The Stripe account is shared with other Synergy IO products, so a webhook
+   * for a customer we have never seen belongs to a sibling app. `findFirst`
+   * rather than `findUnique`: a customer id can appear on both a personal and
+   * an organization row, and either one proves ownership.
+   */
+  async findByCustomerId(
+    stripeCustomerId: string
+  ): Promise<SubscriptionRow | null> {
+    return prisma.subscriptions.findFirst({
+      where: { stripe_customer_id: stripeCustomerId },
+    })
+  },
+
+  /**
+   * Mirrors `claimOrFetch` for organizations: an `incomplete` placeholder exists
+   * from the moment the organization does, so an abandoned Checkout leaves a
+   * recoverable "finish setup" state rather than nothing at all. `incomplete` is
+   * not an entitling status, so it licenses nobody in the meantime.
+   */
+  async claimOrFetchForOrg(
+    orgId: string,
+    quantity: number
+  ): Promise<{ row: SubscriptionRow; claimed: boolean }> {
+    const inserted = await prisma.$queryRaw<SubscriptionRow[]>`
+      insert into app.subscriptions (org_id, stripe_customer_id, status, quantity)
+      values (${orgId}::uuid, '', 'incomplete', ${quantity})
+      on conflict (org_id) do nothing
+      returning *
+    `
+    if (inserted.length > 0) return { row: inserted[0], claimed: true }
+
+    const existing = await prisma.subscriptions.findUnique({
+      where: { org_id: orgId },
+    })
+    if (!existing) {
+      throw new Error(
+        `subscriptions row for organization ${orgId} disappeared between claim and re-read`
+      )
+    }
+    return { row: existing, claimed: false }
+  },
+
   async insertWithCustomer(
     userId: string,
     stripeCustomerId: string

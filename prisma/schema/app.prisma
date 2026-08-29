@@ -33,24 +33,78 @@ model stripe_events {
   @@schema("app")
 }
 
+/// One subscription, owned by EXACTLY ONE of a user (personal) or an organization
+/// (teams) — see ADR-0016. The database enforces that XOR; Prisma cannot express it.
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 /// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
 model subscriptions {
-  user_id                String    @unique(map: "subscriptions_user_id_unique") @db.Uuid
+  /// Surrogate key. Required because user_id is nullable for organization-owned
+  /// rows, and Prisma Client needs one stable record identifier.
+  id                     String         @id @default(uuid()) @db.Uuid
+  user_id                String?        @unique(map: "subscriptions_user_id_unique") @db.Uuid
+  org_id                 String?        @unique(map: "subscriptions_org_id_unique") @db.Uuid
   stripe_customer_id     String
-  stripe_subscription_id String?   @unique
+  stripe_subscription_id String?        @unique
   price_id               String?
   status                 String
-  current_period_end     DateTime? @db.Timestamptz(6)
-  cancel_at              DateTime? @db.Timestamptz(6)
-  trial_end              DateTime? @db.Timestamptz(6)
-  renewal_reminder_sent  Boolean   @default(false)
-  created_at             DateTime  @default(now()) @db.Timestamptz(6)
-  updated_at             DateTime  @default(now()) @db.Timestamptz(6)
-  users                  users     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction) @ignore
+  /// Frozen at 'standard'; organization rows are discriminated by org_id, not by plan.
+  plan                   String         @default("standard")
+  /// Stripe event.created of the newest delivery applied to this row. Guards
+  /// against an older webhook delivery overwriting newer state.
+  last_event_created     BigInt         @default(0)
+  /// Seats the organization is PAYING for — always >= seats assigned (high-water).
+  /// Falls only when an admin explicitly reduces it, never at renewal.
+  quantity               Int            @default(1)
+  current_period_end     DateTime?      @db.Timestamptz(6)
+  cancel_at              DateTime?      @db.Timestamptz(6)
+  trial_end              DateTime?      @db.Timestamptz(6)
+  renewal_reminder_sent  Boolean        @default(false)
+  created_at             DateTime       @default(now()) @db.Timestamptz(6)
+  updated_at             DateTime       @default(now()) @db.Timestamptz(6)
+  users                  users?         @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction) @ignore
+  organization           organizations? @relation(fields: [org_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([current_period_end], map: "subscriptions_renewal_window_idx", where: raw("(status = ANY (ARRAY['active'::text, 'trialing'::text]))"))
   @@index([user_id])
+  @@schema("app")
+}
+
+/// The billing and licensing boundary for a company (ADR-0016). Never a data
+/// boundary: nothing here records what a member does.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model organizations {
+  id            String          @id @default(uuid()) @db.Uuid
+  name          String
+  /// Belongs to the organization, not its creator, so invoices survive a founder leaving.
+  billing_email String
+  created_at    DateTime        @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime        @default(now()) @db.Timestamptz(6)
+  members       org_members[]
+  subscription  subscriptions?
+
+  @@schema("app")
+}
+
+/// One row per person per organization. `seat` and `admin` are independent.
+/// Seats join to auth.users on normalized_email at read time; admin additionally
+/// binds to a verified account (admin_user_id) on first sign-in.
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model org_members {
+  id               String        @id @default(uuid()) @db.Uuid
+  org_id           String        @db.Uuid
+  /// As typed, for display and outbound mail.
+  email            String
+  /// lower(btrim(email)); the join and uniqueness key, stored so raw SQL cannot drift.
+  normalized_email String
+  seat             Boolean       @default(false)
+  admin            Boolean       @default(false)
+  /// Null until that address signs in. An unbound admin row confers nothing.
+  admin_user_id    String?       @db.Uuid
+  created_at       DateTime      @default(now()) @db.Timestamptz(6)
+  updated_at       DateTime      @default(now()) @db.Timestamptz(6)
+  organization     organizations @relation(fields: [org_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([org_id, normalized_email], map: "org_members_org_email_key")
+  @@index([normalized_email], map: "org_members_normalized_email_idx")
   @@schema("app")
 }

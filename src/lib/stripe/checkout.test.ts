@@ -49,6 +49,8 @@ describe("createCheckoutSession", () => {
       customer_update: { address: "auto", name: "auto" },
       line_items: [{ price: "price_monthly_xyz", quantity: 1 }],
       client_reference_id: "u1",
+      metadata: { app: "locus", user_id: "u1" },
+      subscription_data: { metadata: { app: "locus", user_id: "u1" } },
       success_url: "locus://checkout-complete",
       cancel_url: "https://getlocus.tech/pricing",
       adaptive_pricing: { enabled: true },

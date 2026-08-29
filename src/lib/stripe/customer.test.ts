@@ -69,7 +69,7 @@ describe("getOrCreateCustomer", () => {
     expect(id).toBe("cus_new")
     expect(customersCreate).toHaveBeenCalledWith({
       email: "cook@example.com",
-      metadata: { supabase_user_id: "u1" },
+      metadata: { app: "locus", supabase_user_id: "u1" },
     })
     expect(attachStripeCustomer).toHaveBeenCalledWith("u1", "cus_new")
   })

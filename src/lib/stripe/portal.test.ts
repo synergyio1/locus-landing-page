@@ -24,6 +24,7 @@ describe("createPortalSession", () => {
     portalSessionsCreate.mockReset()
     findByUserId.mockReset()
     process.env.NEXT_PUBLIC_SITE_URL = "https://getlocus.tech"
+    process.env.STRIPE_PORTAL_CONFIG_LOCUS = "bpc_locus"
   })
 
   afterEach(() => {
@@ -47,6 +48,7 @@ describe("createPortalSession", () => {
     expect(url).toBe("https://billing.stripe.com/p/session/abc")
     expect(portalSessionsCreate).toHaveBeenCalledWith({
       customer: "cus_existing",
+      configuration: "bpc_locus",
       return_url: "https://getlocus.tech/account",
     })
   })

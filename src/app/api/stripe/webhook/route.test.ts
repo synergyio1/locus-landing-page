@@ -137,17 +137,53 @@ describe("POST /api/stripe/webhook", () => {
     expect(markProcessed).not.toHaveBeenCalled()
   })
 
-  it("on retried delivery while a prior attempt left processed_at null: returns non-200 so Stripe retries again", async () => {
+  it("on retried delivery while a prior attempt left processed_at null: re-runs the handler instead of stranding the event", async () => {
+    // The claim row is not a lock. A first delivery that claimed the row and
+    // then threw leaves processed_at null forever; refusing to reprocess here
+    // meant every subsequent Stripe retry short-circuited and the payment was
+    // never provisioned. Handlers are idempotent, so re-running is the safe
+    // side of that trade.
     constructEvent.mockReturnValue(checkoutCompletedFixture)
     recordIfNew.mockResolvedValueOnce({ claimed: false, processedAt: null })
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {})
 
     const response = await POST(
       postWebhook(JSON.stringify(checkoutCompletedFixture))
     )
 
-    expect(response.status).not.toBe(200)
+    expect(response.status).toBe(200)
+    expect(handleStripeEventMock).toHaveBeenCalledTimes(1)
+    expect(markProcessed).toHaveBeenCalledWith(checkoutCompletedFixture.id)
+    warnSpy.mockRestore()
+  })
+
+  it("acknowledges another app's event without recording it", async () => {
+    // The Stripe account is shared with Shoulders of Giants, and both endpoints
+    // subscribe to the same event types. A foreign event must return 200 (a
+    // non-200 would put THIS endpoint into Stripe's retry-then-disable path)
+    // and must not land in app.stripe_events, which would copy another
+    // product's customer PII into the Locus database.
+    const foreign = {
+      ...checkoutCompletedFixture,
+      data: {
+        ...checkoutCompletedFixture.data,
+        object: {
+          ...checkoutCompletedFixture.data.object,
+          metadata: { app: "sog" },
+        },
+      },
+    }
+    constructEvent.mockReturnValue(foreign)
+
+    const response = await POST(postWebhook(JSON.stringify(foreign)))
+
+    expect(response.status).toBe(200)
+    expect(await response.json()).toEqual({
+      received: true,
+      ignored: "foreign_app",
+    })
+    expect(recordIfNew).not.toHaveBeenCalled()
     expect(handleStripeEventMock).not.toHaveBeenCalled()
-    expect(markProcessed).not.toHaveBeenCalled()
   })
 
   it("returns 500 when STRIPE_WEBHOOK_SECRET is not configured", async () => {
