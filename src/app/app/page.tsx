@@ -100,12 +100,14 @@ export default function AppPage() {
           >
             {appTour.cta.label}
           </Link>
-          <Link
-            href={appTour.secondaryCta.href}
-            className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
-          >
-            {appTour.secondaryCta.label}
-          </Link>
+          {appTour.secondaryCta ? (
+            <Link
+              href={appTour.secondaryCta.href}
+              className={cn(buttonVariants({ size: "lg", variant: "outline" }))}
+            >
+              {appTour.secondaryCta.label}
+            </Link>
+          ) : null}
         </div>
       </SpringReveal>
     </PageShell>

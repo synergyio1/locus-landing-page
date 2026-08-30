@@ -1,5 +1,6 @@
 // The founder statement that replaces the old scroll narrative on the home
-// page (2026-08-17; "struggle" section rewritten 2026-08-19). Superlogical-
+// page (2026-08-17; "struggle" section rewritten 2026-08-19; "tools" section
+// expanded to four paragraphs 2026-08-30). Superlogical-
 // style: one reading column, plain sentences, signed. Copy is Luis's — keep
 // his phrasing ("the struggle never stops", "gigantic noise") even where it
 // sits a notch outside "engineered calm". ("specially in current times" was
@@ -100,9 +101,10 @@ export const manifesto: ManifestoContent = {
     "what happened.",
     "the rest of it.",
   ],
-  // ~990 words across the letter column at ~220 wpm → 5, up from 4 when the
-  // sixth decision landed (recount pinned in manifesto.test.ts, so a longer
-  // letter fails loudly instead of lying).
+  // ~1,150 words across the letter column at ~220 wpm → 5 (the tools section
+  // grew to four paragraphs on 2026-08-30; 1,210 words is where this rounds
+  // to 6). Recount pinned in manifesto.test.ts, so a longer letter fails
+  // loudly instead of lying.
   letterNote: "A letter from Luis · 5 min read",
   blocks: [
     {
@@ -136,20 +138,28 @@ export const manifesto: ManifestoContent = {
     },
     {
       kind: "p",
-      text: "It's a delicate equilibrium. ==Willpower alone rarely holds it.==",
+      text: "It's a delicate equilibrium. ==Two things can help you hold it: personal discipline, and/or a good system.==",
     },
     {
       kind: "p",
-      text: "It's usually done one of two ways, or some mix: brute-force discipline, or having a great operational system in place. The first, we count on you for. The second, you can count on us.",
+      text: "The best odds come from having both. But only one of them can be built for you. Discipline is yours — nobody can supply it from the outside. The system is ours to build. We count on you for the first. You can count on us for the second.",
     },
     { kind: "h", id: "the-problem-with-todays-tools", text: "The problem with today's tools" },
     {
       kind: "p",
-      text: "Most of the tools we rely on were built before AI, and they still barely use what it can now do: take in huge amounts of context and help you draw real insight from it. It is all one day, yet today's tools split it into separate apps. A to-do list holds the intent and never sees the outcome. A calendar holds the plan and never learns what happened. A timer counts minutes without knowing what they were for. ==Nothing holds all of it at once — so nothing can learn from it.==",
+      text: "Most of the tools we rely on were built before AI — so they were never designed around what is now possible. That idea drove many of our decisions, and it is the difference between an AI-native app and AI features bolted onto a traditional one.",
     },
     {
       kind: "p",
-      text: "We never found what we thought a great solution would look like: one that used all of this rich context to help us win the day and, day after day, the war. So we built one.",
+      text: "Building software was also much slower then, so apps kept their ambitions small: one job each, done in isolation. A to-do list holds the intent and never sees the outcome. A calendar holds the plan and never learns what happened. A timer counts minutes without knowing what they were for.",
+    },
+    {
+      kind: "p",
+      text: "We believe a lot of insight, and a lot of improvement, slips through those cracks. And for the first time we have the tools to do something about it: to build a system robust enough to hold the whole day, and to take everything it gathers, process it, and hand back real insight. It is a fundamental paradigm change — in how our systems are built, and in how they run.",
+    },
+    {
+      kind: "p",
+      text: "We never found what we thought a great solution to this modern productivity problem would look like: one that gathered all of this context and used it to help us win the day and, day after day, the war. So we built one.",
     },
     { kind: "h", id: "two-ideas-behind-the-design", text: "Two ideas behind the design" },
     {
@@ -159,7 +169,7 @@ export const manifesto: ManifestoContent = {
     {
       kind: "p",
       emphasis: true,
-      text: "The first is a remarkable effect, at work all around us and all through our lives. A line credited to a famous physics genius captures it best:",
+      text: "The first is a remarkable effect, at work all around us and all through our lives. A line that made the rounds credited to a famous physics genius — though probably not his — captures it best:",
     },
     {
       kind: "quote",
@@ -169,22 +179,17 @@ export const manifesto: ManifestoContent = {
     {
       kind: "p",
       emphasis: true,
-      text: "==Small improvements, repeated, are the whole game.==",
+      text: "==Small improvements, repeated, are the whole game.== We want to be on the earning end of that effect.",
     },
     {
       kind: "p",
       emphasis: true,
-      text: "The second comes from James Clear:",
+      text: "The second is what makes the repeating possible. James Clear put it best:",
     },
     {
       kind: "quote",
       text: "You do not rise to the level of your goals. You fall to the level of your systems.",
       attribution: "Atomic Habits",
-    },
-    {
-      kind: "p",
-      emphasis: true,
-      text: "==For anything that matters, the system decides — not the ambition.==",
     },
     {
       kind: "p",

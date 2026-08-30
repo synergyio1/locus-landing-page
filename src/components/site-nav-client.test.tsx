@@ -23,18 +23,19 @@ describe("<SiteNavClient />", () => {
     render(<SiteNavClient email={null} />)
     const primary = screen.getByRole("navigation", { name: /primary/i })
     const pricing = primary.querySelector('a[href="/pricing"]')
-    const packs = primary.querySelector('a[href="/packs"]')
+    const app = primary.querySelector('a[href="/app"]')
     expect(pricing?.getAttribute("aria-current")).toBe("page")
-    expect(packs?.getAttribute("aria-current")).toBeNull()
+    expect(app?.getAttribute("aria-current")).toBeNull()
   })
 
-  it("carries the four primary tabs, in order", () => {
+  it("carries the three primary tabs, in order (Packs hidden 2026-08-30 until its rework)", () => {
     render(<SiteNavClient email={null} />)
     const primary = screen.getByRole("navigation", { name: /primary/i })
     const hrefs = [...primary.querySelectorAll("a")].map((a) =>
       a.getAttribute("href")
     )
-    expect(hrefs).toEqual(["/#manifesto", "/app", "/packs", "/pricing"])
+    expect(hrefs).toEqual(["/#manifesto", "/app", "/pricing"])
+    expect(hrefs).not.toContain("/packs")
   })
 
   it("does not mark any link current on the home page (Manifesto is a hash link)", () => {

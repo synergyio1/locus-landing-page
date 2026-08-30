@@ -48,17 +48,19 @@ describe("manifesto content", () => {
     }
     // Marks are reserved for the letter's thesis lines; Luis picked this set
     // with the "struggle" rewrite (2026-08-19), then trimmed it the same day:
-    // clause-length marks only (no whole-paragraph underlines, no restatements),
-    // plus the one line the tools section hangs on.
+    // clause-length marks only (no whole-paragraph underlines, no restatements).
+    // 2026-08-30: "Willpower alone rarely holds it." became "Two things can
+    // help you hold it…" (the equilibrium/two-fronts rewrite); the tools
+    // section's "Nothing holds all of it at once…" line was cut with its
+    // sentence, and the Clear restatement "For anything that matters, the
+    // system decides — not the ambition." was cut outright.
     expect(paragraphs.flatMap(listInlineMarks)).toEqual([
       "a system to help us deal with the fast, noisy, high-stress times we increasingly live in",
       "so your mind can stop running the meta-strategy in the background and be present",
       "To win the day, you have to be present",
       "To win the decade, you have to lift your head",
-      "Willpower alone rarely holds it.",
-      "Nothing holds all of it at once — so nothing can learn from it.",
+      "Two things can help you hold it: personal discipline, and/or a good system.",
       "Small improvements, repeated, are the whole game.",
-      "For anything that matters, the system decides — not the ambition.",
     ])
     // Nothing else carries the syntax — quotes, parts, decisions stay plain.
     const rest = JSON.stringify({
@@ -126,9 +128,11 @@ describe("manifesto content", () => {
     // Luis, 2026-08-19 ("the struggle never stops" rewrite): present on the
     // day (a soldier), strategy across the decade (a general) — both at once,
     // both good; the bridge is the weeks and months in between; a delicate
-    // equilibrium willpower alone rarely holds (he cut "specially in current
-    // times" later that day — don't restore it). Discipline we count on you
-    // for; the operational system you can count on us for. Not "fragmentation".
+    // equilibrium (he cut "specially in current times" later that day — don't
+    // restore it) held by two things — discipline and a good system
+    // (2026-08-30, replacing "willpower alone rarely holds it"): discipline
+    // only you can supply, we count on you for; the system is ours to build,
+    // you can count on us for. Not "fragmentation".
     const paragraphs = manifesto.blocks.flatMap((b) => (b.kind === "p" ? [b.text] : []))
     const rolesIndex = paragraphs.findIndex((t) => /A soldier\./.test(t))
     expect(rolesIndex).toBeGreaterThan(-1)
@@ -140,24 +144,30 @@ describe("manifesto content", () => {
     expect(bridge).toMatch(/keep checking the plan still leads/)
     const equilibrium = paragraphs[rolesIndex + 3]
     expect(equilibrium).toMatch(/delicate equilibrium/)
-    expect(equilibrium).toMatch(/Willpower alone rarely holds it\.==$/)
-    expect(equilibrium).not.toMatch(/specially in current times/)
-    // The two ways — discipline (yours) or the operational system (ours).
-    const ways = paragraphs[rolesIndex + 4]
-    expect(ways).toMatch(
-      /brute-force discipline, or having a great operational system in place/
+    expect(equilibrium).toMatch(
+      /^It's a delicate equilibrium\. ==Two things can help you hold it: personal discipline, and\/or a good system\.==$/
     )
-    expect(ways).toMatch(/The second, you can count on us\.$/)
+    expect(equilibrium).not.toMatch(/specially in current times/)
+    // The two — discipline (yours) and the system (ours); have both.
+    const ways = paragraphs[rolesIndex + 4]
+    expect(ways).toMatch(/^The best odds come from having both\./)
+    expect(ways).toMatch(/Discipline is yours/)
+    expect(ways).toMatch(/The system is ours to build\./)
+    expect(ways).toMatch(/We count on you for the first\. You can count on us for the second\.$/)
     // …and the letter still lands on "So we built one."
     expect(JSON.stringify(manifesto.blocks)).toMatch(/So we built one\./)
   })
 
-  it("names the problem with today's tools right below the struggle, in two paragraphs", () => {
+  it("names the problem with today's tools right below the struggle, in four paragraphs", () => {
     // Luis, 2026-08-17: a subheading (not a page section) after the struggle
     // section ("Every day is a battle", renamed "The struggle never stops" on
-    // 2026-08-19) — the tools predate AI and don't use its power to take in
-    // huge context and hand back insight; one day split into separate apps;
-    // then "We never found… So we built one."
+    // 2026-08-19). Expanded 2026-08-30 from two paragraphs to four: the tools
+    // predate AI, so AI-native vs features bolted on; building was slower, so
+    // apps stayed narrow (to-do / calendar / timer — Luis cut the "all one
+    // day… nothing can learn from it" tail the same day); insight slips
+    // through the cracks, and we finally have the tools to gather it and hand
+    // back real insight — a paradigm change; then "We never found… So we
+    // built one."
     const blocks = manifesto.blocks
     const struggle = blocks.findIndex((b) => b.kind === "h" && b.text === "The struggle never stops")
     const problem = blocks.findIndex((b) => b.kind === "h" && /today's tools/.test(b.text))
@@ -165,15 +175,26 @@ describe("manifesto content", () => {
     expect(problem).toBeGreaterThan(struggle)
     const next = blocks.slice(problem + 1)
     const nextHeading = next.findIndex((b) => b.kind !== "p")
-    expect(next.slice(0, nextHeading)).toHaveLength(2)
-    const [tools, built] = next
-    if (tools.kind !== "p" || built.kind !== "p") throw new Error("unreachable")
-    expect(tools.text).toMatch(/built before AI/)
-    expect(tools.text).toMatch(/context/)
-    expect(tools.text).toMatch(/insight/)
-    expect(tools.text).toMatch(/It is all one day, yet today's tools split it into separate apps\./)
-    expect(tools.text).toMatch(/so nothing can learn from it\.==$/)
-    expect(built.text).toMatch(/^We never found what we thought a great solution would look like/)
+    expect(next.slice(0, nextHeading)).toHaveLength(4)
+    const [native, split, cracks, built] = next
+    if (
+      native.kind !== "p" ||
+      split.kind !== "p" ||
+      cracks.kind !== "p" ||
+      built.kind !== "p"
+    ) {
+      throw new Error("unreachable")
+    }
+    expect(native.text).toMatch(/^Most of the tools we rely on were built before AI/)
+    expect(native.text).toMatch(/AI-native app and AI features bolted onto a traditional one\.$/)
+    expect(split.text).toMatch(/^Building software was also much slower then/)
+    expect(split.text).toMatch(/A timer counts minutes without knowing what they were for\.$/)
+    expect(split.text).not.toMatch(/all one day|nothing can learn from it/)
+    expect(cracks.text).toMatch(/slips through those cracks/)
+    expect(cracks.text).toMatch(/hand back real insight/)
+    expect(cracks.text).toMatch(/fundamental paradigm change/)
+    expect(built.text).toMatch(/^We never found what we thought a great solution/)
+    expect(built.text).toMatch(/gathered all of this context/)
     expect(built.text).toMatch(/So we built one\.$/)
   })
 

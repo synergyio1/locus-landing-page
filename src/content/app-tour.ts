@@ -54,7 +54,8 @@ export type AppTourContent = {
   screens: TourScreen[]
   closer: string
   cta: { label: string; href: string }
-  secondaryCta: { label: string; href: string }
+  /** Optional: unset while the Packs page is hidden (2026-08-30). */
+  secondaryCta?: { label: string; href: string }
 }
 
 const SCREENS: TourScreen[] = [
@@ -147,5 +148,5 @@ export const appTour: AppTourContent = {
   closer:
     "Everything above runs on your Mac. The agent behind the last three screens runs on whichever AI you already pay for.",
   cta: { label: "Download Locus", href: "/download" },
-  secondaryCta: { label: "See the packs", href: "/packs" },
+  // secondaryCta: { label: "See the packs", href: "/packs" }, — restore with the nav item.
 }

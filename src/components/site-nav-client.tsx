@@ -11,10 +11,13 @@ import { cn } from "@/lib/utils"
 
 type NavItem = { href: string; label: string }
 
+// Packs hidden 2026-08-30 (Luis): the page is being reworked and comes back
+// later. The route, content, and e2e specs stay live — restore the item here
+// (plus footer link, /app secondary CTA, and sitemap entries) to relaunch.
 const NAV_ITEMS: NavItem[] = [
   { href: "/#manifesto", label: "Manifesto" },
   { href: "/app", label: "App" },
-  { href: "/packs", label: "Packs" },
+  // { href: "/packs", label: "Packs" },
   { href: "/pricing", label: "Pricing" },
 ]
 

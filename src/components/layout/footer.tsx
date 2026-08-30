@@ -58,12 +58,7 @@ export function Footer() {
             >
               App
             </Link>
-            <Link
-              href="/packs"
-              className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
-            >
-              Packs
-            </Link>
+            {/* Packs link hidden 2026-08-30 with the nav item — see site-nav-client.tsx. */}
             <Link
               href={`mailto:${SUPPORT_EMAIL}`}
               className="text-[var(--muted-foreground)] transition-colors hover:text-[var(--fg)]"
