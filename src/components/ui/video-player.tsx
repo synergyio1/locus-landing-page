@@ -21,9 +21,8 @@ import { cn } from "@/lib/utils"
  *    one the OS already ships.
  *  · Pauses when the tab is hidden, like the hero does.
  *
- * `video === null` is a supported state, not a bug: the page ships before the
- * recording does, and holds the same frame at the same size so dropping the
- * asset in changes nothing about the layout.
+ * The page renders this only once a recording exists (`appTour.video`); until
+ * then the showcase above it carries the imagery, so there is no held frame.
  */
 
 const FRAME =
@@ -32,12 +31,10 @@ const FRAME =
 export function VideoPlayer({
   video,
   label,
-  pending,
   className,
 }: {
-  video: TourVideo | null
+  video: TourVideo
   label: string
-  pending: string
   className?: string
 }) {
   const videoRef = React.useRef<HTMLVideoElement | null>(null)
@@ -54,23 +51,6 @@ export function VideoPlayer({
     document.addEventListener("visibilitychange", onVisibility)
     return () => document.removeEventListener("visibilitychange", onVisibility)
   }, [started])
-
-  if (!video) {
-    return (
-      <div
-        className={cn(FRAME, "grid place-items-center", className)}
-        // Held, not loading: the asset simply isn't recorded yet. It keeps the
-        // player's ratio so the frame reads as the same object, but caps its
-        // height — an uncapped 16:10 box is ~875px of empty surface at 1440,
-        // which reads as a broken embed rather than a placeholder.
-        style={{ aspectRatio: "16 / 10", maxHeight: "clamp(240px, 34vh, 380px)" }}
-      >
-        <p className="max-w-sm px-6 text-center text-sm leading-relaxed text-[var(--muted-foreground)]">
-          {pending}
-        </p>
-      </div>
-    )
-  }
 
   const start = () => {
     setStarted(true)

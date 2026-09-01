@@ -36,7 +36,7 @@ test("hero renders the locked headline and both CTAs", async ({ page }) => {
   await expect(readManifesto).toHaveAttribute("href", "#manifesto")
 })
 
-test("manifesto renders the statement, the three app parts, and the sign-off", async ({
+test("manifesto renders the statement, the decisions, and the sign-off", async ({
   page,
 }) => {
   await page.goto("/")
@@ -51,19 +51,19 @@ test("manifesto renders the statement, the three app parts, and the sign-off", a
     })
   ).toBeVisible()
 
-  for (const part of ["Execution", "Inputs", "AI"]) {
-    await expect(section.getByText(part, { exact: true })).toBeVisible()
-  }
-
+  await expect(
+    section.getByRole("heading", { level: 3, name: /six decisions/i })
+  ).toBeVisible()
   await expect(section.getByText("Luis", { exact: true })).toBeVisible()
 })
 
-test("home page is hero → manifesto → pricing, nothing else", async ({
+test("home page is hero → manifesto → showcase → pricing, nothing else", async ({
   page,
 }) => {
   await page.goto("/")
 
   await expect(page.locator("#manifesto")).toBeVisible()
+  await expect(page.locator("#showcase")).toBeVisible()
   await expect(page.locator("#pricing")).toBeVisible()
 
   // Sections retired 2026-08-17 (and earlier) — anti-drift net.
@@ -86,5 +86,5 @@ test("home page is hero → manifesto → pricing, nothing else", async ({
   const ids = await page
     .locator("main > section[id]")
     .evaluateAll((els) => els.map((el) => el.id))
-  expect(ids).toEqual(["manifesto", "pricing"])
+  expect(ids).toEqual(["manifesto", "showcase", "pricing"])
 })

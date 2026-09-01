@@ -15,16 +15,6 @@ describe("manifesto content", () => {
     expect(new Set(manifesto.rotating).size).toBe(manifesto.rotating.length)
   })
 
-  it("names the three app parts in the app's own sidebar order", () => {
-    const parts = manifesto.blocks.find((b) => b.kind === "parts")
-    expect(parts).toBeDefined()
-    if (parts?.kind !== "parts") throw new Error("unreachable")
-    expect(parts.items.map((p) => p.name)).toEqual(["Execution", "Inputs", "AI"])
-    for (const part of parts.items) {
-      expect(part.text.length).toBeGreaterThan(20)
-    }
-  })
-
   it("carries the two founding ideas as attributed pull-quotes", () => {
     const quotes = manifesto.blocks.filter((b) => b.kind === "quote")
     expect(quotes).toHaveLength(2)
@@ -117,7 +107,6 @@ describe("manifesto content", () => {
       "the-struggle-never-stops",
       "the-problem-with-todays-tools",
       "two-ideas-behind-the-design",
-      "locus-in-three-parts",
       "design-decisions",
     ])
     expect(manifesto.decisionsHeading).toBe("Six decisions")

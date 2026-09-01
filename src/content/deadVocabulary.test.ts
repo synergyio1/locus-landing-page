@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 
+import { appShowcase } from "./app-showcase"
 import { appTour } from "./app-tour"
 import { authCopy } from "./auth"
 import { download } from "./download"
@@ -28,6 +29,9 @@ const BANNED: Array<[name: string, pattern: RegExp]> = [
   ["Locus managed AI (now Locus Remote / Remote credits)", /locus managed|managed[- ]ai/i],
   ["$48/yr price point (now $30)", /\$48\b/],
   ["Save 33% (now '2 months free')", /save 33%/i],
+  // Retired by the app's Execution re-org (2026-08-27/28): six flat tabs, no
+  // families, chat in the titlebar. See src/content/app-showcase.ts.
+  ["nine screens / three families (now six tabs + chat)", /nine screens|three families/i],
 ]
 
 // Registration is manual — a content module that isn't listed here is
@@ -41,6 +45,7 @@ const MODULES: Record<string, unknown> = {
   privacy,
   terms,
   appTour,
+  appShowcase,
   packs,
 }
 

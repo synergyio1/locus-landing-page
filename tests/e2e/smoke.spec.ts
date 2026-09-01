@@ -4,8 +4,11 @@ const ROUTES = [
   { path: "/", h1: /the missing os for modern work\./i },
   { path: "/pricing", h1: /one plan\. all of locus\./i },
   { path: "/app", h1: /locus, on screen\./i },
-  { path: "/packs", h1: /choose how locus coaches you\./i },
-  { path: "/packs/relentless", h1: /^relentless$/i },
+  // Packs is hidden since 2026-08-30 (nav item, footer link and sitemap
+  // entries pulled — see site-nav-client.tsx). The routes still serve, so
+  // they stay in the smoke run, but they are deliberately not in the sitemap.
+  { path: "/packs", h1: /choose how locus coaches you\./i, listed: false },
+  { path: "/packs/relentless", h1: /^relentless$/i, listed: false },
   { path: "/download", h1: /download locus for macos/i },
   { path: "/privacy", h1: /privacy policy/i },
   { path: "/terms", h1: /terms of service/i },
@@ -28,7 +31,9 @@ test("/sitemap.xml serves a valid sitemap listing every public route", async ({
   const response = await request.get("/sitemap.xml")
   expect(response.status()).toBe(200)
   const body = await response.text()
-  for (const { path } of ROUTES) {
+  for (const route of ROUTES) {
+    if ("listed" in route && route.listed === false) continue
+    const { path } = route
     const url =
       path === "/" ? "https://getlocus.tech" : `https://getlocus.tech${path}`
     expect(body).toContain(`<loc>${url}</loc>`)

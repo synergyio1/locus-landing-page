@@ -21,6 +21,12 @@ export type IconName =
   | "chat"
   | "routine"
   | "memory"
+  // The six sidebar tabs (SidebarTab.swift SF symbols: house, mountain.2,
+  // signpost.right, bolt, note.text, wand.and.rays) — bolt/note exist above.
+  | "house"
+  | "mountain"
+  | "signpost"
+  | "wand"
 
 type IconProps = React.SVGAttributes<SVGSVGElement> & {
   name: IconName
@@ -192,6 +198,40 @@ export function Icon({ name, size = 16, className, ...props }: IconProps) {
           <circle cx="18.5" cy="12" r="2" />
           <path d="M8 5.5h4a2.5 2.5 0 0 1 2.5 2.5v1.5a2.5 2.5 0 0 0 2 2.45" />
           <path d="M8 18.5h4a2.5 2.5 0 0 0 2.5-2.5v-1.5a2.5 2.5 0 0 1 2-2.45" />
+        </svg>
+      )
+    case "house":
+      return (
+        <svg {...common}>
+          <path d="M4 11l8-7 8 7" />
+          <path d="M6 10v10h12V10" />
+          <path d="M10 20v-6h4v6" />
+        </svg>
+      )
+    case "mountain":
+      return (
+        <svg {...common}>
+          <path d="M2.5 19l6.5-11 4.5 7.5" />
+          <path d="M11.5 15.5l3.5-5.5 6.5 9h-19" />
+          <path d="M7.5 10.5l1.5 1.5 1.5-1.5" />
+        </svg>
+      )
+    case "signpost":
+      return (
+        <svg {...common}>
+          <path d="M12 3v18" />
+          <path d="M6 7h11l3 3-3 3H6z" />
+          <path d="M9 21h6" />
+        </svg>
+      )
+    case "wand":
+      return (
+        <svg {...common}>
+          <path d="M3 21l10-10" />
+          <path d="M13 8l1.5-1.5 3 3L16 11z" />
+          <path d="M18 2v2.5" />
+          <path d="M22 6h-2.5" />
+          <path d="M20.3 3.7l-1.6 1.6" />
         </svg>
       )
   }

@@ -1,3 +1,4 @@
+import { AppShowcase } from "@/components/sections/app-showcase"
 import { Hero } from "@/components/sections/hero"
 import { Manifesto } from "@/components/sections/manifesto"
 import { Pricing } from "@/components/sections/pricing"
@@ -14,6 +15,7 @@ export default async function Home() {
     <>
       <Hero />
       <Manifesto />
+      <AppShowcase />
       <Pricing isAuthed={isAuthed} />
     </>
   )

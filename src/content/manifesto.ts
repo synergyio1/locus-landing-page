@@ -13,12 +13,10 @@
 // "skim the underlines" note existed for a few hours on 2026-08-19; Luis
 // cut it — the underlines speak for themselves.)
 //
-// The three app parts mirror the app's own sidebar families
-// (LocusUI/SidebarTab.swift: Execution · Inputs · AI) — keep them in lockstep.
-// The app's onboarding intro quotes each part verbatim as its three screens
-// (LocusUI/Onboarding/IntroPhaseView.swift → IntroPillar.headline = the
-// "Your ___." lead, .subhead = the rest; pinned by IntroPhaseNavigationTests)
-// — edit here and there together.
+// The "Locus, in three parts" block (Execution · Inputs · AI) was cut on
+// 2026-08-31 — the app showcase right under the letter shows the parts with
+// real screens. The `parts` block kind stays in the type for the app's
+// onboarding, which still quotes that copy (LocusUI/Onboarding/IntroPhaseView.swift).
 
 export type ManifestoPart = {
   name: string
@@ -195,30 +193,10 @@ export const manifesto: ManifestoContent = {
       kind: "p",
       text: "Put together: the most useful thing we could give you is not a better goal. It is a better system — one you can trust with the whole day, that learns from the day you actually had, and that compounds.",
     },
-    // Renamed from "What we're building" / "How we made it" (Luis, 2026-08-19):
-    // the last two titles now carry content like the first three do.
-    { kind: "h", id: "locus-in-three-parts", text: "Locus, in three parts" },
-    {
-      kind: "parts",
-      intro:
-        "Locus is that system, designed for the productivity side of your life. It lives on your Mac and has three parts:",
-      // Each item opens with a "Your ___." lead and stays within ~120–150
-      // characters of the others, so the three read as one balanced set.
-      items: [
-        {
-          name: "Execution",
-          text: "Your time. What you planned to do with the day and what actually happened — intent and outcome, finally in the same place.",
-        },
-        {
-          name: "Inputs",
-          text: "Your context. Notes, tasks, projects, habits — everything you mean to do, achieve, or simply keep, structured so the rest of Locus can use it.",
-        },
-        {
-          name: "AI",
-          text: "Your smart pal. Routines, the behaviors you want it to have; Memory, everything it learns about you. Together, a flywheel that compounds today into tomorrow.",
-        },
-      ],
-    },
+    // "Locus, in three parts" (heading + the Execution · Inputs · AI block)
+    // was cut on 2026-08-31 (Luis: the least important part; the app showcase
+    // right under the letter now shows the parts with real screens). The
+    // app's onboarding keeps its own copy of that copy (IntroPhaseView.swift).
     {
       kind: "p",
       text: "Locus will be there day after day, helping you see a little through the gigantic noise of real life, nudging one tiny change once in a while, and letting the changes compound. If the result is not life-changing, it will at least be much better. That is the bet.",
@@ -244,8 +222,9 @@ export const manifesto: ManifestoContent = {
         "Your Claude Code or Codex subscription, an API key (say, OpenRouter), or Locus Remote — your choice. Pick the model you prefer, and swap it anytime.",
     },
     {
+      // id kept as the anchor; the app renamed Routine → Protocol (PRD #730).
       id: "routines-are-files",
-      title: "Routines are files.",
+      title: "Protocols are files.",
       summary:
         "Different personalities want different approaches. So we left this part deliberately open: every AI behavior is a Markdown file — read, edit, share, or add your own.",
     },

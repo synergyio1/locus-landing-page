@@ -151,11 +151,15 @@ function ProgressiveGlass() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+4rem)]"
+      // Tail shortened 2026-09-01 (Luis): the old +4rem tail put an 8px blur
+      // ~100px below the top, smearing anything that scrolled under the bar
+      // (the showcase's menu bar, for one). The bands now fade out within
+      // ~2rem of the row, still progressive, still seamless.
+      className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[calc(100%+2rem)]"
     >
-      <div className="absolute inset-0 backdrop-blur-[3px] mask-b-from-55% mask-b-to-100%" />
-      <div className="absolute inset-0 backdrop-blur-[8px] mask-b-from-40% mask-b-to-80%" />
-      <div className="absolute inset-0 backdrop-blur-[16px] backdrop-saturate-150 mask-b-from-25% mask-b-to-60%" />
+      <div className="absolute inset-0 backdrop-blur-[3px] mask-b-from-50% mask-b-to-100%" />
+      <div className="absolute inset-0 backdrop-blur-[8px] mask-b-from-35% mask-b-to-70%" />
+      <div className="absolute inset-0 backdrop-blur-[16px] backdrop-saturate-150 mask-b-from-20% mask-b-to-45%" />
       <div className="absolute inset-0 [background:linear-gradient(to_bottom,color-mix(in_oklab,var(--bg)_84%,transparent)_0%,color-mix(in_oklab,var(--bg)_74%,transparent)_25%,color-mix(in_oklab,var(--bg)_54%,transparent)_50%,color-mix(in_oklab,var(--bg)_28%,transparent)_75%,color-mix(in_oklab,var(--bg)_8%,transparent)_92%,transparent_100%)]" />
     </div>
   )

@@ -9,6 +9,6 @@ export default function Image() {
     eyebrow: "The app",
     title: "Locus, on screen.",
     subtitle:
-      "Nine screens in three families — execution, inputs, and the agent that reads both.",
+      "Six tabs and a chat in the title bar — all of it on your Mac.",
   })
 }
