@@ -2,6 +2,7 @@ import "server-only"
 
 import type Stripe from "stripe"
 
+import { captureServerEvent } from "@/lib/analytics/server"
 import {
   CreditLedgerRepo,
   isForeignKeyViolation,
@@ -195,6 +196,16 @@ async function handleCheckoutSessionCompleted(
     session.customer_details?.email ??
     session.customer_email ??
     (await fetchUserEmail(userId))
+
+  // Closes the ads funnel server-side: this fires even when the buyer never
+  // returns from Stripe. distinctId = Supabase user id merges with the
+  // identified browser person and its first-touch UTM attribution.
+  await captureServerEvent(userId, "subscription_created", {
+    price_id: priceIdOf(subscription),
+    status: subscription.status,
+    ...(recipientEmail ? { $set: { email: recipientEmail } } : {}),
+  })
+
   if (recipientEmail) {
     try {
       await sendWelcome(
@@ -441,6 +452,10 @@ async function handleSubscriptionDeleted(
       reason: "subscription_not_found",
     }
   }
+
+  await captureServerEvent(result.user_id, "subscription_canceled", {
+    price_id: priceIdOf(subscription),
+  })
 
   return { handled: true, type: "customer.subscription.deleted" }
 }

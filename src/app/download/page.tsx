@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 
+import { DownloadLink } from "@/components/analytics/download-link"
 import { PageShell } from "@/components/layout/page-shell"
 import { BreathingDot, SpringReveal } from "@/components/motion"
 import { buttonVariants } from "@/components/ui/button"
@@ -46,15 +47,14 @@ export default function DownloadPage() {
         </SpringReveal>
 
         <SpringReveal delay={160} className="flex flex-col gap-3">
-          <a
+          <DownloadLink
             href={download.cta.href}
-            download
             aria-label="Download the macOS DMG"
             className={cn(buttonVariants({ size: "lg" }), "self-start")}
           >
             <Icon name="download" />
             {download.cta.label}
-          </a>
+          </DownloadLink>
           <p className="text-sm text-[var(--muted-foreground)]">
             {download.cta.note}
           </p>

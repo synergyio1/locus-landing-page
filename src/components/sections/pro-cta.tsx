@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { usePathname } from "next/navigation"
+import posthog from "posthog-js"
 
 import { buttonVariants } from "@/components/ui/button"
 import { buildLoginNext } from "@/lib/auth/build-login-next"
@@ -43,6 +44,13 @@ export function ProCta({
     function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey) return
       e.preventDefault()
+      // sendBeacon: the full-page navigation right below would otherwise
+      // outrun the SDK's batched request.
+      posthog.capture(
+        "checkout_started",
+        { cadence, is_authed: false },
+        { transport: "sendBeacon" }
+      )
       const next = buildLoginNext(
         window.location.pathname,
         window.location.hash
@@ -63,6 +71,11 @@ export function ProCta({
 
   async function handleClick() {
     setState({ kind: "pending" })
+    posthog.capture(
+      "checkout_started",
+      { cadence, is_authed: true },
+      { transport: "sendBeacon" }
+    )
     const result = await startCheckout(cadence)
     switch (result.kind) {
       case "ok":

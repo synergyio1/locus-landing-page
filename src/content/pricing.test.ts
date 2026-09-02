@@ -40,11 +40,12 @@ describe("pricing content", () => {
     expect(pricing.subline).toMatch(/infrastructure/i)
   })
 
-  it("does not surface killed free-tier, 7-day trial, or pre-August pricing copy", () => {
+  it("does not surface killed free-tier, 30-day trial, or pre-August pricing copy", () => {
     const serialized = JSON.stringify(pricing)
     expect(serialized).not.toMatch(/free forever/i)
     expect(serialized).not.toMatch(/free tier/i)
-    expect(serialized).not.toMatch(/7[- ]day/i)
+    // The 30-day *refund* assurance is live copy; only trial phrasings died.
+    expect(serialized).not.toMatch(/30[- ]day (free |pro )?trial|30 days free/i)
     expect(serialized).not.toMatch(/\bpro\b/i)
     expect(serialized).not.toMatch(/14[- ]day/i)
     expect(serialized).not.toMatch(/\$8\b/)

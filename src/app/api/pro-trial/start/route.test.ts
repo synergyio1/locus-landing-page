@@ -46,7 +46,7 @@ describe("POST /api/pro-trial/start", () => {
 
   it("inserts a row and returns started:true with expiresAt for a fresh user", async () => {
     authState.user = { id: "user_fresh", email: "fresh@example.com" }
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     queryRaw.mockResolvedValueOnce([{ expires_at: expiresAt }])
 
     const response = await POST()
@@ -84,7 +84,7 @@ describe("POST /api/pro-trial/start", () => {
 
   it("only one of two parallel requests for the same user returns started:true", async () => {
     authState.user = { id: "user_concurrent", email: "race@example.com" }
-    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
     queryRaw
       .mockResolvedValueOnce([{ expires_at: expiresAt }])
       .mockResolvedValueOnce([])
