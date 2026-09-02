@@ -35,7 +35,7 @@ export default function AppPage() {
         <span className="text-xs uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
           {appTour.eyebrow}
         </span>
-        <h1 className="text-4xl font-medium leading-tight tracking-tight text-[var(--fg)] md:text-5xl">
+        <h1 className="text-balance text-4xl font-medium leading-tight tracking-tight text-[var(--fg)] md:text-5xl">
           {appTour.title}
         </h1>
         <p className="text-base leading-relaxed text-[var(--muted-foreground)] md:text-lg">
@@ -69,11 +69,12 @@ export default function AppPage() {
         </SpringReveal>
       ) : null}
 
+      {/* The download. A closing "everything above runs on your Mac…" line
+          sat here until 2026-09-02 — cut, it only repeated the intro. */}
       <SpringReveal
         delay={80}
         className="mx-auto mt-16 flex max-w-[64ch] flex-col gap-6 border-t border-[var(--border)] pt-8 md:mt-24"
       >
-        <p className={BODY}>{appTour.closer}</p>
         <div className="flex flex-wrap gap-3">
           <Link
             href={appTour.cta.href}

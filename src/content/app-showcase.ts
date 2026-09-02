@@ -21,8 +21,10 @@
 // in) under public/app/screens — the "no product stills" rule from 2026-08-20
 // is retired now that fresh captures of the six-tab UI exist. They are served
 // through next/image only (WebP, sized per viewport, 31-day edge cache — see
-// next.config.ts), never raw. To replace a capture, bump its filename
-// (home-v2.png) so the edge cache can't keep serving the old variant.
+// next.config.ts), never raw. Run every new capture through
+// scripts/screens/grade.sh first (the app's paper is warm by design; the
+// script cools it onto the site's --surface). To replace a capture, bump its filename
+// (home-v2.png → home-v3.png) so the edge cache can't keep serving the old variant.
 
 /** A subset of `IconName` (ui/icon.tsx); kept local so this module stays plain data. */
 export type ShowcaseIcon = "house" | "mountain" | "signpost" | "bolt" | "note" | "wand"
@@ -109,7 +111,7 @@ export const appShowcase: AppShowcaseContent = {
       label: "Home",
       subtitle: "How it's going, across everything",
       icon: "house",
-      headline: "The record, never the verdict.",
+      headline: "The whole picture, at a glance.",
       caption:
         "It opens on you: the Portrait, every page Locus has written about you, with three numbers laid over it. Then this morning's brief, yesterday, the month behind you. Home runs nothing.",
       body: [
@@ -121,7 +123,7 @@ export const appShowcase: AppShowcaseContent = {
           id: "home",
           label: "Home",
           screen: {
-            src: "/app/screens/home-v2.png",
+            src: "/app/screens/home-v3.png",
             ...SCREEN,
             alt: "The Home tab: hours last week, the typical stretch before it breaks, hours observed all time, the Portrait constellation of what Locus knows about you, this morning's brief, and yesterday's closed blocks.",
           },
@@ -145,7 +147,7 @@ export const appShowcase: AppShowcaseContent = {
           id: "vision",
           label: "Vision",
           screen: {
-            src: "/app/screens/vision.png",
+            src: "/app/screens/vision-v2.png",
             ...SCREEN,
             alt: "The Vision tab inviting you to find what you actually want, with five stations from everything you want to who that makes you.",
           },
@@ -169,7 +171,7 @@ export const appShowcase: AppShowcaseContent = {
           id: "commitments",
           label: "Commitments",
           screen: {
-            src: "/app/screens/path-commitments.png",
+            src: "/app/screens/path-commitments-v2.png",
             ...SCREEN,
             alt: "The Path tab showing Commitments: three Outcomes, two Habits, and three Time Targets, each with its hours or its streak of kept days.",
           },
@@ -178,9 +180,9 @@ export const appShowcase: AppShowcaseContent = {
           id: "tasks",
           label: "Tasks",
           screen: {
-            src: "/app/screens/path-tasks.png",
+            src: "/app/screens/path-tasks-v2.png",
             ...SCREEN,
-            alt: "The Path tab showing Tasks: one executing, one due today, six for later — each tied to the project or habit it belongs to.",
+            alt: "The Path tab showing Tasks: two due today in the Today Session, seven for later — each tied to the project or habit it belongs to.",
           },
         },
       ],
@@ -202,7 +204,7 @@ export const appShowcase: AppShowcaseContent = {
           id: "execution",
           label: "Execution",
           screen: {
-            src: "/app/screens/execution.png",
+            src: "/app/screens/execution-v2.png",
             ...SCREEN,
             alt: "The Execution tab for Thursday 27 August: intended blocks and calendar events on the left, what happened on the right, time targets along the foot.",
           },
@@ -226,9 +228,9 @@ export const appShowcase: AppShowcaseContent = {
           id: "notes",
           label: "Notes",
           screen: {
-            src: "/app/screens/notes.png",
+            src: "/app/screens/notes-v2.png",
             ...SCREEN,
-            alt: "The Notes tab with the note “Demo script beats” open, filed under the Atlas beta launch project, beside the list of earlier notes, deep dives, and project notes.",
+            alt: "The Notes tab with the note “Sample pack from the marina recording” open, filed under the Ableton practice habit, beside the list of earlier notes, deep dives, and project notes.",
           },
         },
       ],
@@ -250,9 +252,9 @@ export const appShowcase: AppShowcaseContent = {
           id: "system",
           label: "System",
           screen: {
-            src: "/app/screens/system.png",
+            src: "/app/screens/system-v2.png",
             ...SCREEN,
-            alt: "The System tab listing the protocols Locus runs on its own — daily digest, day narrator, distraction coach, morning brief, weekly digest — with the Daily digest open.",
+            alt: "The System tab listing the protocols Locus runs on its own — daily digest, distraction coach, monthly digest, morning brief, weekly digest — with the Daily digest open.",
           },
         },
       ],
@@ -273,7 +275,7 @@ export const appShowcase: AppShowcaseContent = {
     ],
     handoff: "Every tab, one voice away.",
     screen: {
-      src: "/app/screens/chat.png",
+      src: "/app/screens/chat-v3.png",
       ...SCREEN,
       alt: "Chat expanded to the whole window: one thread across two days — a plan check, a ship note, yesterday read back, this morning's brief — with the Ask · Standard · Auto and Fast · Deep controls above the composer.",
     },

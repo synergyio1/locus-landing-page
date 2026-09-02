@@ -14,8 +14,11 @@ type NavItem = { href: string; label: string }
 // Packs hidden 2026-08-30 (Luis): the page is being reworked and comes back
 // later. The route, content, and e2e specs stay live — restore the item here
 // (plus footer link, /app secondary CTA, and sitemap entries) to relaunch.
+// Design decisions joined the menu on 2026-09-02, the day the six left the
+// manifesto letter for their own section on the home page.
 const NAV_ITEMS: NavItem[] = [
   { href: "/#manifesto", label: "Manifesto" },
+  { href: "/#design-decisions", label: "Design decisions" },
   { href: "/app", label: "App" },
   // { href: "/packs", label: "Packs" },
   { href: "/pricing", label: "Pricing" },
@@ -28,7 +31,7 @@ type SiteNavClientProps = {
 /**
  * Site header (2026-08-17, redesign).
  *
- * Structure is the settled one — mark left, three links dead-centre, a
+ * Structure is the settled one — mark left, the links dead-centre, a
  * single "Log in" right (the hero owns Download) — but the chrome is new:
  *
  *  · Progressive glass. Stacked backdrop layers, taller than the bar,

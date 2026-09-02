@@ -28,13 +28,13 @@ describe("<SiteNavClient />", () => {
     expect(app?.getAttribute("aria-current")).toBeNull()
   })
 
-  it("carries the three primary tabs, in order (Packs hidden 2026-08-30 until its rework)", () => {
+  it("carries the four primary tabs, in order (Packs hidden 2026-08-30 until its rework; Design decisions added 2026-09-02)", () => {
     render(<SiteNavClient email={null} />)
     const primary = screen.getByRole("navigation", { name: /primary/i })
     const hrefs = [...primary.querySelectorAll("a")].map((a) =>
       a.getAttribute("href")
     )
-    expect(hrefs).toEqual(["/#manifesto", "/app", "/pricing"])
+    expect(hrefs).toEqual(["/#manifesto", "/#design-decisions", "/app", "/pricing"])
     expect(hrefs).not.toContain("/packs")
   })
 

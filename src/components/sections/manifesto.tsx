@@ -1,5 +1,4 @@
 import * as React from "react"
-import Link from "next/link"
 
 import { PageShell } from "@/components/layout/page-shell"
 import { SpringReveal } from "@/components/motion"
@@ -33,15 +32,13 @@ const HEADING_ANCHOR = "scroll-mt-24"
  * note and a scroll-spy mini-TOC (md+ only) so the letter's shape and end
  * are visible before anyone commits to it. The letter itself stays whole —
  * no pagination, no read-more. (A "skim the underlines" note lived here for
- * a few hours; Luis cut it.)
+ * a few hours; Luis cut it.) The six design decisions closed the letter until
+ * 2026-09-02; they are now their own section right below (design-decisions.tsx).
  */
 export function Manifesto() {
-  const tocItems = [
-    ...manifesto.blocks.flatMap((b) =>
-      b.kind === "h" ? [{ id: b.id, label: b.text }] : []
-    ),
-    { id: manifesto.decisionsId, label: manifesto.decisionsHeading },
-  ]
+  const tocItems = manifesto.blocks.flatMap((b) =>
+    b.kind === "h" ? [{ id: b.id, label: b.text }] : []
+  )
 
   return (
     <section
@@ -80,56 +77,6 @@ export function Manifesto() {
               {manifesto.blocks.map((block, i) => (
                 <Block key={i} block={block} />
               ))}
-            </SpringReveal>
-
-            <SpringReveal delay={140} as="div" className="mt-12 flex flex-col gap-4">
-              <h3
-                id={manifesto.decisionsId}
-                className={cn(SUBHEAD, HEADING_ANCHOR)}
-              >
-                {manifesto.decisionsHeading}
-              </h3>
-              <p className={PARAGRAPH}>{manifesto.decisionsIntro}</p>
-              {/* One numbered column — same numeral treatment as the app parts above. */}
-              <ol className="mt-1 flex flex-col divide-y divide-[var(--border)] border-y border-[var(--border)]">
-                {manifesto.decisions.map((decision, i) => (
-                  <li
-                    key={decision.id}
-                    id={`decision-${decision.id}`}
-                    className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 py-4"
-                  >
-                    <span
-                      aria-hidden
-                      className="pt-[3px] font-mono text-xs tracking-[0.18em] text-[var(--accent-text)]"
-                    >
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-                    <div className="flex flex-col gap-1">
-                      <span className="text-[15px] font-medium text-[var(--fg)] md:text-base">
-                        {decision.title}
-                      </span>
-                      <span className={PARAGRAPH}>{decision.summary}</span>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-              <p className={cn(PARAGRAPH, "pt-2")}>
-                {manifesto.blog.text}{" "}
-                {manifesto.blog.href ? (
-                  <Link
-                    href={manifesto.blog.href}
-                    className="text-[var(--accent-text)] underline decoration-[color-mix(in_oklab,var(--accent)_45%,transparent)] underline-offset-4 transition-colors hover:decoration-[var(--accent-text)]"
-                  >
-                    {manifesto.blog.linkLabel}
-                  </Link>
-                ) : (
-                  <>
-                    <span className="text-[var(--fg)]">{manifesto.blog.linkLabel}</span>
-                    {manifesto.blog.pendingNote ? ` ${manifesto.blog.pendingNote}` : null}
-                  </>
-                )}
-                .
-              </p>
             </SpringReveal>
 
             <SpringReveal delay={180} as="div" className="mt-12 flex flex-col gap-2">

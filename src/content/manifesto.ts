@@ -17,6 +17,11 @@
 // 2026-08-31 — the app showcase right under the letter shows the parts with
 // real screens. The `parts` block kind stays in the type for the app's
 // onboarding, which still quotes that copy (LocusUI/Onboarding/IntroPhaseView.swift).
+//
+// The six design decisions (and the design-ideas blog note) left the letter
+// on 2026-09-02 (Luis: remove the six from the middle of the manifesto) for
+// their own small section right under it — content/design-decisions.ts and
+// sections/design-decisions.tsx. The letter now ends on the sign-off.
 
 export type ManifestoPart = {
   name: string
@@ -29,12 +34,6 @@ export type ManifestoBlock =
   | { kind: "h"; id: string; text: string }
   | { kind: "quote"; text: string; attribution: string }
   | { kind: "parts"; intro: string; items: ManifestoPart[] }
-
-export type ManifestoDecision = {
-  id: string
-  title: string
-  summary: string
-}
 
 export type ManifestoContent = {
   id: string
@@ -49,34 +48,6 @@ export type ManifestoContent = {
    */
   letterNote: string
   blocks: ManifestoBlock[]
-  /** Anchor for the decisions heading — the mini-TOC's last stop. */
-  decisionsId: string
-  decisionsHeading: string
-  decisionsIntro: string
-  /**
-   * Exactly the core design decisions Luis wants named — five as of 2026-08-17,
-   * reframed the same day around build / borrow / leave-open; six as of
-   * 2026-08-20, when "Plug in your own tools" joined the leave-open group
-   * (product ADR-0015). The day feedback loop was cut from this list on
-   * purpose, and "Bring your own AI" was folded into "Choose your model"
-   * (they were redundant); don't re-add either.
-   * Every summary must fit two lines in the letter column at >=1280w (~165
-   * chars max, verified in-browser) — Luis's cap.
-   *
-   * A long-form "Architecture decisions" tab — each one argued out as
-   * question / choice / why / cost — was built and then pulled the same day
-   * (Luis: "it was just to record to do it later"). The draft page and
-   * content module are recoverable at commit bb307b6.
-   */
-  decisions: ManifestoDecision[]
-  blog: {
-    text: string
-    linkLabel: string
-    /** Set once the design-ideas blog exists; until then the text renders plain. */
-    href?: string
-    /** Shown after the label only while `href` is unset. */
-    pendingNote?: string
-  }
   signature: {
     closing: string
     name: string
@@ -103,7 +74,7 @@ export const manifesto: ManifestoContent = {
   // grew to four paragraphs on 2026-08-30; 1,210 words is where this rounds
   // to 6). Recount pinned in manifesto.test.ts, so a longer letter fails
   // loudly instead of lying.
-  letterNote: "A letter from Luis · 5 min read",
+  letterNote: "A letter from Luis · 4 min read",
   blocks: [
     {
       kind: "p",
@@ -113,7 +84,7 @@ export const manifesto: ManifestoContent = {
       kind: "p",
       text: "The starting point was an old idea from David Allen's Getting Things Done: you need one system you can trust with everything — every to-do, every objective, every thing you already did — ==so your mind can stop running the meta-strategy in the background and be present== in what is in front of you, as fully as possible.",
     },
-    { kind: "h", id: "the-struggle-never-stops", text: "The struggle never stops" },
+    { kind: "h", id: "a-delicate-equilibrium", text: "A delicate equilibrium" },
     {
       kind: "p",
       text: "Runner friends of mine say it half as a joke, but it's true: the struggle never stops. The pace only gets faster.",
@@ -124,23 +95,23 @@ export const manifesto: ManifestoContent = {
     },
     {
       kind: "p",
-      text: "==To win the day, you have to be present== — head down, in the work. A soldier. ==To win the decade, you have to lift your head== — set the strategy, learn from the day, connect it to the ones before it. A general.",
+      text: "And the fight happens at two horizons that require different approaches. ==The days, to win them, you have to be present== — head down, in the work. A soldier. ==The years, to win them, you have to lift your head== — set the strategy, learn from each day, connect it to the ones before it, and continuously adapt the strategy if necessary. A general.",
     },
     {
       kind: "p",
-      text: "You don't get to pick which one you are. You're both, at once, permanently — and neither one covers for the other. A bad plan loses no matter how well you fight it. A good plan loses to a day you never showed up for. Both have to be there, and both have to be good.",
+      text: "You don't get to pick one role. You're both, at once, permanently — and neither one covers for the other. A bad plan loses no matter how well you follow it. A good plan loses to a day you never showed up for. Both have to be there, and both have to be great. To top it all, you have to be careful to understand, from the days, the patterns and the new information that really matter and would be important to adapt the strategy — and there is a lot of noise, and a lot of emotion.",
     },
     {
       kind: "p",
-      text: "So everything rests on the bridge between them: the weeks and months in between, the projects, the goals you set for them. Follow the plan — and keep checking the plan still leads where you want to go.",
+      text: "This dynamic rests on a delicate equilibrium, and is a tough ordeal to execute well.",
     },
     {
       kind: "p",
-      text: "It's a delicate equilibrium. ==Two things can help you hold it: personal discipline, and/or a good system.==",
+      text: "Every high achiever we've come across attacks this with the same two ingredients: ==personal discipline, and a great system in place.== Discipline is how hard you push on any given day. The system is how much friction you meet on all of them.",
     },
     {
       kind: "p",
-      text: "The best odds come from having both. But only one of them can be built for you. Discipline is yours — nobody can supply it from the outside. The system is ours to build. We count on you for the first. You can count on us for the second.",
+      text: "Discipline is yours — nobody can supply it from the outside. The system, Locus, is our mission to build. We count on you for the first. You can count on us for the second.",
     },
     { kind: "h", id: "the-problem-with-todays-tools", text: "The problem with today's tools" },
     {
@@ -157,9 +128,9 @@ export const manifesto: ManifestoContent = {
     },
     {
       kind: "p",
-      text: "We never found what we thought a great solution to this modern productivity problem would look like: one that gathered all of this context and used it to help us win the day and, day after day, the war. So we built one.",
+      text: "We didn't find what we thought a great solution to this modern productivity problem would look like: one that really felt like a smart assistant, and that helped us win day after day. So we built one — though we are still at the beginning of the vision.",
     },
-    { kind: "h", id: "two-ideas-behind-the-design", text: "Two ideas behind the design" },
+    { kind: "h", id: "two-ideas-behind-the-design", text: "Two ideas behind our solution" },
     {
       kind: "p",
       text: "Most of the decisions in Locus come down to two ideas.",
@@ -167,7 +138,12 @@ export const manifesto: ManifestoContent = {
     {
       kind: "p",
       emphasis: true,
-      text: "The first is a remarkable effect, at work all around us and all through our lives. A line that made the rounds credited to a famous physics genius — though probably not his — captures it best:",
+      text: "The first is the idea of compounding, an effect that is at work all around us and all through our lives, and it basically states that far down the line, what you reach is not the linear day-by-day sum, but actually the exponential day-by-day multiplication. An idea that is easy to understand logically, but way harder to really absorb and implement.",
+    },
+    {
+      kind: "p",
+      emphasis: true,
+      text: "And it doesn't care if we are attentive to it; it happens, as time does. One line that we think captures this well:",
     },
     {
       kind: "quote",
@@ -177,12 +153,12 @@ export const manifesto: ManifestoContent = {
     {
       kind: "p",
       emphasis: true,
-      text: "==Small improvements, repeated, are the whole game.== We want to be on the earning end of that effect.",
+      text: "==Small improvements, repeated, are the whole game.==",
     },
     {
       kind: "p",
       emphasis: true,
-      text: "The second is what makes the repeating possible. James Clear put it best:",
+      text: "The second is what we hinted at in the last section, but James Clear put it best:",
     },
     {
       kind: "quote",
@@ -191,7 +167,7 @@ export const manifesto: ManifestoContent = {
     },
     {
       kind: "p",
-      text: "Put together: the most useful thing we could give you is not a better goal. It is a better system — one you can trust with the whole day, that learns from the day you actually had, and that compounds.",
+      text: "Put together: the most useful thing we could create is a better system that helps people be on the earning side of the first idea — one that they can trust with everything, that learns from their plans and from the day they actually had, that helps them discern the important things.",
     },
     // "Locus, in three parts" (heading + the Execution · Inputs · AI block)
     // was cut on 2026-08-31 (Luis: the least important part; the app showcase
@@ -199,60 +175,9 @@ export const manifesto: ManifestoContent = {
     // app's onboarding keeps its own copy of that copy (IntroPhaseView.swift).
     {
       kind: "p",
-      text: "Locus will be there day after day, helping you see a little through the gigantic noise of real life, nudging one tiny change once in a while, and letting the changes compound. If the result is not life-changing, it will at least be much better. That is the bet.",
+      text: "Locus will be there day after day, helping you see a little through the gigantic noise of real life, nudging you once in a while, helping you stay on track and, no matter what, keep compounding.",
     },
   ],
-  // Anchor deliberately doesn't count (it was "five-decisions" until the
-  // sixth arrived on 2026-08-20) — the next one shouldn't break links again.
-  decisionsId: "design-decisions",
-  decisionsHeading: "Six decisions",
-  decisionsIntro:
-    "Early on we split the system in three: the parts we should build ourselves, the parts we should borrow, and the parts we should leave open for the community to evolve. Most of what follows comes from that split:",
-  decisions: [
-    {
-      id: "build-the-armor",
-      title: "We build the armor, not the brain.",
-      summary:
-        "Rather than rebuild an agentic core, we lean on the state-of-the-art harnesses and put our craft where we truly add value: the sensors, tools, and UI around them.",
-    },
-    {
-      id: "choose-your-model",
-      title: "Choose your model.",
-      summary:
-        "Your Claude Code or Codex subscription, an API key (say, OpenRouter), or Locus Remote — your choice. Pick the model you prefer, and swap it anytime.",
-    },
-    {
-      // id kept as the anchor; the app renamed Routine → Protocol (PRD #730).
-      id: "routines-are-files",
-      title: "Protocols are files.",
-      summary:
-        "Different personalities want different approaches. So we left this part deliberately open: every AI behavior is a Markdown file — read, edit, share, or add your own.",
-    },
-    {
-      id: "external-tools",
-      title: "Plug in your own tools.",
-      summary:
-        "The MCP servers you already connected to your harness — Notion, Linear, your own — work in Locus too. You switch on the ones that make sense for your setup.",
-    },
-    {
-      id: "gets-to-know-you",
-      title: "It gets to know you.",
-      summary:
-        "The more you use it, the better it adapts — your patterns, your rhythms, what actually works. That picture is a wiki on your Mac; if it's wrong, you fix it.",
-    },
-    {
-      id: "local-first",
-      title: "Your day lives on your Mac.",
-      summary:
-        "Local-first and private by design: your data, your routines, and everything Locus knows about you stay on your device. You only log in for the subscription.",
-    },
-  ],
-  blog: {
-    text: "For the reasoning behind each of these, be sure to check our",
-    linkLabel: "design ideas blog",
-    // href: "/blog", — set once the blog exists; the pending note drops out by itself.
-    pendingNote: "(coming soon)",
-  },
   signature: {
     closing: "We hope you enjoy it.",
     name: "Luis",

@@ -26,21 +26,24 @@ export type AppTourContent = {
   /** null until the recording lands — the page simply omits the player. */
   video: TourVideo | null
   videoLabel: string
-  closer: string
   cta: { label: string; href: string }
   /** Optional: unset while the Packs page is hidden (2026-08-30). */
   secondaryCta?: { label: string; href: string }
 }
 
+// Header rewritten 2026-09-02 (Luis: "Locus, on screen." + the tab inventory
+// was "very generic"). The headline carries the manifesto's spine — the decade
+// down to the day; the intro is Luis's own line: six tabs, one smart copilot
+// (chat in the title bar, or voice) that reaches all of them. The closing
+// "Everything above runs on your Mac…" paragraph was cut the same day — it
+// only repeated the intro's last sentence.
 export const appTour: AppTourContent = {
   eyebrow: "The app",
-  title: "Locus, on screen.",
+  title: "From your decade down to today.",
   intro:
-    "Six tabs and one conversation. Each tab does one job; chat, in the title bar, talks to all of them. Everything runs on your Mac, on the AI you already pay for.",
+    "Six tabs, explained below, and one smart copilot — chat in the title bar, or just your voice — that reaches all of them. All of it on your Mac, on the AI you already pay for.",
   video: null,
   videoLabel: "A walk through Locus",
-  closer:
-    "Everything above runs on your Mac. The agent behind System and Chat runs on whichever AI you already pay for.",
   cta: { label: "Download Locus", href: "/download" },
   // secondaryCta: { label: "See the packs", href: "/packs" }, — restore with the nav item.
 }

@@ -1,10 +1,11 @@
 import Link from "next/link"
+import { Fragment } from "react"
 
 import { PageShell } from "@/components/layout/page-shell"
 import { BreathingDot, SpringReveal } from "@/components/motion"
 import { buttonVariants } from "@/components/ui/button"
 import { MagneticButton } from "@/components/ui/magnetic-button"
-import { hero } from "@/content/hero"
+import { hero, heroSubheadlineLines } from "@/content/hero"
 import { cn } from "@/lib/utils"
 
 import { HeroBackground } from "./hero-background"
@@ -40,9 +41,18 @@ export function Hero() {
                 className="text-balance text-left text-[2.5rem] font-semibold leading-[1] tracking-[-0.035em] text-[var(--fg)] max-md:[text-shadow:0_1px_2px_rgb(236_241_248/0.6),0_0_28px_rgb(236_241_248/0.9)] sm:text-[3rem] md:text-[3.5rem] lg:text-[3.875rem] xl:text-[4.125rem]"
               >
                 {hero.headline}
+                <span className="block">{hero.headlineTail}</span>
               </h1>
               <p className="max-w-xl text-pretty text-left text-[15px] leading-relaxed text-[var(--fg)]/88 max-md:[text-shadow:0_0_20px_rgb(236_241_248/0.9)] md:text-base md:text-[var(--muted-foreground)]">
-                {hero.subheadline}
+                {/* One sentence per line from sm up (Luis, 2026-09-02): the two
+                    sentences are close in length, so breaking at the full stop
+                    gives two balanced lines instead of a ragged wrap. */}
+                {heroSubheadlineLines.map((line, i) => (
+                  <Fragment key={line}>
+                    {i > 0 && <br className="max-sm:hidden" />}
+                    {line}
+                  </Fragment>
+                ))}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-3">
                 <MagneticButton href={hero.primaryCta.href}>

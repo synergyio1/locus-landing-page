@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test"
 const ROUTES = [
   { path: "/", h1: /the missing os for modern work\./i },
   { path: "/pricing", h1: /one plan\. all of locus\./i },
-  { path: "/app", h1: /locus, on screen\./i },
+  { path: "/app", h1: /from your decade down to today\./i },
   // Packs is hidden since 2026-08-30 (nav item, footer link and sitemap
   // entries pulled — see site-nav-client.tsx). The routes still serve, so
   // they stay in the smoke run, but they are deliberately not in the sitemap.

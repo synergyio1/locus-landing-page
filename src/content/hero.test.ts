@@ -21,9 +21,13 @@ describe("hero content", () => {
     expect(hero.headline).toMatch(/missing OS for modern work/i)
   })
 
+  it("closes the headline with the platform on its own line (Luis, 2026-09-02)", () => {
+    expect(hero.headlineTail).toBe("For macOS.")
+  })
+
   it("subheadline is the manifesto's spine, unadorned (Luis, 2026-08-17)", () => {
     expect(hero.subheadline).toBe(
-      "One system you can trust with your whole day. Stay present today, learn from every day, and let the small changes compound."
+      "One system you can trust with your whole day. Learn from every day, and let the small changes compound."
     )
   })
 

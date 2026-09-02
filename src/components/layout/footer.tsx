@@ -3,7 +3,7 @@ import Link from "next/link"
 import { PageShell } from "@/components/layout/page-shell"
 import { Logo } from "@/components/ui/logo"
 
-const SUPPORT_EMAIL = "support@getlocus.tech"
+const SUPPORT_EMAIL = "luis@getlocus.tech"
 
 export function Footer() {
   const year = new Date().getFullYear()
@@ -82,7 +82,6 @@ export function Footer() {
           <div className="flex flex-col gap-2 font-mono text-[0.7rem] uppercase tracking-[0.22em] text-[var(--muted-foreground)] md:text-right">
             <span>v0.1.0</span>
             <span>macOS Tahoe</span>
-            <span>Made in Europe</span>
           </div>
         </div>
 

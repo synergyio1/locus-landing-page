@@ -4,8 +4,15 @@ import { appTour } from "./app-tour"
 
 describe("app tour content", () => {
   it("describes the six-tab app, not the retired nine-screen one", () => {
-    expect(appTour.title).toBe("Locus, on screen.") // pinned by tests/e2e/smoke.spec.ts
+    // Pinned by tests/e2e/smoke.spec.ts. "Locus, on screen." retired 2026-09-02.
+    expect(appTour.title).toBe("From your decade down to today.")
     expect(appTour.intro).toMatch(/six tabs/i)
+    // Luis's line (2026-09-02): six tabs, one smart copilot by chat or voice.
+    expect(appTour.intro).toMatch(/one smart copilot/)
+    expect(appTour.intro).toMatch(/chat in the title bar, or just your voice/)
+    expect(appTour.intro).toMatch(/on the AI you already pay for\.$/)
+    // The closer that repeated the intro's last sentence was cut the same day.
+    expect(JSON.stringify(appTour)).not.toMatch(/Everything above runs on your Mac/)
     expect(JSON.stringify(appTour)).not.toMatch(/nine screens|three families|last three screens/i)
   })
 
