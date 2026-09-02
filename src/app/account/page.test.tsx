@@ -91,11 +91,11 @@ describe("AccountPage", () => {
     expect(yearly.disabled).toBe(false)
 
     const trialButton = screen.getByRole("button", {
-      name: /start 30-day pro trial/i,
+      name: /start 7-day pro trial/i,
     }) as HTMLButtonElement
     expect(trialButton.disabled).toBe(false)
     expect(trialButton.textContent).toMatch(
-      /Free for 30 days, no card needed/i
+      /Free for 7 days, no card needed/i
     )
   })
 
@@ -127,7 +127,7 @@ describe("AccountPage", () => {
     expect(trialButton.disabled).toBe(true)
     expect(trialButton.textContent).toContain("April 1, 2026")
     expect(
-      screen.queryByRole("button", { name: /start 30-day pro trial/i })
+      screen.queryByRole("button", { name: /start 7-day pro trial/i })
     ).toBeNull()
   })
 
@@ -160,7 +160,7 @@ describe("AccountPage", () => {
         screen.getByText(/3 days left · expires april 30, 2026/i)
       ).toBeTruthy()
       expect(
-        screen.queryByRole("button", { name: /start 30-day pro trial/i })
+        screen.queryByRole("button", { name: /start 7-day pro trial/i })
       ).toBeNull()
       expect(
         screen.queryByRole("button", { name: /trial used on/i })
@@ -315,7 +315,7 @@ describe("AccountPage", () => {
 
     const banner = screen.getByTestId("welcome-banner")
     expect(banner.textContent).toMatch(
-      /you're on pro for the next 30 days\. make it count\./i
+      /you're on pro for the next 7 days\. make it count\./i
     )
     expect(banner.textContent).not.toMatch(/welcome to pro/i)
     expect(banner.textContent).not.toMatch(/refresh in a moment/i)

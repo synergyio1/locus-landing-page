@@ -71,7 +71,7 @@ export default async function AccountPage({
           data-testid="welcome-banner"
           className="mb-8 rounded-md border border-[var(--accent)] bg-[var(--accent-subtle)] px-4 py-3 text-sm text-[var(--accent-text)]"
         >
-          {"You're on Pro for the next 30 days. Make it count."}
+          {"You're on Pro for the next 7 days. Make it count."}
         </div>
       ) : null}
 

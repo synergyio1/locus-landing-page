@@ -55,17 +55,17 @@ describe("POST /api/pro-trial/start", () => {
     expect(body.started).toBe(true)
     expect(typeof body.expiresAt).toBe("string")
     const returned = new Date(body.expiresAt).getTime()
-    const thirtyDaysFromNow = Date.now() + 30 * 24 * 60 * 60 * 1000
-    expect(Math.abs(returned - thirtyDaysFromNow)).toBeLessThan(60_000)
+    const sevenDaysFromNow = Date.now() + 7 * 24 * 60 * 60 * 1000
+    expect(Math.abs(returned - sevenDaysFromNow)).toBeLessThan(60_000)
 
     expect(queryRaw).toHaveBeenCalledTimes(1)
     // Pin the duration the route actually writes (tagged template args:
-    // [strings, userId, startedAt, expiresAt]) — the app + locus-api grant 30 days.
+    // [strings, userId, startedAt, expiresAt]) — the app + locus-api grant 7 days.
     const insertArgs = queryRaw.mock.calls[0]
     const startedAtArg = insertArgs[2] as Date
     const expiresAtArg = insertArgs[3] as Date
     expect(expiresAtArg.getTime() - startedAtArg.getTime()).toBe(
-      30 * 24 * 60 * 60 * 1000
+      7 * 24 * 60 * 60 * 1000
     )
   })
 

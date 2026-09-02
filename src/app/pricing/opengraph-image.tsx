@@ -9,6 +9,6 @@ export default function Image() {
   return renderOgImage({
     eyebrow: "Pricing",
     title: "One plan. All of Locus.",
-    subtitle: "$3 a month, or $30 a year. 30 days free, no card.",
+    subtitle: "$3 a month, or $30 a year. 7 days free, no card.",
   })
 }

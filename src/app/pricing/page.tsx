@@ -6,7 +6,7 @@ import { createServerClient } from "@/lib/supabase/server"
 export const metadata: Metadata = {
   title: "Pricing — Locus",
   description:
-    "One plan, everything included. $3 a month, or $30 a year. 30 days free, no card required.",
+    "One plan, everything included. $3 a month, or $30 a year. 7 days free, no card required.",
 }
 
 export default async function PricingPage() {

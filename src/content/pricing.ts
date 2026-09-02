@@ -42,7 +42,7 @@ export const pricing: PricingContent = {
   eyebrow: "Pricing",
   headline: "One plan. All of Locus.",
   subline:
-    "Everything included. 30 days free, no card — then $3 a month or $30 a year: a small fee that keeps the infrastructure running and the app improving.",
+    "Everything included. 7 days free, no card — then $3 a month or $30 a year: a small fee that keeps the infrastructure running and the app improving.",
   defaultCadence: "yearly",
   billing: {
     monthly: {
@@ -61,8 +61,8 @@ export const pricing: PricingContent = {
   },
   plan: {
     label: "Locus — everything included",
-    trialChip: "30 days free",
-    ctaLabel: "Start 30 days free",
+    trialChip: "7 days free",
+    ctaLabel: "Start 7 days free",
     ctaNote: "The trial starts inside the app — no card required.",
   },
   aiChoice: {
@@ -79,7 +79,7 @@ export const pricing: PricingContent = {
     },
     note: "Same features either way. The only difference is whose AI does the thinking.",
   },
-  assurances: ["30-day free trial", "Cancel anytime", "30-day refund"],
+  assurances: ["7-day free trial", "Cancel anytime", "30-day refund"],
   download: {
     label: "Download for macOS — your trial starts in the app",
     href: "/download",

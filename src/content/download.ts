@@ -17,7 +17,7 @@ export const download: DownloadContent = {
   eyebrow: "Download",
   headline: "Download Locus for macOS.",
   body:
-    "The Mac download is open. Install Locus, sign in, and your 30-day trial starts inside the app — every feature included, no card required.",
+    "The Mac download is open. Install Locus, sign in, and your 7-day trial starts inside the app — every feature included, no card required.",
   requirement: "Requires macOS Tahoe for now.",
   support: "Support for older macOS versions will come later.",
   cta: {

@@ -111,9 +111,9 @@ export const appShowcase: AppShowcaseContent = {
       icon: "house",
       headline: "The record, never the verdict.",
       caption:
-        "Three numbers that can't change before lunch, this morning's brief, the week's attention, thirty days of density. What's live sits on the rail. Home runs nothing.",
+        "It opens on you: the Portrait, every page Locus has written about you, with three numbers laid over it. Then this morning's brief, yesterday, the month behind you. Home runs nothing.",
       body: [
-        "Three figures that can't change before lunch — hours last week, your typical stretch, hours observed all time. Then this morning's brief, the closed day, the week, thirty days. The rail holds what's live. No streaks; nothing is a percentage.",
+        "The widest frame first: the Portrait — Locus's read of you, every page of it, as one constellation — with three figures laid over it: hours last week, your typical stretch, hours observed all time. Then this morning's brief, the closed day, the week, thirty days. The rail holds what's live. Nothing is a percentage.",
       ],
       handoff: "Every tab writes here. Home runs nothing.",
       panes: [
@@ -121,9 +121,9 @@ export const appShowcase: AppShowcaseContent = {
           id: "home",
           label: "Home",
           screen: {
-            src: "/app/screens/home.png",
+            src: "/app/screens/home-v2.png",
             ...SCREEN,
-            alt: "The Home tab: hours last week, the typical stretch before it breaks, hours observed all time, this morning's brief, last week's attention, and the 30-day strip.",
+            alt: "The Home tab: hours last week, the typical stretch before it breaks, hours observed all time, the Portrait constellation of what Locus knows about you, this morning's brief, and yesterday's closed blocks.",
           },
         },
       ],

@@ -27,11 +27,11 @@ describe("pricing content", () => {
     expect(pricing.billing.monthly.savings).toBeUndefined()
   })
 
-  it("attaches the 30-day no-card trial to the plan", () => {
-    expect(pricing.plan.trialChip).toMatch(/30 days/i)
-    expect(pricing.plan.ctaLabel).toMatch(/30 days free/i)
+  it("attaches the 7-day no-card trial to the plan", () => {
+    expect(pricing.plan.trialChip).toMatch(/7 days/i)
+    expect(pricing.plan.ctaLabel).toMatch(/7 days free/i)
     expect(pricing.plan.ctaNote).toMatch(/no card/i)
-    expect(pricing.assurances).toContain("30-day free trial")
+    expect(pricing.assurances).toContain("7-day free trial")
   })
 
   it("frames the fee as upkeep, not premium", () => {

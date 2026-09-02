@@ -1,6 +1,6 @@
 # Product Marketing Context
 
-*Last updated: 2026-08-17 (repricing + Locus Remote credits + 30-day trial; body otherwise 2026-07-06)*
+*Last updated: 2026-09-02 (trial cut to 7 days; repricing + Locus Remote credits 2026-08-17; body otherwise 2026-07-06)*
 *Status: V2 — full rewrite against the product source of truth (`../pomodoro-preview`). Supersedes V1 (2026-04-25), which described a pre-pivot Locus: server-orchestrated AI, Free/Pro split, "remove on-device claims." All of that is gone. If a claim here conflicts with the product repo, the product repo wins — see "Source of truth" at the bottom.*
 
 ## Product Overview
@@ -48,7 +48,7 @@ Landing-page surfaces: `src/content/app-showcase.ts` (single source for `/#showc
 - **No free tier.** One plan, everything included — Locus charges for the software, not for AI usage.
 - **$3/mo month-to-month, or $30/yr** (shown as the **$2.50/mo** equivalent; savings chip **"2 months free"** — a year costs ten monthly payments). Pricing UI defaults to yearly with the per-month price shown. The old $6/$4 ($48/yr, "save 33%") numbers are retired.
 - **Framing (Coach voice, humble, not premium):** *"A small fee that keeps the basic infrastructure running and lets us keep maintaining the app and building new features."* Mirrors the app's own paywall line ("Locus is cheap — a low usage fee that maintains the app and keeps development going").
-- **30-day free trial, started from inside the app, no card required.** ✅ Aligned 2026-08-17 across app (`TrialConfiguration.lengthInDays = 30`), `locus-api` (`TRIAL_DURATION_MS` = 30 d), and this repo (`/api/pro-trial/start`, `derive.ts`, `/account` copy). The July "14 days" decision was overtaken by the app shipping 30.
+- **7-day free trial, started from inside the app, no card required.** ✅ Aligned 2026-09-02 across app (`TrialConfiguration.lengthInDays = 7`), `locus-api` (`TRIAL_DURATION_MS` = 7 d), and this repo (`/api/pro-trial/start`, `derive.ts`, `/account` copy). History: 7 → 14 (July, never shipped) → 30 (2026-08-14, ADR-0010) → back to 7 (2026-09-02, user call).
 - **Bring-your-own AI included:** users plug in the AI they already pay for — a Claude Code or Codex subscription, or an API key. No extra cost, no per-token markup.
 - **Optional: Locus Remote, paid with prepaid Remote credits** (product ADR-0010, 2026-08-14). One-off purchases of **any amount**, metered as the AI is used ("the more you use, the more it draws"). **Never part of the plan or the trial; not a tier.** Presented as the second card of the "Choose your AI" rail. Naming adopted from the app: **"Locus Remote"**, **"Remote credits"**, verb **"Buy credits"**. The July "$8/mo Locus managed AI" add-on is retired. Purchase flow lives in the Mac app (Settings → Account) + `locus-api`; the site's `/account` shows a static "Remote credits — coming soon" card only.
 - **30-day no-questions refund.** (`terms.ts` matches.)
@@ -125,7 +125,7 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 | Objection | Response |
 |-----------|----------|
 | "Another focus app — I've tried five." | It's not a timer with charts. Show the loop: the day gets observed, interpreted, and turned into tomorrow's structure — by an agent you can read, edit, and undo. Pomodoro is literally one option inside one tab. |
-| "Why pay when there are free timers?" | No free tier and no apology: 30 days free to feel the loop compound, then $3/mo or $30/yr — a small fee for the software and its upkeep. The AI runs on the subscription you already own, so there's no per-token markup hiding in the price. |
+| "Why pay when there are free timers?" | No free tier and no apology: 7 days free to feel the loop compound, then $3/mo or $30/yr — a small fee for the software and its upkeep. The AI runs on the subscription you already own, so there's no per-token markup hiding in the price. |
 | "What does the AI see / where does my data go?" | Your data lives on your Mac. With BYO, prompts go to your own AI account. With Locus Remote, our relay stores nothing — it can't even replay what you said; it only meters your credits. Specific, checkable claims — not "fully private" hand-waving. |
 | "I don't want an app watching me." | Sentinel observes only off-session foreground app/window titles, on your machine, for you — no keystrokes, no screenshots, no URLs, nothing surfaced to anyone else. And the register is observation, not judgment: nothing scores you outside a session you declared. |
 | "macOS only?" | Yes — macOS 26 (Tahoe) or later, and unapologetically native. Windows/Linux not planned. (iOS companion: unverified, don't promise — see Open items.) |
@@ -213,7 +213,7 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 
 ## Goals
 
-**Business goal:** drive Mac downloads → in-app 30-day trial → paid conversions.
+**Business goal:** drive Mac downloads → in-app 7-day trial → paid conversions.
 **Funnel:** download-first (confirmed; no waitlist).
 **Conversion actions:** primary "Download for macOS" (hero + pricing); secondary: scroll to the demonstration section. Note: with no free tier, CTA copy must stop saying "free" about the product — the *trial* is free, the download is just the download.
 
@@ -241,7 +241,7 @@ Verified against the live code 2026-07-06. **No page code changes in this doc pa
 ## Open items
 
 1. ~~Final public category label + hero~~ — ✅ decided 2026-07-06: "The missing OS for modern work." + "AI-native Execution OS" both stay (user call: the ambitious category claim wins the hero; descriptive truth lives in the subhead).
-2. ~~Trial 7→14 days~~ — ✅ RESOLVED 2026-08-17: everything is 30 days (app, locus-api, site API, `derive.ts`, `/account`).
+2. ~~Trial length~~ — ✅ RESOLVED 2026-09-02: everything is 7 days again (app, locus-api, site API, `derive.ts`, `/account`); was 30 days from 2026-08-17 to 2026-09-02.
 3. **iOS companion** — old claim, no evidence in product repo. Confirm with the user before it appears anywhere.
 4. **New screenshots** — Routines, Memory, Presence captures needed from `pomodoro-preview/marketing/` pipeline.
 5. **Real customer quotes** — capture during beta; unblocks social proof.

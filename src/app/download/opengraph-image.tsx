@@ -9,6 +9,6 @@ export default function Image() {
     eyebrow: "Download",
     title: "Download Locus for macOS.",
     subtitle:
-      "Install, sign in, and your 30-day trial starts in the app. Requires macOS Tahoe.",
+      "Install, sign in, and your 7-day trial starts in the app. Requires macOS Tahoe.",
   })
 }

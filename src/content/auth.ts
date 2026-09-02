@@ -35,7 +35,7 @@ export const authCopy = {
     subline:
       "Your account carries your plan and your billing. Everything you actually do lives on your Mac.",
     points: [
-      "30 days free, no card required.",
+      "7 days free, no card required.",
       "No passwords. Sign in with Google, or we send a one-time link to your inbox.",
     ],
     submitLabel: "Send magic link",

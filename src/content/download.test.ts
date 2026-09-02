@@ -18,9 +18,9 @@ describe("download content", () => {
     expect(download.cta.label).not.toMatch(/free/i)
   })
 
-  it("body routes the visitor into the 30-day in-app trial", () => {
-    expect(download.body).toMatch(/30-day/i)
-    expect(download.body).not.toMatch(/14-day/i)
+  it("body routes the visitor into the 7-day in-app trial", () => {
+    expect(download.body).toMatch(/7-day/i)
+    expect(download.body).not.toMatch(/14-day|30-day/i)
     expect(download.body).toMatch(/no card/i)
   })
 

@@ -22,7 +22,7 @@ describe("<Pricing />", () => {
     expect(
       screen.getByRole("heading", { name: /one plan\. all of locus\./i })
     ).toBeDefined()
-    expect(screen.getByText(/30 days free, no card/i)).toBeDefined()
+    expect(screen.getByText(/7 days free, no card/i)).toBeDefined()
   })
 
   it("supports h1 rendering for the standalone pricing page", () => {
@@ -81,15 +81,15 @@ describe("<Pricing />", () => {
     expect(screen.getByText(/2 months free/i)).toBeDefined()
   })
 
-  it("surfaces the 30-days-free chip and no-card trial note", () => {
+  it("surfaces the 7-days-free chip and no-card trial note", () => {
     render(<Pricing />)
-    expect(screen.getByText(/^30 days free$/i)).toBeDefined()
+    expect(screen.getByText(/^7 days free$/i)).toBeDefined()
     expect(screen.getByText(/no card required/i)).toBeDefined()
   })
 
   it("renders the CTA as an anchor when isAuthed=false", () => {
     render(<Pricing isAuthed={false} />)
-    const cta = screen.getByRole("link", { name: /start 30 days free/i })
+    const cta = screen.getByRole("link", { name: /start 7 days free/i })
     expect(cta.tagName).toBe("A")
     expect(cta.getAttribute("href")).toMatch(/\/login\?next=.*notice=signin/)
   })
@@ -97,7 +97,7 @@ describe("<Pricing />", () => {
   it("renders the CTA as a button when isAuthed=true", () => {
     render(<Pricing isAuthed />)
     expect(
-      screen.getByRole("button", { name: /start 30 days free/i }).tagName
+      screen.getByRole("button", { name: /start 7 days free/i }).tagName
     ).toBe("BUTTON")
   })
 

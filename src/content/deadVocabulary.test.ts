@@ -19,12 +19,14 @@ const BANNED: Array<[name: string, pattern: RegExp]> = [
   ["Loop tier", /loop tier/i],
   ["Try Pro", /try pro/i],
   ["Pro (the retired paid tier)", /\bPro\b/],
-  ["7-day trial", /7[- ]day/i],
   ["digest by email (email digests are disabled)", /by email/i],
   ["Friday review (now the weekly review)", /friday review/i],
-  // Retired by the 2026-08-17 repricing ($3/mo · $30/yr · 30-day trial ·
+  // Retired by the 2026-08-17 repricing ($3/mo · $30/yr ·
   // Locus Remote prepaid credits). See product ADR-0010.
-  ["14-day trial (now 30 days)", /14[- ]day|14 days free/i],
+  ["14-day trial (now 7 days)", /14[- ]day|14 days free/i],
+  // Trial cut 30 → 7 days on 2026-09-02. The 30-day *refund* is still live
+  // copy, so only the trial phrasings are banned.
+  ["30-day trial (now 7 days)", /30[- ]day (free |pro )?trial|30 days free/i],
   ["$8/mo managed-AI add-on (now prepaid Remote credits)", /\$8\/mo|\$8 a month/i],
   ["Locus managed AI (now Locus Remote / Remote credits)", /locus managed|managed[- ]ai/i],
   ["$48/yr price point (now $30)", /\$48\b/],

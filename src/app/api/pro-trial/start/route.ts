@@ -5,7 +5,7 @@ import { createServerClient } from "@/lib/supabase/server"
 
 export const runtime = "nodejs"
 
-const TRIAL_DURATION_MS = 30 * 24 * 60 * 60 * 1000
+const TRIAL_DURATION_MS = 7 * 24 * 60 * 60 * 1000
 
 export async function POST() {
   const supabase = await createServerClient()
