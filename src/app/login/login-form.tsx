@@ -129,8 +129,14 @@ function useHashError(): string | undefined {
  */
 function friendlyError(raw: string): string {
   const message = raw.toLowerCase()
+  // Two different ceilings, and telling someone to "wait a minute" when the
+  // project's hourly quota is gone sends them back to try again and fail again.
+  // That one is not about them at all, so it should not read like a scolding.
+  if (message.includes("email rate limit exceeded")) {
+    return "We've hit our own limit on sign-in emails for the moment. This one is on us — try again a little later, or sign in with Google."
+  }
   if (message.includes("rate limit") || message.includes("too many")) {
-    return "Too many attempts. Wait a minute, then try again."
+    return "You just asked for a link. Give it a few seconds, then try again."
   }
   if (message.includes("invalid") && message.includes("email")) {
     return "That address doesn't look right. Check it and try again."

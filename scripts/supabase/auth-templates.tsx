@@ -4,6 +4,7 @@
  *
  *   npx tsx scripts/supabase/auth-templates.tsx            # render + write to disk
  *   npx tsx scripts/supabase/auth-templates.tsx --push     # also PATCH the project
+ *   npx tsx scripts/supabase/auth-templates.tsx --smtp     # point auth email at Resend
  *
  * Needs SUPABASE_ACCESS_TOKEN (https://supabase.com/dashboard/account/tokens) for
  * --push. SUPABASE_PROJECT_REF selects the project.
@@ -126,7 +127,9 @@ async function build(): Promise<Record<string, string>> {
   return payload
 }
 
-async function push(payload: Record<string, string>): Promise<void> {
+async function patchAuthConfig(
+  payload: Record<string, string | number | boolean>
+): Promise<void> {
   const token = process.env.SUPABASE_ACCESS_TOKEN
   if (!token) {
     throw new Error(
@@ -155,11 +158,54 @@ async function push(payload: Record<string, string>): Promise<void> {
   console.log(`pushed ${Object.keys(payload).length} fields to ${PROJECT_REF}`)
 }
 
+/**
+ * Hands Supabase's auth email to Resend.
+ *
+ * Supabase's built-in mailer is a testing convenience: it sends from
+ * `noreply@mail.app.supabase.io` and allows a couple of messages an hour across
+ * the whole project, so on a live site most people asking to sign in simply never
+ * receive anything. Custom SMTP replaces both the sender and the ceiling.
+ *
+ * Resend's SMTP username is the literal string `resend`; the password is an API
+ * key, and a send-only restricted key is the right one to use here. The from
+ * address has to be on a domain verified in Resend.
+ */
+async function configureSmtp(): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY
+  if (!apiKey) throw new Error("RESEND_API_KEY is not set")
+
+  const from = process.env.RESEND_FROM ?? "Locus <luis@getlocus.tech>"
+  const address = from.includes("<") ? from.split("<")[1].replace(">", "") : from
+  const perHour = Number(process.env.AUTH_EMAILS_PER_HOUR ?? 100)
+
+  console.log("sender      :", from)
+  console.log("smtp        : smtp.resend.com:587 as 'resend'")
+  console.log("rate limit  :", perHour, "auth emails/hour")
+
+  await patchAuthConfig({
+    external_email_enabled: true,
+    smtp_host: "smtp.resend.com",
+    smtp_port: 587,
+    smtp_user: "resend",
+    smtp_pass: apiKey,
+    smtp_admin_email: address.trim(),
+    smtp_sender_name: "Locus",
+    // The built-in mailer's ceiling is a handful an hour; it only lifts once the
+    // project is sending through its own SMTP.
+    rate_limit_email_sent: perHour,
+  })
+}
+
 async function main(): Promise<void> {
+  if (process.argv.includes("--smtp")) {
+    await configureSmtp()
+    return
+  }
+
   const payload = await build()
 
   if (process.argv.includes("--push")) {
-    await push(payload)
+    await patchAuthConfig(payload)
   } else {
     console.log("\nrender only. re-run with --push to install on", PROJECT_REF)
   }

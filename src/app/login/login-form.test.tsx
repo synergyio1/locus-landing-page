@@ -77,7 +77,7 @@ describe("LoginForm", () => {
     expect(alert.textContent).not.toMatch(/AuthApiError|provider is not enabled/i)
   })
 
-  it("explains a rate-limit rejection in plain language", async () => {
+  it("tells someone who just asked for a link to wait a few seconds", async () => {
     signInWithOtpMock.mockResolvedValue({
       error: { message: "For security purposes, you can only request this after 54 seconds (rate limit)" },
     })
@@ -85,7 +85,21 @@ describe("LoginForm", () => {
     await submitEmail("cook@example.com")
 
     const alert = await screen.findByRole("alert")
-    expect(alert.textContent).toMatch(/too many attempts/i)
+    expect(alert.textContent).toMatch(/few seconds/i)
+  })
+
+  // The project-wide hourly quota is not the visitor's doing, and "wait a minute"
+  // would send them back to fail again.
+  it("owns the project-wide email quota instead of blaming the visitor", async () => {
+    signInWithOtpMock.mockResolvedValue({
+      error: { message: "email rate limit exceeded" },
+    })
+    render(<LoginForm next="/account" />)
+    await submitEmail("cook@example.com")
+
+    const alert = await screen.findByRole("alert")
+    expect(alert.textContent).toMatch(/on us/i)
+    expect(alert.textContent).not.toMatch(/wait a minute/i)
   })
 
   it("sends the Google flow back through /auth/callback with next preserved", async () => {
