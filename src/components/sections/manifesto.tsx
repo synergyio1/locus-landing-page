@@ -1,12 +1,9 @@
-import * as React from "react"
-
 import { PageShell } from "@/components/layout/page-shell"
 import { SpringReveal } from "@/components/motion"
 import { ManifestoToc } from "@/components/sections/manifesto-toc"
-import { InkUnderline } from "@/components/ui/ink-underline"
 import { RotatingWord } from "@/components/ui/rotating-word"
 import { manifesto, type ManifestoBlock } from "@/content/manifesto"
-import { splitInlineMarks } from "@/lib/inline-marks"
+import { stripInlineMarks } from "@/lib/inline-marks"
 import { cn } from "@/lib/utils"
 
 // Manifesto body ink: the site's muted tone nudged a step toward the ink
@@ -31,9 +28,13 @@ const HEADING_ANCHOR = "scroll-mt-24"
  * The pinned rail also carries the length layer (2026-08-19): a "4 min read"
  * note and a scroll-spy mini-TOC (md+ only) so the letter's shape and end
  * are visible before anyone commits to it. The letter itself stays whole —
- * no pagination, no read-more. (A "skim the underlines" note lived here for
- * a few hours; Luis cut it.) The six design decisions closed the letter until
- * 2026-09-02; they are now their own section right below (design-decisions.tsx).
+ * no pagination, no read-more. The six design decisions closed the letter
+ * until 2026-09-02; they are now their own section right below
+ * (design-decisions.tsx).
+ *
+ * The copy's ==marks== (Luis's thesis lines) were drawn as Cobalt ink
+ * underlines (ui/ink-underline.tsx) until 2026-09-02; Luis cut the underlines,
+ * so paragraphs render the marks stripped. Underlined version at e21eb81.
  */
 export function Manifesto() {
   const tocItems = manifesto.blocks.flatMap((b) =>
@@ -106,7 +107,7 @@ function Block({ block }: { block: ManifestoBlock }) {
     case "p":
       return (
         <p className={block.emphasis ? PARAGRAPH_EMPHASIS : PARAGRAPH}>
-          <InlineMarks text={block.text} />
+          {stripInlineMarks(block.text)}
         </p>
       )
     case "quote":
@@ -148,15 +149,4 @@ function Block({ block }: { block: ManifestoBlock }) {
         </div>
       )
   }
-}
-
-/** Copy with ==marks== → text runs, the marked ones drawn as ink underlines. */
-function InlineMarks({ text }: { text: string }) {
-  return splitInlineMarks(text).map((run, i) =>
-    run.marked ? (
-      <InkUnderline key={i}>{run.text}</InkUnderline>
-    ) : (
-      <React.Fragment key={i}>{run.text}</React.Fragment>
-    )
-  )
 }

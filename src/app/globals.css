@@ -141,7 +141,8 @@ details[open] > .faq-collapse {
   grid-template-rows: 1fr;
 }
 
-/* Ink underline (ui/ink-underline.tsx): a Cobalt pen stroke under a phrase.
+/* Ink underline (ui/ink-underline.tsx; unwired since 2026-09-02, see the
+   component note): a Cobalt pen stroke under a phrase.
    The stroke is one background gradient sized against the *unbroken* inline
    box (box-decoration-break: slice, the default), so a wrapped phrase draws
    line one first, then line two — and only its width animates. Faint alpha

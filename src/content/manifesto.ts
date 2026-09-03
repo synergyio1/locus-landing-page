@@ -6,12 +6,15 @@
 // sits a notch outside "engineered calm". ("specially in current times" was
 // his too, until he cut it himself later on 2026-08-19.)
 //
-// Inline emphasis: wrap a phrase in ==double equals== and the letter draws an
-// ink underline under it (lib/inline-marks.ts → ui/ink-underline.tsx). Luis
-// picks the marked lines — the exact set is pinned in manifesto.test.ts;
-// never inside a pull-quote, never outside the letter body. (A rail-side
-// "skim the underlines" note existed for a few hours on 2026-08-19; Luis
-// cut it — the underlines speak for themselves.)
+// Inline emphasis: wrap a phrase in ==double equals== to mark a thesis line
+// (lib/inline-marks.ts). Luis picks the marked lines — the exact set is
+// pinned in manifesto.test.ts; never inside a pull-quote, never outside the
+// letter body. Until 2026-09-02 the letter drew a Cobalt ink underline under
+// each mark (ui/ink-underline.tsx); Luis cut the underlines ("don't think
+// they are cool"), so the marks now render as plain text — the set stays
+// pinned so a future treatment can pick it up. Underlined letter recoverable
+// at e21eb81. (A rail-side "skim the underlines" note existed for a few hours
+// on 2026-08-19; Luis cut that too.)
 //
 // The "Locus, in three parts" block (Execution · Inputs · AI) was cut on
 // 2026-08-31 — the app showcase right under the letter shows the parts with
@@ -99,7 +102,7 @@ export const manifesto: ManifestoContent = {
     },
     {
       kind: "p",
-      text: "You don't get to pick one role. You're both, at once, permanently — and neither one covers for the other. A bad plan loses no matter how well you follow it. A good plan loses to a day you never showed up for. Both have to be there, and both have to be great. To top it all, you have to be careful to understand, from the days, the patterns and the new information that really matter and would be important to adapt the strategy — and there is a lot of noise, and a lot of emotion.",
+      text: "You don't get to pick one role. You're both, at once, permanently — and neither one covers for the other. A bad plan loses no matter how well you follow it. A good plan loses to a day you never showed up for. Both have to be there, and both have to be great. To top it all, the two have to talk: out of every day, you have to catch the patterns and the new information that really matter, the ones worth adapting the strategy for — and there is a lot of noise, and a lot of emotion.",
     },
     {
       kind: "p",

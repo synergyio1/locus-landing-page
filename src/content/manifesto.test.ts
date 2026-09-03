@@ -31,7 +31,7 @@ describe("manifesto content", () => {
     expect(JSON.stringify(manifesto.blocks)).toMatch(/James Clear/)
   })
 
-  it("underlines exactly the thesis lines Luis picked, with balanced marks", () => {
+  it("marks exactly the thesis lines Luis picked, with balanced marks", () => {
     const paragraphs = manifesto.blocks.flatMap((b) => (b.kind === "p" ? [b.text] : []))
     for (const text of paragraphs) {
       expect(hasBalancedInlineMarks(text), text).toBe(true)
@@ -44,6 +44,9 @@ describe("manifesto content", () => {
     // section's "Nothing holds all of it at once…" line was cut with its
     // sentence, and the Clear restatement "For anything that matters, the
     // system decides — not the ambition." was cut outright.
+    // 2026-09-02: the ink underline under the marks was switched off (Luis:
+    // "don't think they are cool"); the marks stay in the copy as the pinned
+    // thesis set and render plain (sections/manifesto.tsx strips them).
     expect(paragraphs.flatMap(listInlineMarks)).toEqual([
       "a system to help us deal with the fast, noisy, high-stress times we increasingly live in",
       "so your mind can stop running the meta-strategy in the background and be present",
@@ -110,7 +113,9 @@ describe("manifesto content", () => {
     // both great. 2026-09-02 (his own rewrite, orthography-only edits): the
     // fight happens at two horizons; the days-to-decade "loop" paragraph was
     // folded into the soldier/general pair and dropped; the noise/emotion tail
-    // sits on the "both roles" paragraph; a delicate equilibrium and a tough
+    // sits on the "both roles" paragraph — reworked for flow later that day
+    // ("the two have to talk: out of every day, you have to catch the
+    // patterns…", same ending); a delicate equilibrium and a tough
     // ordeal (he cut "specially in current times" on 2026-08-19 — don't
     // restore it); high achievers share two ingredients — discipline (the push
     // you apply to the day) and a great system (the friction in your days);
@@ -125,6 +130,8 @@ describe("manifesto content", () => {
     const roles = paragraphs[rolesIndex + 1]
     expect(roles).toMatch(/^You don't get to pick one role\./)
     expect(roles).toMatch(/Both have to be there, and both have to be great\./)
+    expect(roles).toMatch(/the two have to talk: out of every day, you have to catch/)
+    expect(roles).not.toMatch(/be careful to understand|would be important/)
     expect(roles).toMatch(/a lot of noise, and a lot of emotion\.$/)
     const equilibrium = paragraphs[rolesIndex + 2]
     expect(equilibrium).not.toMatch(/fragmentation|bridge/i)

@@ -24,6 +24,10 @@ let queueUntil = 0
  * A pen-stroke underline that draws itself in — left to right, continuing
  * across line wraps — the first time the phrase scrolls into view.
  *
+ * Not wired anywhere since 2026-09-02: the manifesto stopped drawing its
+ * ==marks== (Luis: "don't think they are cool"). Kept, with `.ink-underline`
+ * in globals.css, in case the treatment comes back — delete both otherwise.
+ *
  * The stroke is the element's own background: one gradient laid over the
  * *unbroken* inline box (box-decoration-break: slice, the default), whose
  * width animates 0 → 100%. Because the image is sized against the unbroken
