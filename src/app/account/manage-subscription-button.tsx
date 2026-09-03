@@ -2,12 +2,22 @@
 
 import { useState } from "react"
 
+import {
+  accountButton,
+  accountButtonError,
+  accountButtonOutline,
+} from "./button-styles"
+
 type ButtonState =
   | { kind: "idle" }
   | { kind: "pending" }
   | { kind: "error"; message: string }
 
-export function ManageSubscriptionButton() {
+export function ManageSubscriptionButton({
+  variant = "default",
+}: {
+  variant?: "default" | "outline"
+} = {}) {
   const [state, setState] = useState<ButtonState>({ kind: "idle" })
 
   async function openPortal() {
@@ -55,15 +65,12 @@ export function ManageSubscriptionButton() {
         type="button"
         onClick={openPortal}
         disabled={pending}
-        className="inline-flex items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-foreground)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        className={variant === "outline" ? accountButtonOutline : accountButton}
       >
         {pending ? "Redirecting…" : "Manage subscription"}
       </button>
       {state.kind === "error" ? (
-        <p
-          role="alert"
-          className="basis-full text-sm text-[var(--danger,#b00020)]"
-        >
+        <p role="alert" className={accountButtonError}>
           {state.message}
         </p>
       ) : null}

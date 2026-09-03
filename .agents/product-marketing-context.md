@@ -1,6 +1,6 @@
 # Product Marketing Context
 
-*Last updated: 2026-09-02 (trial cut to 7 days; repricing + Locus Remote credits 2026-08-17; body otherwise 2026-07-06)*
+*Last updated: 2026-09-03 (glossary reconciled with the Aug-27/28 six-tab re-org + the Protocol rename; trial cut to 7 days 2026-09-02; repricing + Locus Remote credits 2026-08-17; body otherwise 2026-07-06)*
 *Status: V2 — full rewrite against the product source of truth (`../pomodoro-preview`). Supersedes V1 (2026-04-25), which described a pre-pivot Locus: server-orchestrated AI, Free/Pro split, "remove on-device claims." All of that is gone. If a claim here conflicts with the product repo, the product repo wins — see "Source of truth" at the bottom.*
 
 ## Product Overview
@@ -35,11 +35,11 @@ Shipped in the product's Execution re-org (PRDs #725–#738, 2026-08-27/28; grou
 Landing-page surfaces: `src/content/app-showcase.ts` (single source for `/#showcase` and `/app`), captures under `public/app/screens/` (light theme, 2784×1824 window captures, SM demo persona). The 2026-08-20 "no product stills" rule is retired.
 
 **What makes it AI-native now:** the AI is a real agent living on your Mac, not API calls bolted onto a tracker.
-- **Routines** — every AI behavior (daily digest, chat replies, notes analysis, a distraction coach) is a user-readable, user-editable Markdown file with triggers (manual, event-based, scheduled). You can see exactly what the AI does and change it.
-- **Memory** — an on-device Markdown wiki of what Locus has learned about you, rendered as an editable knowledge tree. Inspectable, correctable, yours.
+- **Protocols** (was: Routines) — every AI behavior (daily digest, chat replies, notes analysis, a distraction coach) is a user-readable, user-editable Markdown file with triggers (manual, event-based, scheduled). You can see exactly what the AI does and change it. They live in the **System** tab.
+- **The Portrait** (was: Memory) — an on-device Markdown wiki of what Locus has learned about you, rendered as one constellation with a page count. Inspectable, correctable, yours. Shown on **Home** and **Vision**.
 - **Autonomy with Undo** — the AI acts at a level you set (ask / standard / auto), can only auto-execute genuinely undoable actions, and every auto action shows a done-card with one-click Undo.
 
-**Product category (user-confirmed 2026-07-06):** the category-creation play stands, and so does its label — **"AI-native Execution OS"** stays, and is *more* true post-pivot: the AI is literally native now (an agent living on the Mac — Routines, Memory, Autonomy). **Hero locked (user, 2026-07-06): "The missing OS for modern work."** — the ambitious category claim leads; the mechanism and the local-first/BYO differentiators live in the subhead ("…with an AI agent that lives on your Mac and runs on the AI you already pay for"). What changed underneath the label: the category is no longer defined by the "planner + classifier + Friday review" trio but by the local-first agent. The product-voice line "turn today's mess into tomorrow's structure" is body-copy register, not the hero.
+**Product category (user-confirmed 2026-07-06):** the category-creation play stands, and so does its label — **"AI-native Execution OS"** stays, and is *more* true post-pivot: the AI is literally native now (an agent living on the Mac — Protocols, the Portrait, Autonomy). **Hero locked (user, 2026-07-06): "The missing OS for modern work."** — the ambitious category claim leads; the mechanism and the local-first/BYO differentiators live in the subhead ("…with an AI agent that lives on your Mac and runs on the AI you already pay for"). What changed underneath the label: the category is no longer defined by the "planner + classifier + Friday review" trio but by the local-first agent. The product-voice line "turn today's mess into tomorrow's structure" is body-copy register, not the hero.
 
 **Product type:** Native macOS app, **macOS 26 (Tahoe) or later** (verified: `MACOSX_DEPLOYMENT_TARGET = 26.0`). B2C single-seat subscription. Direct distribution with Sparkle auto-update — not the Mac App Store. Currently shipping v1.1.0. Optional Apple Watch companion. *(The old "iOS companion end of Q2 2026" claim has no basis in the product repo — treat as unverified; see Open items.)*
 
@@ -97,10 +97,10 @@ Landing-page surfaces: `src/content/app-showcase.ts` (single source for `/#showc
 **Key differentiators (rebuilt 2026-07-06):**
 - **Local-first, for real** — sessions, projects, habits, tasks, chat history, and the AI's memory of you are files and a database *on your Mac* (SQLite + Markdown). The account is a license, not a data scope. This is now a **lead differentiator**, not a claim to avoid — the April rule "remove on-device claims" is **retired** because the architecture changed underneath it.
 - **Your AI, your compute** — bring the Claude Code or Codex subscription (or API key) you already pay for; Locus drives it as its brain. No other productivity app does this. Managed compute exists for people who want zero setup — through a thin proxy that **stores no prompts or responses**, only aggregate token counts.
-- **A user-programmable agent, not a feature flag** — Routines make every AI behavior a readable, editable Markdown file with triggers. "What does Locus do on its own?" has an inspectable answer.
-- **Transparent memory** — the Memory tab shows exactly what Locus knows about you, as an editable wiki. Disagree with an insight in chat and the disagreement itself is remembered.
+- **A user-programmable agent, not a feature flag** — **Protocols** (renamed from Routines, product PRD #730) make every AI behavior a readable, editable Markdown file with triggers. They live in the **System** tab. "What does Locus do on its own?" has an inspectable answer.
+- **Transparent memory** — the **Portrait** (there is no Memory tab any more) shows exactly what Locus knows about you, as an editable wiki, on **Home** and **Vision**. Disagree with an insight in chat and the disagreement itself is remembered.
 - **Autonomy you can trust** — ask/standard/auto modes, auto-execution only for undoable actions, one-click Undo on everything the agent did.
-- **Observation, not judgment** — Sentinel makes the unplanned day legible without scoring it; scores only exist inside sessions you declared. Coach voice, not surveillance voice.
+- **Observation, not judgment** — the **What Happened** column in **Execution** (the surface formerly called Sentinel) makes the unplanned day legible without scoring it; scores only exist inside sessions you declared. Coach voice, not surveillance voice.
 - **Native-Mac craft** — menu-bar timer with breathing dot, chat popover, voice input, Sparkle auto-update, macOS Tahoe APIs. Not an Electron port.
 
 **Why that's better:** the user stops being their own operating system *and* stops renting their self-knowledge to a cloud. The system carries the structure; the user keeps the data and the AI relationship.
@@ -127,7 +127,7 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 | "Another focus app — I've tried five." | It's not a timer with charts. Show the loop: the day gets observed, interpreted, and turned into tomorrow's structure — by an agent you can read, edit, and undo. Pomodoro is literally one option inside one tab. |
 | "Why pay when there are free timers?" | No free tier and no apology: 7 days free to feel the loop compound, then $3/mo or $30/yr — a small fee for the software and its upkeep. The AI runs on the subscription you already own, so there's no per-token markup hiding in the price. |
 | "What does the AI see / where does my data go?" | Your data lives on your Mac. With BYO, prompts go to your own AI account. With Locus Remote, our relay stores nothing — it can't even replay what you said; it only meters your credits. Specific, checkable claims — not "fully private" hand-waving. |
-| "I don't want an app watching me." | Sentinel observes only off-session foreground app/window titles, on your machine, for you — no keystrokes, no screenshots, no URLs, nothing surfaced to anyone else. And the register is observation, not judgment: nothing scores you outside a session you declared. |
+| "I don't want an app watching me." | Locus observes only off-session foreground app/window titles, on your machine, for you — no keystrokes, no screenshots, no URLs, nothing surfaced to anyone else. And the register is observation, not judgment: nothing scores you outside a session you declared. |
 | "macOS only?" | Yes — macOS 26 (Tahoe) or later, and unapologetically native. Windows/Linux not planned. (iOS companion: unverified, don't promise — see Open items.) |
 | "What if I miss a day or skip sessions?" | Nothing breaks, nothing scolds. Rhythm commitments don't roll over debt; the weekly digest tells the truth without shaming. |
 | "Why should I trust an AI with autonomy?" | Because it's engineered for distrust: you set the autonomy level, it can only auto-do what can be undone, and every action shows an Undo. Plus you can open the routine file and read its instructions. |
@@ -154,7 +154,7 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 - "I pay for Claude anyway — I want it working on my life, not just my code."
 
 **Words to use:**
-- the day, the week, the work, legible / readable, on track, structure, commitments, sessions, the loop, the agent, memory, routines, undo, on your Mac, local-first, your AI / your compute, what actually moved, gently, once, every day
+- the day, the week, the work, legible / readable, on track, structure, commitments, sessions, the loop, the agent, the Portrait, protocols, undo, on your Mac, local-first, your AI / your compute, what actually moved, gently, once, every day
 - Coach register: warm, honest, accountability-partner.
 
 **Words to avoid:**
@@ -169,24 +169,26 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 - Stoic / clinical / editorial flourishes — the previously flagged "amateur feel."
 - ~~"on-device," "locally," "never leaves your Mac"~~ — **un-banned 2026-07-06.** These are now true and encouraged where concrete. (Old ban retained here only so nobody "restores" it from stale docs.)
 
-**Glossary (current domain language — matches the app and `pomodoro-preview/docs/glossary.md`):**
+**Glossary.**
+
+> ⚠️ **Updated 2026-09-03.** Rows below are the *internal* domain language. Four terms were renamed or retired by the Aug-27/28 Execution re-org and the Protocol rename (PRD #730) and must **never** appear in customer-facing copy: Sentinel, Command, Routines, Memory. The public vocabulary is the six tabs plus chat, from `src/content/app-showcase.ts`, and it is guarded by `src/content/deadVocabulary.test.ts` for the content modules. Renames are marked **→** in the table.
 | Term | Meaning |
 |------|---------|
 | Day Feedback Loop | The product model: observe → interpret → structure → focused work → adapt. |
-| Sentinel / "Watch" | Off-session ambient observation: foreground app + window title, on your Mac, made legible as a timeline and digests. |
+| ~~Sentinel / "Watch"~~ **→ Execution, "What Happened"** | Off-session ambient observation: foreground app + window title, on your Mac, made legible as the right-hand column of the Execution day and in the digests. Never say "Sentinel" or "Watch" in copy. |
 | Session / Focus | A declared-intent timed work block — the only place a focus score exists. |
 | Execution strategy | Per-launch run shape: single block, multiple blocks, or pomodoro. Pomodoro is one option, chosen per launch, never a persistent identity. |
-| Command / "Control" | The today surface: objective → Smart Plan → timeline → launch sessions. |
+| ~~Command / "Control"~~ **→ Execution** | The today surface: intended blocks and calendar on the left, what happened on the right, one time axis. Never say "Command" or "Control" in copy. |
 | Smart Plan / Objective | Free-text "what today is for" → AI-drafted day plan you accept or edit; deterministic fallback offline. |
 | Commitments | Umbrella for the two shapes of ongoing work: **Projects** (outcome commitments — have a finish line) and **Habits** (rhythm commitments — return on cadence, no debt rollover). |
 | Tasks | One-off next actions; link to at most one parent commitment. |
-| Review / "Learn" | The interpretation surface: day/week/month digests, metrics, and the AI chat. |
-| Chat | The conversational surface of Review — charts, suggested-action cards, agree/disagree. Disagreements persist as user-level facts. |
-| Routines | User-editable Markdown+YAML files defining every AI behavior — triggers (manual/event/scheduled), tool allowlist, autonomy cap. "What Locus does on its own." |
-| Memory / the wiki | On-device Markdown knowledge base of what Locus knows about you, rendered as an editable knowledge tree. |
+| ~~Review / "Learn"~~ **→ the digests + Home** | The interpretation surface: day/week/month digests (run by protocols in **System**), the record on **Home**, and chat. Never say "Review" or "Learn" as a screen name. |
+| Chat | Not a tab: it lives in the title bar behind the Locus mark (⌘J), follows you into every tab, and takes voice on ⌥1. Charts, suggested-action cards, agree/disagree; disagreements persist as user-level facts. Controls: Ask · Standard · Auto, and Fast · Deep. |
+| ~~Routines~~ **→ Protocols** | User-editable Markdown+YAML files defining every AI behavior — triggers (manual/event/scheduled), tool allowlist, autonomy cap. "What Locus does on its own." Listed in the **System** tab. The site's anchor `#decision-routines-are-files` keeps its old id on purpose; the visible words are "Protocols are files." |
+| ~~Memory / the wiki~~ **→ the Portrait** | On-device Markdown knowledge base of what Locus knows about you, rendered as one constellation with a page count ("38 pages"). Shown on **Home**, and on **Vision** against your own answers. |
 | Autonomy modes | Ask / Standard / Auto — how much the agent may do alone. Auto-executed actions are always undoable and show a done-card with Undo. |
 | Presence | Nudge-loudness control: quiet / normal / frequent templates over five nudge families. "How Locus speaks." |
-| The breathing dot | Menu-bar liveness mark while a session runs; echoed in the concentric-rings brand mark. |
+| The breathing dot | Menu-bar liveness mark while a session runs. **Not** echoed in the brand mark: the concentric-rings icon was retired: the current mark is the disc with the tapered compounding slot (`public/brand/locus/locus-mark-*.png`). |
 | BYO / harness | Bring-your-own AI: Claude Code or Codex subscription, or an API key, driven by Locus as its engine. |
 | Locus Remote / Remote credits | Locus-supplied compute through a no-prompt-storage relay, paid with prepaid one-off any-amount credits metered by use. Optional; never part of the plan or trial. |
 | Model lanes (fast/deep) | Internal routing: quick classifications on the fast lane, agentic work on the deep lane. |
@@ -204,9 +206,9 @@ What is literally true now (from `pomodoro-preview` ADR-0001/0008 + code):
 **Value themes:**
 | Theme | Proof |
 |-------|-------|
-| The day becomes legible | Sentinel timeline + digests: show a real messy day rendered readable. |
+| The day becomes legible | The Execution day (intended ‖ what happened) + digests: show a real messy day rendered readable. |
 | Tomorrow gets structured from today | Smart Plan drafted from the objective + what the system learned; digest → suggested structure. |
-| The AI is yours | Routines as readable files; Memory as an editable wiki; Undo on every autonomous action. |
+| The AI is yours | Protocols as readable files; the Portrait as an editable wiki; Undo on every autonomous action. |
 | Your data stays yours | Files on disk you can reveal in Finder; lock-screen state still lets you export everything. |
 | Runs on the AI you already pay for | Provider picker: Claude Code, Codex, API keys — or Locus Remote on prepaid credits. |
 | Native Mac craft | Menu-bar widget, voice input, Sparkle updates, Tahoe APIs, no Electron. |

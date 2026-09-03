@@ -94,7 +94,7 @@ export function CreditBalance({
     <>
       <p
         data-testid="remote-credits-balance"
-        className="font-mono text-sm text-[var(--fg)]"
+        className="font-mono text-xl tracking-tight text-[var(--fg)]"
       >
         {formatUsdCents(balance)}
       </p>

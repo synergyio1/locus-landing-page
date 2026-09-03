@@ -5,6 +5,12 @@ import { useState } from "react"
 import { formatUsdCentsCompact } from "@/lib/billing/format-money"
 import { startCreditCheckout } from "@/lib/billing/start-credit-checkout"
 
+import {
+  accountButton,
+  accountButtonError,
+  accountButtonOutline,
+} from "./button-styles"
+
 export type CreditPackOption = {
   priceId: string
   unitAmountCents: number
@@ -67,21 +73,14 @@ export function BuyCreditsButtons({ packs }: { packs: CreditPackOption[] }) {
             type="button"
             onClick={() => handleClick(pack.priceId)}
             disabled={anyPending}
-            className={
-              index === 0
-                ? "inline-flex items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-foreground)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-                : "inline-flex items-center justify-center rounded-md border border-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-text)] transition hover:bg-[var(--accent-subtle)] disabled:cursor-not-allowed disabled:opacity-60"
-            }
+            className={index === 0 ? accountButton : accountButtonOutline}
           >
             {pending ? "Redirecting…" : `Add ${amount}`}
           </button>
         )
       })}
       {state.kind === "error" ? (
-        <p
-          role="alert"
-          className="basis-full text-sm text-[var(--danger,#b00020)]"
-        >
+        <p role="alert" className={accountButtonError}>
           {state.message}
         </p>
       ) : null}

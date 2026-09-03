@@ -7,12 +7,26 @@ import {
   type CheckoutCadence,
 } from "@/lib/billing/start-checkout"
 
+import {
+  accountButton,
+  accountButtonError,
+  accountButtonOutline,
+} from "./button-styles"
+
 type ButtonState =
   | { kind: "idle" }
   | { kind: "pending"; plan: CheckoutCadence }
   | { kind: "error"; message: string }
 
-export function UpgradeButtons() {
+/**
+ * `emphasis` is "secondary" wherever Download for Mac already owns the filled
+ * pill (trial and paid), so two Cobalt blocks never compete in one row.
+ */
+export function UpgradeButtons({
+  emphasis = "primary",
+}: {
+  emphasis?: "primary" | "secondary"
+} = {}) {
   const [state, setState] = useState<ButtonState>({ kind: "idle" })
 
   async function handleClick(plan: CheckoutCadence) {
@@ -59,7 +73,9 @@ export function UpgradeButtons() {
         type="button"
         onClick={() => handleClick("monthly")}
         disabled={anyPending}
-        className="inline-flex items-center justify-center rounded-md bg-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-foreground)] transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        className={
+          emphasis === "primary" ? accountButton : accountButtonOutline
+        }
       >
         {monthlyPending ? "Redirecting…" : "Upgrade to Pro — Monthly"}
       </button>
@@ -67,15 +83,12 @@ export function UpgradeButtons() {
         type="button"
         onClick={() => handleClick("yearly")}
         disabled={anyPending}
-        className="inline-flex items-center justify-center rounded-md border border-[var(--accent)] px-4 py-2 text-sm font-medium text-[var(--accent-text)] transition hover:bg-[var(--accent-subtle)] disabled:cursor-not-allowed disabled:opacity-60"
+        className={accountButtonOutline}
       >
         {yearlyPending ? "Redirecting…" : "Upgrade to Pro — Yearly"}
       </button>
       {state.kind === "error" ? (
-        <p
-          role="alert"
-          className="basis-full text-sm text-[var(--danger,#b00020)]"
-        >
+        <p role="alert" className={accountButtonError}>
           {state.message}
         </p>
       ) : null}

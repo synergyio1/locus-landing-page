@@ -121,11 +121,12 @@ describe("AccountPage", () => {
     render(jsx)
 
     expect(screen.getByTestId("plan-chip").textContent).toBe("Free")
-    const trialButton = screen.getByRole("button", {
-      name: /trial used on/i,
-    }) as HTMLButtonElement
-    expect(trialButton.disabled).toBe(true)
-    expect(trialButton.textContent).toContain("April 1, 2026")
+    // A spent trial is a status, not a control — it reads as text rather than
+    // a permanently disabled button.
+    expect(screen.getByText(/trial used on april 1, 2026/i)).toBeTruthy()
+    expect(
+      screen.queryByRole("button", { name: /trial used on/i })
+    ).toBeNull()
     expect(
       screen.queryByRole("button", { name: /start 7-day pro trial/i })
     ).toBeNull()
@@ -341,7 +342,9 @@ describe("AccountPage", () => {
     expect(screen.queryByTestId("welcome-banner")).toBeNull()
   })
 
-  it("retains the 'Sign out everywhere' button", async () => {
+  // Signing out lives in the header's account menu (2026-09-03) — the page
+  // itself no longer carries a sign-out control.
+  it("does not render a sign-out button", async () => {
     setSnapshot({
       email: "cook@example.com",
       entitlement: {
@@ -358,9 +361,7 @@ describe("AccountPage", () => {
     const jsx = await AccountPage()
     render(jsx)
 
-    expect(
-      screen.getByRole("button", { name: /sign out everywhere/i })
-    ).toBeTruthy()
+    expect(screen.queryByRole("button", { name: /sign out/i })).toBeNull()
   })
 
   describe("Remote credits", () => {
