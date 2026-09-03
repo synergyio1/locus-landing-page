@@ -5,7 +5,6 @@ import {
   Heading,
   Hr,
   Html,
-  Img,
   Link,
   Preview,
   Section,
@@ -77,15 +76,23 @@ export function AuthLinkEmail({
             padding: "40px",
           }}
         >
-          <Section>
-            <Img
-              src={`${siteUrl}/brand/locus/locus-mark-cobalt-512.png`}
-              alt="Locus"
-              width="30"
-              height="30"
-              style={{ display: "block", margin: 0 }}
-            />
-          </Section>
+          {/* A wordmark in text, not the logo image. Mail clients hide remote
+              images by default for any sender they are unsure about, and a
+              sign-in email that renders as a broken picture is worse than one
+              with no picture. It also spares the message a request to a domain
+              that isn't the sender's — one of the signals that gets branded mail
+              from a shared sending domain marked as impersonation. */}
+          <Text
+            style={{
+              color: INK,
+              fontSize: "17px",
+              fontWeight: 600,
+              letterSpacing: "-0.01em",
+              margin: 0,
+            }}
+          >
+            Locus
+          </Text>
 
           <Text
             style={{

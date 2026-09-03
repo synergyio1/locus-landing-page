@@ -39,8 +39,13 @@ describe("AuthLinkEmail", () => {
     expect(html).toContain("{{ .RedirectTo }}")
   })
 
-  it("keeps the logo on an absolute URL so mail clients can load it", async () => {
+  // Mail clients hide remote images for senders they are unsure about, and a
+  // request to a domain that isn't the sender's is one of the signals that gets
+  // branded mail marked as impersonation. Neither is worth a logo on the one
+  // email someone needs in order to get in.
+  it("asks the mail client to load nothing", async () => {
     const html = await render(<AuthLinkEmail {...props} />)
-    expect(html).toContain("https://getlocus.tech/brand/locus/locus-mark-cobalt-512.png")
+    expect(html).not.toMatch(/<img/i)
+    expect(html).toContain("Locus")
   })
 })

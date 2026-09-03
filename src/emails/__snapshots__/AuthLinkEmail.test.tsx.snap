@@ -4,10 +4,6 @@ exports[`AuthLinkEmail > renders the sign-in email 1`] = `
 "<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html dir="ltr" lang="en">
   <head>
-    <link
-      rel="preload"
-      as="image"
-      href="https://getlocus.tech/brand/locus/locus-mark-cobalt-512.png" />
     <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
     <meta name="x-apple-disable-message-reformatting" />
   </head>
@@ -44,26 +40,10 @@ exports[`AuthLinkEmail > renders the sign-in email 1`] = `
               <tbody>
                 <tr style="width:100%">
                   <td>
-                    <table
-                      align="center"
-                      width="100%"
-                      border="0"
-                      cellpadding="0"
-                      cellspacing="0"
-                      role="presentation">
-                      <tbody>
-                        <tr>
-                          <td>
-                            <img
-                              alt="Locus"
-                              height="30"
-                              src="https://getlocus.tech/brand/locus/locus-mark-cobalt-512.png"
-                              style="display:block;outline:none;border:none;text-decoration:none;margin:0"
-                              width="30" />
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    <p
+                      style="font-size:17px;line-height:24px;color:#0B1A33;font-weight:600;letter-spacing:-0.01em;margin:0;margin-top:0;margin-bottom:0;margin-left:0;margin-right:0">
+                      Locus
+                    </p>
                     <p
                       style="font-size:11px;line-height:24px;color:#0047AB;font-family:ui-monospace, SFMono-Regular, &#x27;SF Mono&#x27;, Menlo, Consolas, &#x27;Liberation Mono&#x27;, monospace;letter-spacing:0.18em;margin:28px 0 0;text-transform:uppercase;margin-top:28px;margin-right:0;margin-bottom:0;margin-left:0">
                       Access
