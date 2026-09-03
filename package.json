@@ -10,7 +10,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "auth:templates": "tsx scripts/supabase/auth-templates.tsx"
   },
   "dependencies": {
     "@paper-design/shaders-react": "^0.0.76",

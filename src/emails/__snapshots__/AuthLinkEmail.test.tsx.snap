@@ -1,0 +1,146 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AuthLinkEmail > renders the sign-in email 1`] = `
+"<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html dir="ltr" lang="en">
+  <head>
+    <link
+      rel="preload"
+      as="image"
+      href="https://getlocus.tech/brand/locus/locus-mark-cobalt-512.png" />
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <meta name="x-apple-disable-message-reformatting" />
+  </head>
+  <body style="background-color:#F1F4FA;margin:0;padding:0">
+    <!--$--><!--html--><!--head-->
+    <div
+      style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0"
+      data-skip-in-text="true">
+      Your one-time link to sign in to Locus.
+      <div>
+         ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿ ‌​‍‎‏﻿
+      </div>
+    </div>
+    <!--body-->
+    <table
+      border="0"
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      role="presentation"
+      align="center">
+      <tbody>
+        <tr>
+          <td
+            style="background-color:#F1F4FA;font-family:-apple-system, BlinkMacSystemFont, &#x27;SF Pro Text&#x27;, &#x27;Segoe UI&#x27;, Roboto, Helvetica, Arial, sans-serif;margin:0;padding:0 16px;-webkit-font-smoothing:antialiased">
+            <table
+              align="center"
+              width="100%"
+              border="0"
+              cellpadding="0"
+              cellspacing="0"
+              role="presentation"
+              style="max-width:480px;background-color:#FFFFFF;border:1px solid #DFE5F0;border-radius:16px;margin:40px auto;padding:40px">
+              <tbody>
+                <tr style="width:100%">
+                  <td>
+                    <table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <img
+                              alt="Locus"
+                              height="30"
+                              src="https://getlocus.tech/brand/locus/locus-mark-cobalt-512.png"
+                              style="display:block;outline:none;border:none;text-decoration:none;margin:0"
+                              width="30" />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p
+                      style="font-size:11px;line-height:24px;color:#0047AB;font-family:ui-monospace, SFMono-Regular, &#x27;SF Mono&#x27;, Menlo, Consolas, &#x27;Liberation Mono&#x27;, monospace;letter-spacing:0.18em;margin:28px 0 0;text-transform:uppercase;margin-top:28px;margin-right:0;margin-bottom:0;margin-left:0">
+                      Access
+                    </p>
+                    <h1
+                      style="color:#0B1A33;font-size:26px;font-weight:600;letter-spacing:-0.02em;line-height:1.15;margin:10px 0 0">
+                      Sign in to Locus.
+                    </h1>
+                    <p
+                      style="font-size:15px;line-height:1.6;color:#5C6880;margin:14px 0 0;margin-top:14px;margin-right:0;margin-bottom:0;margin-left:0">
+                      Tap below and you&#x27;re back where you left off.
+                    </p>
+                    <table
+                      align="center"
+                      width="100%"
+                      border="0"
+                      cellpadding="0"
+                      cellspacing="0"
+                      role="presentation"
+                      style="margin:28px 0 0">
+                      <tbody>
+                        <tr>
+                          <td>
+                            <table
+                              cellpadding="0"
+                              cellspacing="0"
+                              role="presentation">
+                              <tbody>
+                                <tr>
+                                  <td
+                                    style="background-color:#0047AB;border-radius:999px">
+                                    <a
+                                      href="https://getlocus.tech/auth/confirm?token_hash=abc&amp;type=email"
+                                      style="color:#FFFFFF;text-decoration-line:none;display:inline-block;font-size:15px;font-weight:600;padding:13px 26px;text-decoration:none"
+                                      target="_blank"
+                                      >Sign in to Locus</a
+                                    >
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p
+                      style="font-size:13px;line-height:1.6;color:#5C6880;margin:24px 0 0;margin-top:24px;margin-right:0;margin-bottom:0;margin-left:0">
+                      The link works once, and only for a short while. If it
+                      stops working, ask for a fresh one from the sign-in page.
+                    </p>
+                    <hr
+                      style="width:100%;border:none;border-top:1px solid #DFE5F0;margin:32px 0 0" />
+                    <p
+                      style="font-size:13px;line-height:1.6;color:#5C6880;margin:20px 0 0;margin-top:20px;margin-right:0;margin-bottom:0;margin-left:0">
+                      You received this because someone asked to sign in to
+                      Locus with this address. If that wasn’t you, ignore this
+                      email — opening it changes nothing on its own.
+                    </p>
+                    <p
+                      style="font-size:11px;line-height:24px;color:#5C6880;font-family:ui-monospace, SFMono-Regular, &#x27;SF Mono&#x27;, Menlo, Consolas, &#x27;Liberation Mono&#x27;, monospace;letter-spacing:0.12em;margin:24px 0 0;text-transform:uppercase;margin-top:24px;margin-right:0;margin-bottom:0;margin-left:0">
+                      <a
+                        href="https://getlocus.tech"
+                        style="color:#5C6880;text-decoration-line:none;text-decoration:none"
+                        target="_blank"
+                        >getlocus.tech</a
+                      >
+                    </p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <!--/$-->
+  </body>
+</html>
+"
+`;

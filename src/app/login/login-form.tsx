@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState, useSyncExternalStore } from "react"
 
 import { buttonVariants } from "@/components/ui/button"
 import { GoogleMark } from "@/components/ui/provider-marks"
@@ -20,14 +20,102 @@ type Status =
   | { kind: "sent"; email: string }
   | { kind: "error"; message: string }
 
-function buildRedirectUrl(next: string): string {
-  const origin =
+function siteOrigin(): string {
+  return (
     (typeof window !== "undefined" && window.location.origin) ||
     process.env.NEXT_PUBLIC_SITE_URL ||
-    ""
-  const url = new URL("/auth/callback", origin || "http://localhost")
+    "http://localhost"
+  )
+}
+
+/** Google hands back a PKCE code, which only `/auth/callback` knows what to do with. */
+function buildOAuthRedirectUrl(next: string): string {
+  const url = new URL("/auth/callback", siteOrigin())
   url.searchParams.set("next", next)
   return url.toString()
+}
+
+/**
+ * Email links land on `/auth/confirm` instead, which shows a button rather than
+ * signing you in on sight — inbox scanners fetch every link in a message, and a
+ * Supabase token hash is single-use, so a link that verifies on GET is spent
+ * before the recipient ever sees it.
+ *
+ * Supabase copies this whole URL into the template as `{{ .RedirectTo }}`, so the
+ * confirm route unwraps the `next` back out of it.
+ */
+function buildEmailRedirectUrl(next: string): string {
+  const url = new URL("/auth/confirm", siteOrigin())
+  url.searchParams.set("next", next)
+  return url.toString()
+}
+
+/**
+ * Supabase reports a failed email link in the URL *fragment*, which never reaches
+ * the server — so a stale link arrives at the callback looking like a request with
+ * no code at all, and the page renders a vague apology while `#error_code=
+ * otp_expired` sits in the address bar.
+ */
+function readHashError(): string | undefined {
+  if (typeof window === "undefined") return undefined
+  const hash = window.location.hash
+  if (!hash.includes("error")) return undefined
+
+  const params = new URLSearchParams(hash.slice(1))
+  const code = params.get("error_code") ?? params.get("error")
+  if (!code) return undefined
+
+  if (code === "otp_expired") {
+    return "That sign-in link was already used or has expired. Send yourself a fresh one."
+  }
+  if (code === "access_denied") {
+    return "That sign-in was declined. Please try again."
+  }
+  return "We couldn't complete your sign-in. Please try again."
+}
+
+/**
+ * The fragment is state owned by the browser, not by React, and the server never
+ * sees it — so it is read through `useSyncExternalStore`, which renders the
+ * server's answer (nothing) during hydration and the real one straight after.
+ * The snapshot is taken once and cached per mount: it has to stay stable across
+ * renders, and the effect below erases the fragment it was read from.
+ */
+function useHashError(): string | undefined {
+  const [store] = useState(() => {
+    let snapshot: string | undefined
+    let taken = false
+    return {
+      subscribe: () => () => {},
+      getSnapshot: () => {
+        if (!taken) {
+          taken = true
+          snapshot = readHashError()
+        }
+        return snapshot
+      },
+      getServerSnapshot: () => undefined,
+    }
+  })
+
+  const message = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot,
+    store.getServerSnapshot
+  )
+
+  // Left in the address bar the fragment would re-raise this error on every
+  // reload, long after the user has asked for a fresh link.
+  useEffect(() => {
+    if (!message) return
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}${window.location.search}`
+    )
+  }, [message])
+
+  return message
 }
 
 /**
@@ -56,13 +144,14 @@ export function LoginForm({
 }: LoginFormProps) {
   const [status, setStatus] = useState<Status>({ kind: "idle" })
   const [email, setEmail] = useState("")
+  const hashError = useHashError()
 
   async function signInWithGoogle() {
     setStatus({ kind: "sending" })
     const supabase = createBrowserClient()
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: buildRedirectUrl(next) },
+      options: { redirectTo: buildOAuthRedirectUrl(next) },
     })
     if (error) {
       console.error("[auth] google sign-in failed:", error.message)
@@ -76,7 +165,7 @@ export function LoginForm({
     const supabase = createBrowserClient()
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: buildRedirectUrl(next) },
+      options: { emailRedirectTo: buildEmailRedirectUrl(next) },
     })
     if (error) {
       console.error("[auth] magic link failed:", error.message)
@@ -87,6 +176,9 @@ export function LoginForm({
   }
 
   const disabled = status.kind === "sending"
+  // A fragment error describes the click that just failed, so it outranks the
+  // server-rendered one, which may be describing the same failure more vaguely.
+  const bannerError = hashError ?? errorMessage
 
   // The link is out — swap the whole panel rather than appending a line under a
   // form that still looks untouched.
@@ -140,12 +232,12 @@ export function LoginForm({
           {noticeMessage}
         </p>
       ) : null}
-      {errorMessage ? (
+      {bannerError ? (
         <p
           role="alert"
           className="rounded-xl border border-[color-mix(in_oklab,var(--warn)_35%,transparent)] bg-[color-mix(in_oklab,var(--warn)_8%,transparent)] px-3.5 py-2.5 text-sm text-[var(--warn)]"
         >
-          {errorMessage}
+          {bannerError}
         </p>
       ) : null}
 

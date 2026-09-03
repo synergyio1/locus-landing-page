@@ -100,14 +100,51 @@ describe("LoginForm", () => {
     )
   })
 
-  it("sends the magic link back through /auth/callback with next preserved", async () => {
+  // Email links must land on /auth/confirm, never /auth/callback: the callback
+  // signs you in on a GET, and inbox scanners issue GETs, which spends the
+  // single-use token before the recipient can click it.
+  it("sends the magic link to /auth/confirm with next preserved", async () => {
     render(<LoginForm next="/billing" />)
 
     await submitEmail("cook@example.com")
 
     await waitFor(() => expect(signInWithOtpMock).toHaveBeenCalled())
-    expect(signInWithOtpMock.mock.calls[0][0].options.emailRedirectTo).toContain(
-      "/auth/callback?next=%2Fbilling"
-    )
+    const redirect = signInWithOtpMock.mock.calls[0][0].options.emailRedirectTo
+    expect(redirect).toContain("/auth/confirm?next=%2Fbilling")
+    expect(redirect).not.toContain("/auth/callback")
+  })
+
+  describe("errors Supabase reports in the URL fragment", () => {
+    const setHash = (hash: string) => {
+      window.history.replaceState(null, "", `/login${hash}`)
+    }
+
+    afterEach(() => {
+      window.history.replaceState(null, "", "/login")
+    })
+
+    it("explains a spent link instead of the server's vaguer message", () => {
+      setHash("#error=access_denied&error_code=otp_expired&error_description=x")
+      render(<LoginForm next="/account" errorMessage="We couldn't complete your sign-in. Please try again." />)
+
+      const alert = screen.getByRole("alert")
+      expect(alert.textContent).toMatch(/already used or has expired/i)
+    })
+
+    // Left in the address bar, the fragment would re-raise the error on reload —
+    // long after the user has asked for a fresh link.
+    it("strips the fragment once it has been read", () => {
+      setHash("#error=access_denied&error_code=otp_expired")
+      render(<LoginForm next="/account" />)
+
+      expect(window.location.hash).toBe("")
+      expect(screen.getByRole("alert")).toBeTruthy()
+    })
+
+    it("leaves a clean URL alone", () => {
+      render(<LoginForm next="/account" />)
+
+      expect(screen.queryByRole("alert")).toBeNull()
+    })
   })
 })

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 
 import { authCopy } from "@/content/auth"
+import { sanitizeNext } from "@/lib/auth/sanitize-next"
 import { createServerClient } from "@/lib/supabase/server"
 
 import { AuthLayout } from "./auth-layout"
@@ -10,16 +11,19 @@ type PageProps = {
   searchParams: Promise<{ next?: string; error?: string; notice?: string }>
 }
 
-function sanitizeNext(next: string | undefined): string {
-  if (!next) return "/account"
-  if (!next.startsWith("/") || next.startsWith("//")) return "/account"
-  return next
-}
-
+/**
+ * Every one of these lands the user back here mid-sign-in, so each message has to
+ * say what to do next. `link_expired` is the common one: a link works once, and
+ * an inbox scanner or a second click can spend it first.
+ */
 function errorMessageFor(code: string | undefined): string | undefined {
   if (!code) return undefined
-  if (code === "missing_code") return "We couldn't complete your sign-in. Please try again."
-  if (code === "exchange_failed") return "That sign-in link is invalid or expired. Please try again."
+  if (code === "link_expired")
+    return "That sign-in link was already used or has expired. Send yourself a fresh one."
+  if (code === "missing_token")
+    return "That link is missing its sign-in code. Send yourself a fresh one."
+  if (code === "missing_code" || code === "exchange_failed")
+    return "We couldn't complete your sign-in. Please try again."
   return "Something went wrong. Please try again."
 }
 
