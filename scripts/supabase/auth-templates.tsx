@@ -185,7 +185,9 @@ async function configureSmtp(): Promise<void> {
   await patchAuthConfig({
     external_email_enabled: true,
     smtp_host: "smtp.resend.com",
-    smtp_port: 587,
+    // A string, not a number: the Management API rejects 587 with
+    // "expected string, received number".
+    smtp_port: "587",
     smtp_user: "resend",
     smtp_pass: apiKey,
     smtp_admin_email: address.trim(),
