@@ -7,6 +7,7 @@ import { isVerifyType } from "@/lib/auth/email-otp-type"
 import { cn } from "@/lib/utils"
 
 import { AuthLayout } from "../../login/auth-layout"
+import { AutoConfirm } from "./auto-confirm"
 
 type PageProps = {
   searchParams: Promise<{
@@ -27,11 +28,14 @@ type PageProps = {
  * built to end. Only the click spends the token.
  *
  * One email template serves two products, so there are two buttons. A link asked
- * for on the website posts to `confirm/verify`, which mints a browser session. A
- * link asked for in the macOS app goes to Supabase's own verify endpoint, which
- * hands the session to the app over its custom scheme — the app's session has to
- * be minted against the code verifier in its keychain, and a browser cannot do
- * that. Both are only reached by a real click.
+ * for on the website posts to `confirm/verify`, which mints a browser session,
+ * and a script submits that form on arrival so the visitor just lands signed in —
+ * scanners fetch pages but do not run them. A link asked for in the macOS app
+ * goes to Supabase's own verify endpoint, which hands the session to the app over
+ * its custom scheme; the app's session has to be minted against the code verifier
+ * in its keychain, and a browser cannot do that. That one keeps a real click,
+ * because browsers are entitled to refuse a navigation to a custom scheme that
+ * no gesture asked for.
  *
  * `dynamic = "force-dynamic"` keeps the token hash out of any cache: it arrives
  * in the query string and gets echoed into the page.
@@ -79,28 +83,12 @@ export default async function ConfirmPage({ searchParams }: PageProps) {
 
   return (
     <AuthLayout copy={authCopy.confirm}>
-      <form
-        method="post"
-        action="/auth/confirm/verify"
-        className="flex flex-col gap-4"
-      >
-        <input type="hidden" name="token_hash" value={tokenHash} />
-        <input type="hidden" name="type" value={type} />
-        {next ? <input type="hidden" name="next" value={next} /> : null}
-        <button
-          type="submit"
-          className={cn(
-            buttonVariants({ size: "lg" }),
-            "w-full shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
-          )}
-        >
-          {authCopy.confirm.submitLabel}
-        </button>
-        <p className="text-sm leading-relaxed text-[var(--muted-foreground)]">
-          Didn&rsquo;t start this? Close the tab — nothing happens until you
-          confirm.
-        </p>
-      </form>
+      <AutoConfirm
+        tokenHash={tokenHash}
+        type={type}
+        next={next}
+        label={authCopy.confirm.submitLabel}
+      />
     </AuthLayout>
   )
 }

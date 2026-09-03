@@ -100,17 +100,18 @@ describe("LoginForm", () => {
     )
   })
 
-  // Email links must land on /auth/confirm, never /auth/callback: the callback
-  // signs you in on a GET, and inbox scanners issue GETs, which spends the
-  // single-use token before the recipient can click it.
-  it("sends the magic link to /auth/confirm with next preserved", async () => {
+  // This value is not a route the browser visits — Supabase copies it into the
+  // email as {{ .RedirectTo }} and /auth/confirm reads it. Naming the destination
+  // directly keeps a second query string out of every link.
+  it("names the destination itself as the email's redirect", async () => {
     render(<LoginForm next="/billing" />)
 
     await submitEmail("cook@example.com")
 
     await waitFor(() => expect(signInWithOtpMock).toHaveBeenCalled())
     const redirect = signInWithOtpMock.mock.calls[0][0].options.emailRedirectTo
-    expect(redirect).toContain("/auth/confirm?next=%2Fbilling")
+    expect(new URL(redirect).pathname).toBe("/billing")
+    // The callback signs you in on a GET, which is what scanners issue.
     expect(redirect).not.toContain("/auth/callback")
   })
 

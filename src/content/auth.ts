@@ -46,11 +46,11 @@ export const authCopy = {
   // The copy has to explain the extra step without sounding like an error.
   confirm: {
     eyebrow: "Access",
-    title: "Almost in.",
+    title: "Signing you in.",
     subline:
-      "Your link is good. Confirm below and we'll take you the rest of the way.",
+      "One moment — we're finishing your sign-in. If nothing happens, use the button.",
     points: [
-      "This step exists because inbox scanners open links before you do. Confirming here keeps your link yours.",
+      "This page exists because inbox scanners open links before you do. Stopping here keeps your link yours.",
       "Links work once, and only for a short while. If this one fails, send another.",
     ],
     submitLabel: "Confirm sign-in",

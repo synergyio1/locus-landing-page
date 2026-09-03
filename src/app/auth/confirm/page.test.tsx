@@ -45,7 +45,30 @@ describe("ConfirmPage", () => {
       type: "email",
       next: "/billing",
     })
-    expect(screen.getByRole("button", { name: /confirm sign-in/i })).toBeTruthy()
+    expect(form.querySelector("button[type=submit]")).toBeTruthy()
+  })
+
+  // Scanners fetch the page but do not run it, so submitting on arrival keeps the
+  // protection and gives back the single click an email link should cost.
+  it("submits itself as soon as a real browser opens it", async () => {
+    const requestSubmit = vi
+      .spyOn(HTMLFormElement.prototype, "requestSubmit")
+      .mockImplementation(() => {})
+
+    const jsx = await ConfirmPage({
+      searchParams: Promise.resolve({ token_hash: "hash-123", type: "email" }),
+    })
+    const { container } = render(jsx)
+
+    expect(requestSubmit).toHaveBeenCalledTimes(1)
+
+    // The manual path closes as the automatic one opens; spending the token
+    // twice fails the second time.
+    const button = container.querySelector<HTMLButtonElement>("button[type=submit]")!
+    expect(button.disabled).toBe(true)
+    expect(button.textContent).toMatch(/signing you in/i)
+
+    requestSubmit.mockRestore()
   })
 
   it("sends a link with no token back to /login", async () => {

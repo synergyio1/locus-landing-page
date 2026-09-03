@@ -36,18 +36,20 @@ function buildOAuthRedirectUrl(next: string): string {
 }
 
 /**
- * Email links land on `/auth/confirm` instead, which shows a button rather than
- * signing you in on sight — inbox scanners fetch every link in a message, and a
- * Supabase token hash is single-use, so a link that verifies on GET is spent
- * before the recipient ever sees it.
+ * For an email link this is not a route the browser is sent to — Supabase copies
+ * it verbatim into the template as `{{ .RedirectTo }}`, and `/auth/confirm` reads
+ * it to learn where to land and which product asked. So it names the destination
+ * itself rather than pointing back at the confirm route: nesting the confirm URL
+ * inside its own query string meant a second `?` and double-encoded slashes in
+ * every link, for no gain.
  *
- * Supabase copies this whole URL into the template as `{{ .RedirectTo }}`, so the
- * confirm route unwraps the `next` back out of it.
+ * Supabase validates it against the project's redirect allow list and silently
+ * substitutes the Site URL if it fails — and this project's Site URL is the macOS
+ * app's scheme, which `/auth/confirm` reads as an app sign-in. The allow list is
+ * a wildcard over the site, so any same-site path is safe here.
  */
 function buildEmailRedirectUrl(next: string): string {
-  const url = new URL("/auth/confirm", siteOrigin())
-  url.searchParams.set("next", next)
-  return url.toString()
+  return new URL(next, siteOrigin()).toString()
 }
 
 /**

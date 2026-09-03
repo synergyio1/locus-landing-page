@@ -29,7 +29,7 @@ import { render } from "@react-email/render"
 import { AuthLinkEmail } from "../../src/emails/AuthLinkEmail"
 
 const PROJECT_REF = process.env.SUPABASE_PROJECT_REF ?? "iqmdqompkvjoukvfrfvo"
-const SITE_URL = process.env.SITE_URL ?? "https://getlocus.tech"
+const SITE_URL = process.env.SITE_URL ?? "https://www.getlocus.tech"
 
 /**
  * ⚠️ Not {{ .SiteURL }}. This project's Site URL is `com.locus.app://auth/callback`
