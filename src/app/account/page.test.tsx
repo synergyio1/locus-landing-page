@@ -260,7 +260,7 @@ describe("AccountPage", () => {
     const jsx = await AccountPage()
     render(jsx)
 
-    const link = screen.getByRole("link", { name: /download locus for mac/i })
+    const link = screen.getByRole("link", { name: /download the app/i })
     expect(link.getAttribute("href")).toBe("/download")
   })
 

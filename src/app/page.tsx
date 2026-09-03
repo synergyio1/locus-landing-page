@@ -11,22 +11,15 @@ import { appShowcase } from "@/content/app-showcase"
 import { designDecisions } from "@/content/design-decisions"
 import { manifesto } from "@/content/manifesto"
 import { pricing } from "@/content/pricing"
-import { createServerClient } from "@/lib/supabase/server"
 
-export default async function Home() {
-  const supabase = await createServerClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-  const isAuthed = user !== null
-
+export default function Home() {
   return (
     <>
       <Hero />
       <Manifesto />
       <DesignDecisions />
       <AppShowcase />
-      <Pricing isAuthed={isAuthed} />
+      <Pricing />
       <SectionTracking
         sectionIds={[
           manifesto.id,

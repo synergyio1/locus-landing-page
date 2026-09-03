@@ -21,7 +21,7 @@ export const terms: LegalContent = {
     },
     {
       heading: "Contact",
-      body: "Questions about these terms, billing, or your account can be sent to support@getlocus.tech and we'll respond directly.",
+      body: "Questions about these terms, billing, or your account can be sent to luis@getlocus.tech and we'll respond directly.",
     },
   ],
 }

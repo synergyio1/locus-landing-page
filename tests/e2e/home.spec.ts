@@ -32,7 +32,7 @@ test("hero renders the locked headline and both CTAs", async ({ page }) => {
     })
   ).toBeVisible()
 
-  const download = page.getByRole("link", { name: /download for macos/i })
+  const download = page.getByRole("link", { name: /download the app/i })
   await expect(download.first()).toHaveAttribute("href", "/download")
 
   const readManifesto = page.getByRole("link", { name: /read the manifesto/i })

@@ -34,4 +34,8 @@ describe("hero content", () => {
   it("does not call the product free — only the trial is free", () => {
     expect(hero.primaryCta.label).not.toMatch(/free/i)
   })
+
+  it("primary CTA is the one download CTA the site uses everywhere (Luis, 2026-09-02)", () => {
+    expect(hero.primaryCta.label).toBe("Download the app")
+  })
 })

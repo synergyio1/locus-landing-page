@@ -25,6 +25,8 @@ export type PricingContent = {
     label: string
     trialChip: string
     ctaLabel: string
+    /** Same target as every other CTA on the site — the download page, no login in front of it. */
+    ctaHref: string
     ctaNote: string
   }
   aiChoice: {
@@ -34,7 +36,6 @@ export type PricingContent = {
     note: string
   }
   assurances: string[]
-  download: { label: string; href: string }
 }
 
 export const pricing: PricingContent = {
@@ -62,8 +63,12 @@ export const pricing: PricingContent = {
   plan: {
     label: "Locus — everything included",
     trialChip: "7 days free",
-    ctaLabel: "Start 7 days free",
-    ctaNote: "The trial starts inside the app — no card required.",
+    // One CTA everywhere (Luis, 2026-09-02): "Download the app", straight to
+    // the download page. The 7-day trial starts inside the app, so nothing on
+    // the web asks for a login or a card before the download.
+    ctaLabel: "Download the app",
+    ctaHref: "/download",
+    ctaNote: "Your 7-day trial starts inside the app — no card required, no web login.",
   },
   aiChoice: {
     eyebrow: "Choose your AI",
@@ -80,8 +85,4 @@ export const pricing: PricingContent = {
     note: "Same features either way. The only difference is whose AI does the thinking.",
   },
   assurances: ["7-day free trial", "Cancel anytime", "30-day refund"],
-  download: {
-    label: "Download for macOS — your trial starts in the app",
-    href: "/download",
-  },
 }

@@ -5,7 +5,7 @@ import Link from "next/link"
 
 import { PageShell } from "@/components/layout/page-shell"
 import { SpringReveal } from "@/components/motion"
-import { ProCta } from "@/components/sections/pro-cta"
+import { buttonVariants } from "@/components/ui/button"
 import {
   pricing,
   type AiChoiceCard,
@@ -22,10 +22,8 @@ export function formatPerMonth(perMonth: number): string {
 
 export function Pricing({
   headingLevel = "h2",
-  isAuthed = false,
 }: {
   headingLevel?: "h1" | "h2"
-  isAuthed?: boolean
 } = {}) {
   const Heading = headingLevel
   const [cadence, setCadence] = React.useState<PricingCadence>(
@@ -62,11 +60,7 @@ export function Pricing({
         </SpringReveal>
 
         <SpringReveal delay={120} as="div" className="mt-12 md:mt-16">
-          <PriceRow
-            cadence={cadence}
-            onCadenceChange={setCadence}
-            isAuthed={isAuthed}
-          />
+          <PriceRow cadence={cadence} onCadenceChange={setCadence} />
         </SpringReveal>
 
         <SpringReveal delay={220} as="div" className="mt-12 md:mt-16">
@@ -84,11 +78,9 @@ export function Pricing({
 function PriceRow({
   cadence,
   onCadenceChange,
-  isAuthed,
 }: {
   cadence: PricingCadence
   onCadenceChange: (cadence: PricingCadence) => void
-  isAuthed: boolean
 }) {
   const option = pricing.billing[cadence]
 
@@ -137,11 +129,18 @@ function PriceRow({
           {pricing.plan.trialChip}
         </span>
         <div className="flex flex-col gap-3">
-          <ProCta
-            cadence={cadence}
-            isAuthed={isAuthed}
-            label={pricing.plan.ctaLabel}
-          />
+          {/* The same CTA as the hero (Luis, 2026-09-02): straight to the
+              download page, no login and no Stripe checkout in front of it.
+              The trial starts inside the app; billing lives on /account. */}
+          <Link
+            href={pricing.plan.ctaHref}
+            className={cn(
+              buttonVariants({ size: "lg", variant: "default" }),
+              "w-full shadow-[inset_0_1px_0_rgba(255,255,255,0.18)]"
+            )}
+          >
+            {pricing.plan.ctaLabel}
+          </Link>
           <p className="text-xs leading-relaxed text-[var(--muted-foreground)]">
             {pricing.plan.ctaNote}
           </p>
@@ -284,9 +283,11 @@ function AiChoiceOption({
   )
 }
 
+/** Assurances only — the tertiary download link that sat beside them was
+    redundant once the card's own CTA became the download (2026-09-02). */
 function PricingFooter() {
   return (
-    <div className="flex flex-col justify-between gap-4 border-b border-[var(--border)] pb-6 md:flex-row md:items-center">
+    <div className="border-b border-[var(--border)] pb-6">
       <ul className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-[0.7rem] uppercase tracking-[0.14em] text-[var(--muted-foreground)]">
         {pricing.assurances.map((assurance, i) => (
           <React.Fragment key={assurance}>
@@ -295,12 +296,6 @@ function PricingFooter() {
           </React.Fragment>
         ))}
       </ul>
-      <Link
-        href={pricing.download.href}
-        className="inline-flex w-fit items-center gap-1 text-xs text-[var(--muted-foreground)] underline decoration-[var(--border)] underline-offset-4 transition-colors hover:text-[var(--fg)] hover:decoration-[var(--accent-text)]"
-      >
-        {pricing.download.label}
-      </Link>
     </div>
   )
 }

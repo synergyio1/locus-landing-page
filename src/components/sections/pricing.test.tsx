@@ -87,18 +87,12 @@ describe("<Pricing />", () => {
     expect(screen.getByText(/no card required/i)).toBeDefined()
   })
 
-  it("renders the CTA as an anchor when isAuthed=false", () => {
-    render(<Pricing isAuthed={false} />)
-    const cta = screen.getByRole("link", { name: /start 7 days free/i })
-    expect(cta.tagName).toBe("A")
-    expect(cta.getAttribute("href")).toMatch(/\/login\?next=.*notice=signin/)
-  })
-
-  it("renders the CTA as a button when isAuthed=true", () => {
-    render(<Pricing isAuthed />)
-    expect(
-      screen.getByRole("button", { name: /start 7 days free/i }).tagName
-    ).toBe("BUTTON")
+  it("renders the CTA as a plain link to /download — no login, no checkout in front of it (Luis, 2026-09-02)", () => {
+    const { container } = render(<Pricing />)
+    const cta = screen.getByRole("link", { name: /download the app/i })
+    expect(cta.getAttribute("href")).toBe("/download")
+    expect(container.querySelector('a[href^="/login"]')).toBeNull()
+    expect(screen.queryByRole("button", { name: /start|checkout|7 days/i })).toBeNull()
   })
 
   it("renders the AI choice rail with BYO included and Locus Remote as prepaid credits", () => {
@@ -135,11 +129,8 @@ describe("<Pricing />", () => {
     expect(container.textContent).not.toMatch(/14 days/i)
   })
 
-  it("renders the tertiary download link pointing to /download", () => {
+  it("renders exactly one download CTA — the tertiary link under the assurances is gone", () => {
     render(<Pricing />)
-    const link = screen.getByRole("link", {
-      name: /download for macos/i,
-    })
-    expect(link.getAttribute("href")).toBe("/download")
+    expect(screen.getAllByRole("link", { name: /download/i })).toHaveLength(1)
   })
 })

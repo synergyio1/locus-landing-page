@@ -44,6 +44,6 @@ export const appTour: AppTourContent = {
     "Six tabs, explained below, and one smart copilot — chat in the title bar, or just your voice — that reaches all of them. All of it on your Mac, on the AI you already pay for.",
   video: null,
   videoLabel: "A walk through Locus",
-  cta: { label: "Download Locus", href: "/download" },
+  cta: { label: "Download the app", href: "/download" },
   // secondaryCta: { label: "See the packs", href: "/packs" }, — restore with the nav item.
 }

@@ -193,7 +193,7 @@ export default async function AccountPage({
             href="/download"
             className="text-sm text-[var(--accent-text)] underline-offset-4 hover:underline"
           >
-            Download Locus for Mac →
+            Download the app →
           </Link>
         </div>
       ) : null}

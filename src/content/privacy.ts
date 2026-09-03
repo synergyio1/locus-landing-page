@@ -32,7 +32,7 @@ export const privacy: LegalContent = {
     },
     {
       heading: "Contact",
-      body: "Questions about this policy or your data can be sent to support@getlocus.tech and we'll get back to you directly.",
+      body: "Questions about this policy or your data can be sent to luis@getlocus.tech and we'll get back to you directly.",
     },
   ],
 }

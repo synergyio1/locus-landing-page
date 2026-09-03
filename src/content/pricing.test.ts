@@ -29,7 +29,7 @@ describe("pricing content", () => {
 
   it("attaches the 7-day no-card trial to the plan", () => {
     expect(pricing.plan.trialChip).toMatch(/7 days/i)
-    expect(pricing.plan.ctaLabel).toMatch(/7 days free/i)
+    expect(pricing.plan.ctaNote).toMatch(/7-day/i)
     expect(pricing.plan.ctaNote).toMatch(/no card/i)
     expect(pricing.assurances).toContain("7-day free trial")
   })
@@ -91,8 +91,9 @@ describe("pricing content", () => {
     )
   })
 
-  it("provides a tertiary download link to /download", () => {
-    expect(pricing.download.href).toBe("/download")
-    expect(pricing.download.label.length).toBeGreaterThan(0)
+  it("the plan CTA is the download, with no login in front of it (Luis, 2026-09-02)", () => {
+    expect(pricing.plan.ctaLabel).toBe("Download the app")
+    expect(pricing.plan.ctaHref).toBe("/download")
+    expect(pricing.plan.ctaHref).not.toMatch(/login|signup/)
   })
 })

@@ -21,7 +21,7 @@ export const download: DownloadContent = {
   requirement: "Requires macOS Tahoe for now.",
   support: "Support for older macOS versions will come later.",
   cta: {
-    label: "Download for macOS",
+    label: "Download the app",
     href: MAC_DOWNLOAD_URL,
     note: "Direct DMG download. No web login required; Locus asks you to sign in after launch.",
   },

@@ -14,7 +14,7 @@ describe("download content", () => {
   })
 
   it("primary CTA does not call the product free — only the trial is", () => {
-    expect(download.cta.label).toMatch(/download for macos/i)
+    expect(download.cta.label).toBe("Download the app")
     expect(download.cta.label).not.toMatch(/free/i)
   })
 

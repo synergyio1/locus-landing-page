@@ -23,7 +23,7 @@ export const hero: HeroContent = {
   subheadline:
     "One system you can trust with your whole day. Learn from every day, and let the small changes compound.",
   primaryCta: {
-    label: "Download for macOS",
+    label: "Download the app",
     href: "/download",
   },
   secondaryCta: {
