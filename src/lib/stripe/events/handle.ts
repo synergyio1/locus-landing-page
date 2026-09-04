@@ -12,6 +12,11 @@ import { SubscriptionsRepo } from "@/lib/db/subscriptionsRepo"
 import { sendCancellation } from "@/lib/mail/sendCancellation"
 import { sendPaymentFailed } from "@/lib/mail/sendPaymentFailed"
 import { sendWelcome } from "@/lib/mail/sendWelcome"
+import {
+  notifyCancellation,
+  notifyCreditPurchase,
+  notifySubscription,
+} from "@/lib/slack"
 
 import { getStripeClient } from "../client"
 import { isForeignEvent } from "./app-guard"
@@ -206,6 +211,16 @@ async function handleCheckoutSessionCompleted(
     ...(recipientEmail ? { $set: { email: recipientEmail } } : {}),
   })
 
+  // #locus-newusers. Safe to sit inline: the notifier swallows its own
+  // failures, and the route's stripe_events dedupe means a Stripe retry does
+  // not re-announce a sale that already landed.
+  await notifySubscription({
+    email: recipientEmail,
+    amountMinor: session.amount_total,
+    currency: session.currency,
+    priceId: priceIdOf(subscription),
+  })
+
   if (recipientEmail) {
     try {
       await sendWelcome(
@@ -278,6 +293,18 @@ async function handleCreditPurchase(
       console.log(
         `[stripe-webhook] credit event ${eventId} already granted — replay ignored`
       )
+    } else {
+      // Only on a real grant. `granted === false` is a replay of a pack that
+      // was already announced.
+      await notifyCreditPurchase({
+        email:
+          session.customer_details?.email ??
+          session.customer_email ??
+          (await safeFetchUserEmail(userId)),
+        amountMinor: session.amount_total,
+        currency: session.currency,
+        priceId,
+      })
     }
     return { handled: true, type: eventType, creditsGranted: granted }
   } catch (error) {
@@ -289,6 +316,25 @@ async function handleCreditPurchase(
       return { handled: true, type: eventType, creditsGranted: false }
     }
     throw error
+  }
+}
+
+/**
+ * `fetchUserEmail` for the Slack pings only. The notifier swallows its own
+ * transport failures, but a DB hiccup in an argument expression would escape
+ * that and fail a webhook whose real work (the grant, the cancellation) has
+ * already succeeded. A ping missing an address is strictly better than a
+ * retried payment event.
+ */
+async function safeFetchUserEmail(userId: string): Promise<string | null> {
+  try {
+    return await fetchUserEmail(userId)
+  } catch (error) {
+    console.error(
+      `[stripe-webhook] could not look up email for slack ping (user ${userId})`,
+      error
+    )
+    return null
   }
 }
 
@@ -455,6 +501,15 @@ async function handleSubscriptionDeleted(
 
   await captureServerEvent(result.user_id, "subscription_canceled", {
     price_id: priceIdOf(subscription),
+  })
+
+  // Churn is announced here rather than on the `updated` active→canceled
+  // transition: an immediate cancel fires BOTH, and this is the one Stripe
+  // always sends when a subscription actually ends. It is also where the
+  // matching `subscription_canceled` analytics event already lives.
+  await notifyCancellation({
+    email: await safeFetchUserEmail(result.user_id),
+    accessUntil: toIsoOrNull(toDateOrNull(currentPeriodEndOf(subscription))),
   })
 
   return { handled: true, type: "customer.subscription.deleted" }

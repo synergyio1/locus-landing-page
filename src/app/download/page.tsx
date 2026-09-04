@@ -1,12 +1,11 @@
 import type { Metadata } from "next"
+import { headers } from "next/headers"
 
-import { DownloadLink } from "@/components/analytics/download-link"
+import { DownloadCta } from "@/components/download/download-cta"
 import { PageShell } from "@/components/layout/page-shell"
 import { BreathingDot, SpringReveal } from "@/components/motion"
-import { buttonVariants } from "@/components/ui/button"
-import { Icon } from "@/components/ui/icon"
 import { download } from "@/content/download"
-import { cn } from "@/lib/utils"
+import { isMacUserAgent } from "@/lib/platform/detect"
 
 export const metadata: Metadata = {
   title: "Download — Locus",
@@ -14,7 +13,10 @@ export const metadata: Metadata = {
     "Download Locus for macOS Tahoe. Install, sign in, and your 7-day trial starts inside the app.",
 }
 
-export default function DownloadPage() {
+export default async function DownloadPage() {
+  const requestHeaders = await headers()
+  const initialIsMac = isMacUserAgent(requestHeaders.get("user-agent"))
+
   return (
     <PageShell as="section" className="py-24 md:py-32">
       <div className="mx-auto flex max-w-2xl flex-col gap-8">
@@ -46,18 +48,8 @@ export default function DownloadPage() {
           </p>
         </SpringReveal>
 
-        <SpringReveal delay={160} className="flex flex-col gap-3">
-          <DownloadLink
-            href={download.cta.href}
-            aria-label="Download the macOS DMG"
-            className={cn(buttonVariants({ size: "lg" }), "self-start")}
-          >
-            <Icon name="download" />
-            {download.cta.label}
-          </DownloadLink>
-          <p className="text-sm text-[var(--muted-foreground)]">
-            {download.cta.note}
-          </p>
+        <SpringReveal delay={160}>
+          <DownloadCta initialIsMac={initialIsMac} />
         </SpringReveal>
       </div>
     </PageShell>

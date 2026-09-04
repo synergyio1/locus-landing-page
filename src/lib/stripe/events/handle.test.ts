@@ -20,6 +20,9 @@ const {
   sendWelcomeMock,
   sendCancellationMock,
   sendPaymentFailedMock,
+  notifySubscriptionMock,
+  notifyCreditPurchaseMock,
+  notifyCancellationMock,
 } = vi.hoisted(() => ({
   grantPurchase: vi.fn(),
   promoteOrInsertFromSubscription: vi.fn(),
@@ -31,6 +34,9 @@ const {
   sendWelcomeMock: vi.fn(),
   sendCancellationMock: vi.fn(),
   sendPaymentFailedMock: vi.fn(),
+  notifySubscriptionMock: vi.fn(),
+  notifyCreditPurchaseMock: vi.fn(),
+  notifyCancellationMock: vi.fn(),
 }))
 
 vi.mock("@/lib/db/subscriptionsRepo", () => ({
@@ -77,6 +83,13 @@ vi.mock("@/lib/mail/sendPaymentFailed", () => ({
   sendPaymentFailed: (...args: unknown[]) => sendPaymentFailedMock(...args),
 }))
 
+vi.mock("@/lib/slack", () => ({
+  notifySubscription: (...args: unknown[]) => notifySubscriptionMock(...args),
+  notifyCreditPurchase: (...args: unknown[]) =>
+    notifyCreditPurchaseMock(...args),
+  notifyCancellation: (...args: unknown[]) => notifyCancellationMock(...args),
+}))
+
 import { handleStripeEvent } from "./handle"
 
 describe("handleStripeEvent", () => {
@@ -89,6 +102,9 @@ describe("handleStripeEvent", () => {
     // shared-account case override this with null.
     findByCustomerId.mockResolvedValue({ user_id: "user_ada" })
     queryRaw.mockReset()
+    // `prisma.$queryRaw` always resolves to an array; "no such user" is an
+    // empty one. Tests that need an address override with mockResolvedValueOnce.
+    queryRaw.mockResolvedValue([])
     subscriptionsRetrieve.mockReset()
     sendWelcomeMock.mockReset()
     sendWelcomeMock.mockResolvedValue(undefined)
@@ -96,6 +112,12 @@ describe("handleStripeEvent", () => {
     sendCancellationMock.mockResolvedValue(undefined)
     sendPaymentFailedMock.mockReset()
     sendPaymentFailedMock.mockResolvedValue(undefined)
+    notifySubscriptionMock.mockReset()
+    notifySubscriptionMock.mockResolvedValue(undefined)
+    notifyCreditPurchaseMock.mockReset()
+    notifyCreditPurchaseMock.mockResolvedValue(undefined)
+    notifyCancellationMock.mockReset()
+    notifyCancellationMock.mockResolvedValue(undefined)
   })
 
   describe("checkout.session.completed", () => {
@@ -799,5 +821,125 @@ describe("checkout.session.completed identity resolution", () => {
     expect(promoteOrInsertFromSubscription.mock.calls[0][0]).toBe(
       "user-uuid-123"
     )
+  })
+})
+
+// The #locus-newusers pings. The notifier swallows its own transport failures,
+// so what matters here is only that each revenue event reaches it exactly once
+// — and that a replayed grant does not announce the same sale twice.
+describe("handleStripeEvent — slack notifications", () => {
+  beforeEach(() => {
+    promoteOrInsertFromSubscription.mockReset()
+    promoteOrInsertFromSubscription.mockResolvedValue({ promoted: true })
+    updateBySubscriptionId.mockReset()
+    markCanceledBySubscriptionId.mockReset()
+    subscriptionsRetrieve.mockReset()
+    grantPurchase.mockReset()
+    queryRaw.mockReset()
+    queryRaw.mockResolvedValue([])
+    sendWelcomeMock.mockReset()
+    sendWelcomeMock.mockResolvedValue(undefined)
+    sendCancellationMock.mockReset()
+    sendCancellationMock.mockResolvedValue(undefined)
+    notifySubscriptionMock.mockReset()
+    notifySubscriptionMock.mockResolvedValue(undefined)
+    notifyCreditPurchaseMock.mockReset()
+    notifyCreditPurchaseMock.mockResolvedValue(undefined)
+    notifyCancellationMock.mockReset()
+    notifyCancellationMock.mockResolvedValue(undefined)
+  })
+
+  it("announces a new subscription with the buyer and the charged amount", async () => {
+    subscriptionsRetrieve.mockResolvedValueOnce(subscriptionRetrieveFixture)
+
+    await handleStripeEvent(checkoutCompletedFixture as unknown as Stripe.Event)
+
+    expect(notifySubscriptionMock).toHaveBeenCalledTimes(1)
+    expect(notifySubscriptionMock.mock.calls[0][0]).toMatchObject({
+      email: "ada@example.com",
+    })
+    expect(notifyCreditPurchaseMock).not.toHaveBeenCalled()
+    expect(notifyCancellationMock).not.toHaveBeenCalled()
+  })
+
+  it("announces churn on subscription.deleted", async () => {
+    markCanceledBySubscriptionId.mockResolvedValueOnce({
+      user_id: "user-uuid-123",
+    })
+    queryRaw.mockResolvedValueOnce([{ email: "ada@example.com" }])
+
+    await handleStripeEvent(
+      subscriptionDeletedFixture as unknown as Stripe.Event
+    )
+
+    expect(notifyCancellationMock).toHaveBeenCalledTimes(1)
+    expect(notifyCancellationMock.mock.calls[0][0]).toMatchObject({
+      email: "ada@example.com",
+    })
+  })
+
+  // An immediate cancel fires updated(active→canceled) AND deleted. Announcing
+  // both would report one cancellation twice.
+  it("does not also announce on the updated active→canceled transition", async () => {
+    updateBySubscriptionId.mockResolvedValueOnce({ user_id: "user-uuid-123" })
+    queryRaw.mockResolvedValueOnce([{ email: "ada@example.com" }])
+
+    await handleStripeEvent(
+      subscriptionCanceledFixture as unknown as Stripe.Event
+    )
+
+    expect(notifyCancellationMock).not.toHaveBeenCalled()
+  })
+
+  it("stays quiet on a price swap — that is not churn", async () => {
+    updateBySubscriptionId.mockResolvedValueOnce({ user_id: "user-uuid-123" })
+
+    await handleStripeEvent(
+      subscriptionPriceswapFixture as unknown as Stripe.Event
+    )
+
+    expect(notifyCancellationMock).not.toHaveBeenCalled()
+  })
+
+  it("announces a credit pack once, and never on a replayed grant", async () => {
+    const event = {
+      id: "evt_credit_slack",
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_test_credit",
+          object: "checkout.session",
+          mode: "payment",
+          payment_status: "paid",
+          amount_total: 2000,
+          currency: "usd",
+          client_reference_id: "user-uuid-123",
+          customer_details: { email: "buyer@example.com" },
+          metadata: {
+            locus_credit_purchase: "true",
+            user_id: "user-uuid-123",
+            credit_price_id: "price_5",
+            credit_amount_cents: "500",
+          },
+        },
+      },
+    } as unknown as Stripe.Event
+
+    grantPurchase.mockResolvedValueOnce({ granted: true })
+    await handleStripeEvent(event)
+
+    expect(notifyCreditPurchaseMock).toHaveBeenCalledTimes(1)
+    expect(notifyCreditPurchaseMock.mock.calls[0][0]).toMatchObject({
+      email: "buyer@example.com",
+      amountMinor: 2000,
+      currency: "usd",
+    })
+
+    // A redelivery: the ledger reports the pack already landed, so the channel
+    // must stay quiet rather than announce the same sale twice.
+    grantPurchase.mockResolvedValueOnce({ granted: false })
+    await handleStripeEvent(event)
+
+    expect(notifyCreditPurchaseMock).toHaveBeenCalledTimes(1)
   })
 })
