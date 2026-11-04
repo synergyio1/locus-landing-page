@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 
-const SITE_URL = "https://getlocus.tech"
+const SITE_URL = "https://www.getlocus.tech"
 
 const ROUTES = [
   { path: "/", changeFrequency: "weekly", priority: 1 },

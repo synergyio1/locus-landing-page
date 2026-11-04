@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://getlocus.tech"),
+  metadataBase: new URL("https://www.getlocus.tech"),
   title: "Locus — the missing OS for modern work",
   description:
     "Declare intent, see what actually happened, and turn each day into a better tomorrow. The AI-native execution OS for macOS — local-first, running on the AI you already pay for.",

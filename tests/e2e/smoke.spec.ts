@@ -35,7 +35,7 @@ test("/sitemap.xml serves a valid sitemap listing every public route", async ({
     if ("listed" in route && route.listed === false) continue
     const { path } = route
     const url =
-      path === "/" ? "https://getlocus.tech" : `https://getlocus.tech${path}`
+      path === "/" ? "https://www.getlocus.tech" : `https://www.getlocus.tech${path}`
     expect(body).toContain(`<loc>${url}</loc>`)
   }
 })
@@ -48,5 +48,5 @@ test("/robots.txt allows all crawlers and references the sitemap", async ({
   const body = await response.text()
   expect(body).toMatch(/User-Agent:\s*\*/i)
   expect(body).toMatch(/Allow:\s*\//i)
-  expect(body).toMatch(/Sitemap:\s*https:\/\/getlocus\.tech\/sitemap\.xml/i)
+  expect(body).toMatch(/Sitemap:\s*https:\/\/www\.getlocus\.tech\/sitemap\.xml/i)
 })
